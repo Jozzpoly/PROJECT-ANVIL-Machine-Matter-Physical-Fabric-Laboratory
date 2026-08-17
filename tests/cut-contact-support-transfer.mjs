@@ -32,6 +32,30 @@ const LONG_CHILD_SUPPORT_GAP_EPS_M = 0.03;
 const LONG_CHILD_LINEAR_SPEED_EPS_MPS = 0.05;
 const LONG_CHILD_ANGULAR_SPEED_EPS_RADPS = 0.05;
 
+// Dynamic-impact probe. Here the oracle is deliberately NOT the unsplit body:
+// topology changes may legitimately change the impact response. Instead we
+// compare a split topology that has existed throughout free fall against the
+// same split topology reconstructed from the parent state just before impact.
+const PREIMPACT_MIN_GAP_M = 0.05;
+const PREIMPACT_MAX_GAP_M = 0.23;
+const PREIMPACT_MIN_DOWNWARD_SPEED_MPS = 2.0;
+const PREIMPACT_MAX_SEARCH_STEPS = 180;
+const PREIMPACT_CHILD_POSITION_EPS_M = 2e-4;
+const PREIMPACT_CHILD_VELOCITY_EPS_MPS = 2e-5;
+const PREIMPACT_CHILD_ANGULAR_EPS_RADPS = 2e-5;
+const IMPACT_MAX_SEARCH_STEPS = 12;
+const MIN_CONTACT_IMPULSE_VELOCITY_EFFECT_MPS = 1.0;
+const IMPACT_BARYCENTER_EPS_M = 7e-4;
+const IMPACT_MEAN_VELOCITY_EPS_MPS = 0.02;
+const IMPACT_MOMENTUM_EPS_KG_MPS = 30.0;
+const IMPACT_POST_STEPS = 20;
+const POST_IMPACT_BARYCENTER_EPS_M = 3e-3;
+const POST_IMPACT_MEAN_VELOCITY_EPS_MPS = 0.03;
+const POST_IMPACT_MOMENTUM_EPS_KG_MPS = 45.0;
+const POST_IMPACT_CHILD_POSITION_EPS_M = 0.01;
+const POST_IMPACT_CHILD_VELOCITY_EPS_MPS = 0.05;
+const POST_IMPACT_SUPPORT_GAP_EPS_M = 0.04;
+
 function add(a, b) {
   return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
 }
@@ -145,6 +169,25 @@ function aggregateSnapshot(snapshots) {
   };
 }
 
+function childMotionsFromParent(parentPlan, afterPlan, parentMotion) {
+  const motions = {};
+  for (const child of afterPlan.bodies) {
+    const authoredComOffset = subtract(child.centerOfMassWorld, parentPlan.centerOfMassWorld);
+    const worldComOffset = rotateVec3ByQuat(parentMotion.rotation, authoredComOffset);
+    const childWorldCom = add(parentMotion.position, worldComOffset);
+    motions[child.id] = {
+      position: childWorldCom,
+      rotation: { ...parentMotion.rotation },
+      linearVelocity: add(
+        parentMotion.linearVelocity,
+        cross(parentMotion.angularVelocity, worldComOffset),
+      ),
+      angularVelocity: { ...parentMotion.angularVelocity },
+    };
+  }
+  return motions;
+}
+
 test("CUT reconstructs a settled supported contact without an artificial launch or sink", async () => {
   const document = createCollapseFixture(false);
   const beforePlan = compileMatter(document);
@@ -230,25 +273,7 @@ test("CUT reconstructs a settled supported contact without an artificial launch 
     },
   });
 
-  const childInitialMotion = {};
-  for (const child of afterPlan.bodies) {
-    const authoredComOffset = subtract(child.centerOfMassWorld, parentPlan.centerOfMassWorld);
-    const worldComOffset = rotateVec3ByQuat(parentMotion.rotation, authoredComOffset);
-    const childWorldCom = add(parentMotion.position, worldComOffset);
-    // Parent is nearly static, but use the already-tested rigid-field rule so
-    // contact is the only newly introduced variable.
-    const childVelocity = add(
-      parentMotion.linearVelocity,
-      cross(parentMotion.angularVelocity, worldComOffset),
-    );
-    childInitialMotion[child.id] = {
-      position: childWorldCom,
-      rotation: { ...parentMotion.rotation },
-      linearVelocity: childVelocity,
-      angularVelocity: { ...parentMotion.angularVelocity },
-    };
-  }
-
+  const childInitialMotion = childMotionsFromParent(parentPlan, afterPlan, parentMotion);
   const splitRuntime = await CollapsePhysics.create(afterPlan, document.materials, {
     gravity: GRAVITY,
     includeGround: true,
@@ -372,5 +397,276 @@ test("CUT reconstructs a settled supported contact without an artificial launch 
   } finally {
     controlRuntime.dispose();
     splitRuntime.dispose();
+  }
+});
+
+test("CUT reconstructed split matches a pre-existing split through a dynamic ground impact", async () => {
+  const document = createCollapseFixture(false);
+  const beforePlan = compileMatter(document);
+  const afterPlan = compileMatter(
+    { ...document, revision: "anvil-01-cut/contact-impact-split" },
+    { blockedFaceConnections: [CUT_CONNECTION] },
+  );
+  const parentPlan = beforePlan.bodies[0];
+  assert.ok(parentPlan);
+  assert.equal(afterPlan.bodies.length, 2);
+
+  const parentInitialMotion = {
+    position: { x: 0, y: 3.2, z: 0 },
+    rotation: IDENTITY,
+    linearVelocity: ZERO,
+    angularVelocity: ZERO,
+  };
+
+  // Find a real pre-impact parent state instead of guessing the integrator.
+  const parentRuntime = await CollapsePhysics.create(beforePlan, document.materials, {
+    gravity: GRAVITY,
+    includeGround: true,
+    initialMotionByPlanBodyId: {
+      [parentPlan.id]: parentInitialMotion,
+    },
+  });
+
+  let preImpactParent;
+  let stepsToPreImpact = 0;
+  let preImpactGapM = Number.NaN;
+  try {
+    for (let step = 1; step <= PREIMPACT_MAX_SEARCH_STEPS; step += 1) {
+      parentRuntime.step(1);
+      const snapshot = parentRuntime.snapshots()[0];
+      assert.ok(snapshot);
+      const bottomY = lowestWorldY(parentPlan, snapshot);
+      if (
+        bottomY >= PREIMPACT_MIN_GAP_M &&
+        bottomY <= PREIMPACT_MAX_GAP_M &&
+        snapshot.linearVelocity.y <= -PREIMPACT_MIN_DOWNWARD_SPEED_MPS
+      ) {
+        preImpactParent = snapshot;
+        stepsToPreImpact = step;
+        preImpactGapM = bottomY;
+        break;
+      }
+    }
+  } finally {
+    parentRuntime.dispose();
+  }
+
+  assert.ok(preImpactParent, "failed to locate a non-contacting dynamic pre-impact state");
+  assert.ok(preImpactGapM > 0, `pre-impact parent already penetrates ground: ${preImpactGapM}`);
+  assert.ok(
+    preImpactParent.linearVelocity.y <= -PREIMPACT_MIN_DOWNWARD_SPEED_MPS,
+    `pre-impact state is not dynamically falling: vy=${preImpactParent.linearVelocity.y}`,
+  );
+
+  // Reference: the split topology exists for the whole free-fall history.
+  const referenceInitialChildren = childMotionsFromParent(
+    parentPlan,
+    afterPlan,
+    parentInitialMotion,
+  );
+  const referenceRuntime = await CollapsePhysics.create(afterPlan, document.materials, {
+    gravity: GRAVITY,
+    includeGround: true,
+    initialMotionByPlanBodyId: referenceInitialChildren,
+  });
+  referenceRuntime.step(stepsToPreImpact);
+  const referencePreImpact = referenceRuntime.snapshots();
+  assert.equal(referencePreImpact.length, 2);
+
+  // Candidate: topology changes at the parent snapshot and the split runtime is
+  // recreated immediately before impact using the already-tested rigid field.
+  const reconstructedInitialChildren = childMotionsFromParent(
+    parentPlan,
+    afterPlan,
+    motionFromSnapshot(preImpactParent),
+  );
+  const reconstructedRuntime = await CollapsePhysics.create(afterPlan, document.materials, {
+    gravity: GRAVITY,
+    includeGround: true,
+    initialMotionByPlanBodyId: reconstructedInitialChildren,
+  });
+  const reconstructedPreImpact = reconstructedRuntime.snapshots();
+  assert.equal(reconstructedPreImpact.length, 2);
+
+  let maxPreImpactPositionErrorM = 0;
+  let maxPreImpactVelocityErrorMps = 0;
+  let maxPreImpactAngularErrorRadps = 0;
+  for (const child of afterPlan.bodies) {
+    const reference = referencePreImpact.find((value) => value.planBodyId === child.id);
+    const reconstructed = reconstructedPreImpact.find((value) => value.planBodyId === child.id);
+    assert.ok(reference && reconstructed, `missing pre-impact child ${child.id}`);
+    const positionError = magnitude(subtract(reconstructed.position, reference.position));
+    const velocityError = magnitude(
+      subtract(reconstructed.linearVelocity, reference.linearVelocity),
+    );
+    const angularError = magnitude(
+      subtract(reconstructed.angularVelocity, reference.angularVelocity),
+    );
+    maxPreImpactPositionErrorM = Math.max(maxPreImpactPositionErrorM, positionError);
+    maxPreImpactVelocityErrorMps = Math.max(maxPreImpactVelocityErrorMps, velocityError);
+    maxPreImpactAngularErrorRadps = Math.max(maxPreImpactAngularErrorRadps, angularError);
+    assert.ok(
+      positionError <= PREIMPACT_CHILD_POSITION_EPS_M,
+      `${child.id} pre-impact position mismatch ${positionError}`,
+    );
+    assert.ok(
+      velocityError <= PREIMPACT_CHILD_VELOCITY_EPS_MPS,
+      `${child.id} pre-impact velocity mismatch ${velocityError}`,
+    );
+    assert.ok(
+      angularError <= PREIMPACT_CHILD_ANGULAR_EPS_RADPS,
+      `${child.id} pre-impact angular mismatch ${angularError}`,
+    );
+  }
+
+  const referencePreAggregate = aggregateSnapshot(referencePreImpact);
+  let impactStep = 0;
+  let referenceImpact;
+  let reconstructedImpact;
+  let contactImpulseVelocityEffectMps = 0;
+
+  try {
+    for (let step = 1; step <= IMPACT_MAX_SEARCH_STEPS; step += 1) {
+      referenceRuntime.step(1);
+      reconstructedRuntime.step(1);
+      const referenceNow = referenceRuntime.snapshots();
+      const reconstructedNow = reconstructedRuntime.snapshots();
+      const referenceMinBottomY = Math.min(
+        ...afterPlan.bodies.map((child) => {
+          const snapshot = referenceNow.find((value) => value.planBodyId === child.id);
+          assert.ok(snapshot);
+          return lowestWorldY(child, snapshot);
+        }),
+      );
+      const referenceAggregate = aggregateSnapshot(referenceNow);
+      const verticalVelocityEffect = Math.abs(
+        referenceAggregate.meanVelocity.y - referencePreAggregate.meanVelocity.y,
+      );
+      if (
+        referenceMinBottomY <= SOURCE_SUPPORT_GAP_EPS_M &&
+        verticalVelocityEffect >= MIN_CONTACT_IMPULSE_VELOCITY_EFFECT_MPS
+      ) {
+        impactStep = step;
+        referenceImpact = referenceNow;
+        reconstructedImpact = reconstructedNow;
+        contactImpulseVelocityEffectMps = verticalVelocityEffect;
+        break;
+      }
+    }
+
+    assert.ok(referenceImpact && reconstructedImpact, "dynamic impact was not observed in search horizon");
+    const referenceImpactAggregate = aggregateSnapshot(referenceImpact);
+    const reconstructedImpactAggregate = aggregateSnapshot(reconstructedImpact);
+    assertVecNear(
+      reconstructedImpactAggregate.barycenter,
+      referenceImpactAggregate.barycenter,
+      IMPACT_BARYCENTER_EPS_M,
+      "dynamic-impact barycenter",
+    );
+    assertVecNear(
+      reconstructedImpactAggregate.meanVelocity,
+      referenceImpactAggregate.meanVelocity,
+      IMPACT_MEAN_VELOCITY_EPS_MPS,
+      "dynamic-impact mean velocity",
+    );
+    assertVecNear(
+      reconstructedImpactAggregate.momentum,
+      referenceImpactAggregate.momentum,
+      IMPACT_MOMENTUM_EPS_KG_MPS,
+      "dynamic-impact momentum",
+    );
+
+    referenceRuntime.step(IMPACT_POST_STEPS);
+    reconstructedRuntime.step(IMPACT_POST_STEPS);
+    const referencePost = referenceRuntime.snapshots();
+    const reconstructedPost = reconstructedRuntime.snapshots();
+    const referencePostAggregate = aggregateSnapshot(referencePost);
+    const reconstructedPostAggregate = aggregateSnapshot(reconstructedPost);
+
+    assertVecNear(
+      reconstructedPostAggregate.barycenter,
+      referencePostAggregate.barycenter,
+      POST_IMPACT_BARYCENTER_EPS_M,
+      "post-impact barycenter",
+    );
+    assertVecNear(
+      reconstructedPostAggregate.meanVelocity,
+      referencePostAggregate.meanVelocity,
+      POST_IMPACT_MEAN_VELOCITY_EPS_MPS,
+      "post-impact mean velocity",
+    );
+    assertVecNear(
+      reconstructedPostAggregate.momentum,
+      referencePostAggregate.momentum,
+      POST_IMPACT_MOMENTUM_EPS_KG_MPS,
+      "post-impact momentum",
+    );
+
+    let maxPostChildPositionErrorM = 0;
+    let maxPostChildVelocityErrorMps = 0;
+    let maxReconstructedSupportGapM = 0;
+    for (const child of afterPlan.bodies) {
+      const reference = referencePost.find((value) => value.planBodyId === child.id);
+      const reconstructed = reconstructedPost.find((value) => value.planBodyId === child.id);
+      assert.ok(reference && reconstructed, `missing post-impact child ${child.id}`);
+      const positionError = magnitude(subtract(reconstructed.position, reference.position));
+      const velocityError = magnitude(
+        subtract(reconstructed.linearVelocity, reference.linearVelocity),
+      );
+      const supportGap = Math.abs(lowestWorldY(child, reconstructed));
+      maxPostChildPositionErrorM = Math.max(maxPostChildPositionErrorM, positionError);
+      maxPostChildVelocityErrorMps = Math.max(maxPostChildVelocityErrorMps, velocityError);
+      maxReconstructedSupportGapM = Math.max(maxReconstructedSupportGapM, supportGap);
+      assert.ok(
+        positionError <= POST_IMPACT_CHILD_POSITION_EPS_M,
+        `${child.id} post-impact position mismatch ${positionError}`,
+      );
+      assert.ok(
+        velocityError <= POST_IMPACT_CHILD_VELOCITY_EPS_MPS,
+        `${child.id} post-impact velocity mismatch ${velocityError}`,
+      );
+      assert.ok(
+        supportGap <= POST_IMPACT_SUPPORT_GAP_EPS_M,
+        `${child.id} reconstructed impact lost ground support: ${supportGap} m`,
+      );
+    }
+
+    console.log(
+      JSON.stringify({
+        probe: "ANVIL-01/CUT-2D2",
+        stepsToPreImpact,
+        preImpactGapM,
+        preImpactDownwardSpeedMps: -preImpactParent.linearVelocity.y,
+        maxPreImpactPositionErrorM,
+        maxPreImpactVelocityErrorMps,
+        maxPreImpactAngularErrorRadps,
+        impactStepAfterReconstruction: impactStep,
+        contactImpulseVelocityEffectMps,
+        impactBarycenterErrorM: magnitude(
+          subtract(reconstructedImpactAggregate.barycenter, referenceImpactAggregate.barycenter),
+        ),
+        impactMeanVelocityErrorMps: magnitude(
+          subtract(reconstructedImpactAggregate.meanVelocity, referenceImpactAggregate.meanVelocity),
+        ),
+        impactMomentumErrorKgMps: magnitude(
+          subtract(reconstructedImpactAggregate.momentum, referenceImpactAggregate.momentum),
+        ),
+        postImpactBarycenterErrorM: magnitude(
+          subtract(reconstructedPostAggregate.barycenter, referencePostAggregate.barycenter),
+        ),
+        postImpactMeanVelocityErrorMps: magnitude(
+          subtract(reconstructedPostAggregate.meanVelocity, referencePostAggregate.meanVelocity),
+        ),
+        postImpactMomentumErrorKgMps: magnitude(
+          subtract(reconstructedPostAggregate.momentum, referencePostAggregate.momentum),
+        ),
+        maxPostChildPositionErrorM,
+        maxPostChildVelocityErrorMps,
+        maxReconstructedSupportGapM,
+      }),
+    );
+  } finally {
+    referenceRuntime.dispose();
+    reconstructedRuntime.dispose();
   }
 });
