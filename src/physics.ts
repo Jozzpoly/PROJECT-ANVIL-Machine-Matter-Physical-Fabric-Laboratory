@@ -1,18 +1,11 @@
 import Box3DFactory from "box3d.js/inline";
-import type { Box3DModule, b3BodyId, b3Quat, b3WorldId } from "box3d.js";
+import type { Box3DModule, b3BodyId, b3WorldId } from "box3d.js";
 import type { MaterialDefinition, PhysicalPlan, RigidBodyPlan, Vec3 } from "./model.js";
+import type { PhysicsRuntime, RuntimeBodyObservation } from "./foundation/runtime.js";
 
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
 const SPAWN_OFFSET: Vec3 = { x: 0, y: 3.5, z: 0 };
-
-export interface RuntimeBodySnapshot {
-  readonly planBodyId: string;
-  readonly position: Vec3;
-  readonly rotation: b3Quat;
-  readonly massKg: number;
-  readonly localCenter: Vec3;
-}
 
 export interface RuntimeReceipt {
   readonly engineVersion: string;
@@ -40,7 +33,7 @@ function boxHullPoints(body: RigidBodyPlan, colliderIndex: number): number[] {
   return points;
 }
 
-export class CollapsePhysics {
+export class CollapsePhysics implements PhysicsRuntime<RuntimeBodyObservation> {
   readonly #b3: Box3DModule;
   readonly #worldId: b3WorldId;
   readonly #bodyIds = new Map<string, b3BodyId>();
@@ -150,7 +143,7 @@ export class CollapsePhysics {
     }
   }
 
-  snapshots(): readonly RuntimeBodySnapshot[] {
+  snapshots(): readonly RuntimeBodyObservation[] {
     this.#assertActive();
     return [...this.#bodyIds.entries()].map(([planBodyId, bodyId]) => {
       const position = this.#b3.b3Body_GetPosition(bodyId);
@@ -159,7 +152,7 @@ export class CollapsePhysics {
       return {
         planBodyId,
         position: { x: position.x, y: position.y, z: position.z },
-        rotation,
+        rotation: { x: rotation.v.x, y: rotation.v.y, z: rotation.v.z, w: rotation.s },
         massKg: mass.mass,
         localCenter: { x: mass.center.x, y: mass.center.y, z: mass.center.z },
       };
