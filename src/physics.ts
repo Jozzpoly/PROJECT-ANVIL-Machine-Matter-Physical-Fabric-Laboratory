@@ -1,23 +1,30 @@
 import Box3DFactory from "box3d.js/inline";
-import type { Box3DModule, b3BodyId, b3Quat, b3WorldId } from "box3d.js";
+import type { Box3DModule, b3BodyId, b3WorldId } from "box3d.js";
 import type { MaterialDefinition, PhysicalPlan, RigidBodyPlan, Vec3 } from "./model.js";
+import type { Quat } from "./foundation/spatial.js";
+import type { PhysicsRuntime, RuntimeBodyObservation } from "./foundation/runtime.js";
 
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
 const SPAWN_OFFSET: Vec3 = { x: 0, y: 3.5, z: 0 };
 
-export interface RuntimeBodySnapshot {
-  readonly planBodyId: string;
-  readonly position: Vec3;
-  readonly rotation: b3Quat;
-  readonly massKg: number;
-  readonly localCenter: Vec3;
-}
-
 export interface RuntimeReceipt {
   readonly engineVersion: string;
   readonly bodyMassErrorsKg: Readonly<Record<string, number>>;
   readonly bodyLocalCenterErrorsM: Readonly<Record<string, number>>;
+}
+
+/**
+ * ANVIL-00 viewer compatibility shape. The promoted foundation contract is the
+ * x/y/z/w `Quat`; v/s are temporary aliases used only by the original viewer.
+ */
+interface ViewerQuat extends Quat {
+  readonly v: Vec3;
+  readonly s: number;
+}
+
+export interface RuntimeBodySnapshot extends Omit<RuntimeBodyObservation, "rotation"> {
+  readonly rotation: ViewerQuat;
 }
 
 function boxHullPoints(body: RigidBodyPlan, colliderIndex: number): number[] {
@@ -40,7 +47,7 @@ function boxHullPoints(body: RigidBodyPlan, colliderIndex: number): number[] {
   return points;
 }
 
-export class CollapsePhysics {
+export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
   readonly #b3: Box3DModule;
   readonly #worldId: b3WorldId;
   readonly #bodyIds = new Map<string, b3BodyId>();
@@ -156,10 +163,18 @@ export class CollapsePhysics {
       const position = this.#b3.b3Body_GetPosition(bodyId);
       const rotation = this.#b3.b3Body_GetRotation(bodyId);
       const mass = this.#b3.b3Body_GetMassData(bodyId);
+      const vector = { x: rotation.v.x, y: rotation.v.y, z: rotation.v.z };
       return {
         planBodyId,
         position: { x: position.x, y: position.y, z: position.z },
-        rotation,
+        rotation: {
+          x: vector.x,
+          y: vector.y,
+          z: vector.z,
+          w: rotation.s,
+          v: vector,
+          s: rotation.s,
+        },
         massKg: mass.mass,
         localCenter: { x: mass.center.x, y: mass.center.y, z: mass.center.z },
       };

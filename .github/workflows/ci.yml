@@ -5,7 +5,12 @@ on:
     branches:
       - main
       - "experiment/**"
+      - "foundation/**"
   pull_request:
+
+concurrency:
+  group: anvil-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -27,7 +32,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Typecheck and run semantic + Box3D smoke tests
+      - name: Typecheck and run foundation + semantic + Box3D tests
         run: npm run check
 
       - name: Build browser laboratory
@@ -42,7 +47,7 @@ jobs:
       - name: Upload browser build
         uses: actions/upload-artifact@v4
         with:
-          name: anvil-00-collapse-browser
+          name: anvil-browser-laboratory
           path: dist
           if-no-files-found: error
           retention-days: 14

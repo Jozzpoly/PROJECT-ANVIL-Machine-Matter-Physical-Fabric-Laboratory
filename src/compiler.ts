@@ -8,6 +8,7 @@ import type {
   RigidBodyPlan,
   Vec3,
 } from "./model.js";
+import { computeMassProperties } from "./foundation/mass-properties.js";
 
 const NEIGHBORS: readonly GridPosition[] = [
   { x: 1, y: 0, z: 0 },
@@ -229,32 +230,28 @@ function compileBody(
   materials: ReadonlyMap<string, MaterialDefinition>,
   cellSizeM: number,
 ): RigidBodyPlan {
-  const volume = cellSizeM ** 3;
-  let massKg = 0;
-  const weighted = { x: 0, y: 0, z: 0 };
+  const cellVolumeM3 = cellSizeM ** 3;
+  const halfExtentM = cellSizeM / 2;
+  const massProperties = computeMassProperties(
+    component.map((cell) => {
+      const material = materials.get(cell.materialId);
+      if (material === undefined) throw new Error(`missing material ${cell.materialId}`);
+      return {
+        id: cell.id,
+        massKg: cellVolumeM3 * material.densityKgM3,
+        center: cellCenter(cell, cellSizeM),
+        halfExtents: { x: halfExtentM, y: halfExtentM, z: halfExtentM },
+      };
+    }),
+  );
 
-  for (const cell of component) {
-    const material = materials.get(cell.materialId);
-    if (material === undefined) throw new Error(`missing material ${cell.materialId}`);
-    const mass = volume * material.densityKgM3;
-    const center = cellCenter(cell, cellSizeM);
-    massKg += mass;
-    weighted.x += center.x * mass;
-    weighted.y += center.y * mass;
-    weighted.z += center.z * mass;
-  }
-
-  if (!(massKg > 0)) throw new Error("rigid component has no positive mass");
   const sourceCellIds = component.map((cell) => cell.id).sort();
   return {
     id: `body:${sourceCellIds[0] ?? "empty"}`,
     sourceCellIds,
-    massKg,
-    centerOfMassWorld: {
-      x: weighted.x / massKg,
-      y: weighted.y / massKg,
-      z: weighted.z / massKg,
-    },
+    massKg: massProperties.massKg,
+    centerOfMassWorld: massProperties.centerOfMass,
+    inertiaDiagonalKgM2: massProperties.inertiaDiagonalKgM2,
     colliders: compactComponent(component, cellSizeM),
   };
 }
