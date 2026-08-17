@@ -8,22 +8,30 @@ import { totalLinearMomentum } from "../.test-build/src/foundation/continuity.js
 const ZERO = { x: 0, y: 0, z: 0 };
 const GRAVITY = { x: 0, y: -10, z: 0 };
 const CUT_CONNECTION = ["cell:-1:0:0", "cell:0:0:0"];
+const GROUND_MIN_X_M = -8;
+const EDGE_CLEARANCE_M = 0.06;
+const INITIAL_SUPPORTED_GAP_M = 0.06;
 
-// Source search gates: the old one-body representation must already have a real
-// asymmetric ground response while only one would-be child is geometrically in contact.
-const SEARCH_STEPS = 120;
+// The source is accepted only when the old one-body representation has already
+// received a measurable ground response while the future right child is at the
+// ground and the future left child is both raised and horizontally beyond the
+// finite ground box. This prevents a post-bounce near-ground state from passing.
+const SEARCH_STEPS = 180;
 const CONTACT_BOTTOM_MIN_M = -0.03;
 const CONTACT_BOTTOM_MAX_M = 0.02;
 const AIRBORNE_BOTTOM_MIN_M = 0.12;
+const AIRBORNE_MAX_X_M = GROUND_MIN_X_M - 0.01;
+const CONTACT_MIN_X_REACH_M = GROUND_MIN_X_M + 0.35;
 const SOURCE_MIN_LINEAR_CONTACT_EFFECT_MPS = 0.03;
 const SOURCE_MIN_ANGULAR_CONTACT_EFFECT_RADPS = 0.01;
 
-// Reconstructed split gates. Both split worlds start from exactly the same state;
-// only ground existence differs, so their momentum difference is an external
-// contact-impulse measurement rather than a topology comparison.
+// Reconstructed split gates. The two split worlds start from identical state;
+// only ground existence differs. Their momentum difference therefore measures
+// the external ground impulse after topology reconstruction.
 const INITIAL_CONTACT_BOTTOM_MIN_M = -0.04;
 const INITIAL_CONTACT_BOTTOM_MAX_M = 0.03;
 const INITIAL_AIRBORNE_BOTTOM_MIN_M = 0.10;
+const INITIAL_AIRBORNE_MAX_X_M = GROUND_MIN_X_M - 0.005;
 const MIN_EXTERNAL_CONTACT_IMPULSE_KG_MPS = 5.0;
 const MIN_CONTACT_CHILD_VELOCITY_EFFECT_MPS = 0.02;
 const MIN_CONTACT_CHILD_UPWARD_EFFECT_MPS = 0.02;
@@ -110,8 +118,15 @@ function childMotionsFromParent(parentPlan, childPlan, parentMotion) {
   return motions;
 }
 
-function lowestWorldY(planBody, snapshot) {
-  let minimum = Number.POSITIVE_INFINITY;
+function worldBounds(planBody, snapshot) {
+  const bounds = {
+    minX: Number.POSITIVE_INFINITY,
+    maxX: Number.NEGATIVE_INFINITY,
+    minY: Number.POSITIVE_INFINITY,
+    maxY: Number.NEGATIVE_INFINITY,
+    minZ: Number.POSITIVE_INFINITY,
+    maxZ: Number.NEGATIVE_INFINITY,
+  };
   for (const collider of planBody.colliders) {
     const localCenter = subtract(collider.centerWorld, planBody.centerOfMassWorld);
     const h = collider.halfExtentsM;
@@ -123,28 +138,28 @@ function lowestWorldY(planBody, snapshot) {
             y: localCenter.y + dy * h.y,
             z: localCenter.z + dz * h.z,
           };
-          const worldCorner = add(
-            snapshot.position,
-            rotateVec3ByQuat(snapshot.rotation, localCorner),
-          );
-          minimum = Math.min(minimum, worldCorner.y);
+          const world = add(snapshot.position, rotateVec3ByQuat(snapshot.rotation, localCorner));
+          bounds.minX = Math.min(bounds.minX, world.x);
+          bounds.maxX = Math.max(bounds.maxX, world.x);
+          bounds.minY = Math.min(bounds.minY, world.y);
+          bounds.maxY = Math.max(bounds.maxY, world.y);
+          bounds.minZ = Math.min(bounds.minZ, world.z);
+          bounds.maxZ = Math.max(bounds.maxZ, world.z);
         }
       }
     }
   }
-  assert.ok(Number.isFinite(minimum));
-  return minimum;
+  for (const value of Object.values(bounds)) assert.ok(Number.isFinite(value));
+  return bounds;
 }
 
-function childBottomsFromParent(parentPlan, childPlan, parentSnapshot) {
+function childStatesFromParent(parentPlan, childPlan, parentSnapshot) {
   const motions = childMotionsFromParent(parentPlan, childPlan, motionFromSnapshot(parentSnapshot));
-  return childPlan.bodies
-    .map((child) => {
-      const motion = motions[child.id];
-      assert.ok(motion);
-      return { child, bottomY: lowestWorldY(child, motion) };
-    })
-    .sort((a, b) => a.bottomY - b.bottomY);
+  return childPlan.bodies.map((child) => {
+    const motion = motions[child.id];
+    assert.ok(motion);
+    return { child, motion, bounds: worldBounds(child, motion) };
+  });
 }
 
 function momentumOf(snapshots) {
@@ -189,15 +204,64 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
   const parentPlan = beforePlan.bodies[0];
   assert.ok(parentPlan);
 
-  // Positive z rotation lowers the negative-x lobe. The source is allowed to
-  // evolve in the real solver; the search below accepts only a measured state
-  // where the asymmetry and actual ground response are both demonstrated.
-  const initialMotion = {
-    position: { x: 0, y: 1.45, z: 0 },
-    rotation: axisAngleQuat({ x: 0, y: 0, z: 1 }, 0.17),
-    linearVelocity: { x: 0, y: -1.25, z: 0 },
+  const orderedChildren = [...afterPlan.bodies].sort(
+    (a, b) => a.centerOfMassWorld.x - b.centerOfMassWorld.x,
+  );
+  const leftChild = orderedChildren[0];
+  const rightChild = orderedChildren[1];
+  assert.ok(leftChild && rightChild);
+
+  // Use the real finite ground edge instead of trying to catch a transient bounce
+  // on an infinite-looking flat patch. A negative z tilt raises the negative-x
+  // (left) lobe and lowers the positive-x (right) lobe. Translation is derived
+  // from compiled child bounds: left is placed beyond x=-8 while right is low and
+  // extends onto the ground. No hand-tuned absolute parent pose is required.
+  const initialRotation = axisAngleQuat({ x: 0, y: 0, z: 1 }, -0.17);
+  const prototypeParentMotion = {
+    position: ZERO,
+    rotation: initialRotation,
+    linearVelocity: { x: 0, y: -0.5, z: 0 },
     angularVelocity: ZERO,
   };
+  const prototypeStates = childStatesFromParent(parentPlan, afterPlan, {
+    ...prototypeParentMotion,
+    planBodyId: parentPlan.id,
+    massKg: parentPlan.massKg,
+  });
+  const prototypeLeft = prototypeStates.find((state) => state.child.id === leftChild.id);
+  const prototypeRight = prototypeStates.find((state) => state.child.id === rightChild.id);
+  assert.ok(prototypeLeft && prototypeRight);
+
+  const initialMotion = {
+    position: {
+      x: GROUND_MIN_X_M - EDGE_CLEARANCE_M - prototypeLeft.bounds.maxX,
+      y: INITIAL_SUPPORTED_GAP_M - prototypeRight.bounds.minY,
+      z: 0,
+    },
+    rotation: initialRotation,
+    linearVelocity: { x: 0, y: -0.5, z: 0 },
+    angularVelocity: ZERO,
+  };
+
+  const initialStates = childMotionsFromParent(parentPlan, afterPlan, initialMotion);
+  const initialLeftBounds = worldBounds(leftChild, initialStates[leftChild.id]);
+  const initialRightBounds = worldBounds(rightChild, initialStates[rightChild.id]);
+  assert.ok(
+    initialLeftBounds.maxX <= GROUND_MIN_X_M - EDGE_CLEARANCE_M + 1e-9,
+    `left lobe was not placed beyond ground edge: maxX=${initialLeftBounds.maxX}`,
+  );
+  assert.ok(
+    initialRightBounds.maxX >= CONTACT_MIN_X_REACH_M,
+    `right lobe does not extend onto ground: maxX=${initialRightBounds.maxX}`,
+  );
+  assert.ok(
+    initialLeftBounds.minY >= AIRBORNE_BOTTOM_MIN_M,
+    `tilt fixture does not raise left lobe enough: minY=${initialLeftBounds.minY}`,
+  );
+  assert.ok(
+    Math.abs(initialRightBounds.minY - INITIAL_SUPPORTED_GAP_M) <= 1e-8,
+    `right lobe initial ground gap mismatch: ${initialRightBounds.minY}`,
+  );
 
   const groundedParentRuntime = await CollapsePhysics.create(beforePlan, document.materials, {
     gravity: GRAVITY,
@@ -211,11 +275,9 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
   });
 
   let sourceSnapshot;
-  let contactChildId = "";
-  let airborneChildId = "";
   let sourceStep = 0;
-  let sourceContactBottomM = Number.NaN;
-  let sourceAirborneBottomM = Number.NaN;
+  let sourceContactBounds;
+  let sourceAirborneBounds;
   let sourceLinearContactEffectMps = 0;
   let sourceAngularContactEffectRadps = 0;
   let bestCandidate = null;
@@ -228,45 +290,45 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
       const free = freeParentRuntime.snapshots()[0];
       assert.ok(grounded && free);
 
-      const bottoms = childBottomsFromParent(parentPlan, afterPlan, grounded);
-      const lower = bottoms[0];
-      const upper = bottoms[1];
-      assert.ok(lower && upper);
+      const childStates = childStatesFromParent(parentPlan, afterPlan, grounded);
+      const left = childStates.find((state) => state.child.id === leftChild.id);
+      const right = childStates.find((state) => state.child.id === rightChild.id);
+      assert.ok(left && right);
       const linearEffect = magnitude(subtract(grounded.linearVelocity, free.linearVelocity));
       const angularEffect = magnitude(subtract(grounded.angularVelocity, free.angularVelocity));
 
       const candidate = {
         step,
-        lowerId: lower.child.id,
-        upperId: upper.child.id,
-        lowerBottomM: lower.bottomY,
-        upperBottomM: upper.bottomY,
+        rightBottomM: right.bounds.minY,
+        leftBottomM: left.bounds.minY,
+        leftMaxX: left.bounds.maxX,
+        rightMaxX: right.bounds.maxX,
         linearEffectMps: linearEffect,
         angularEffectRadps: angularEffect,
       };
       if (
         bestCandidate === null ||
-        (Math.abs(candidate.lowerBottomM) < Math.abs(bestCandidate.lowerBottomM) &&
-          candidate.upperBottomM > bestCandidate.upperBottomM * 0.7)
+        (Math.abs(candidate.rightBottomM) < Math.abs(bestCandidate.rightBottomM) &&
+          candidate.leftBottomM > AIRBORNE_BOTTOM_MIN_M * 0.7)
       ) {
         bestCandidate = candidate;
       }
 
-      const asymmetricGeometry =
-        lower.bottomY >= CONTACT_BOTTOM_MIN_M &&
-        lower.bottomY <= CONTACT_BOTTOM_MAX_M &&
-        upper.bottomY >= AIRBORNE_BOTTOM_MIN_M;
+      const oneLobeGeometry =
+        right.bounds.minY >= CONTACT_BOTTOM_MIN_M &&
+        right.bounds.minY <= CONTACT_BOTTOM_MAX_M &&
+        right.bounds.maxX >= CONTACT_MIN_X_REACH_M &&
+        left.bounds.minY >= AIRBORNE_BOTTOM_MIN_M &&
+        left.bounds.maxX <= AIRBORNE_MAX_X_M;
       const actualContactResponse =
         linearEffect >= SOURCE_MIN_LINEAR_CONTACT_EFFECT_MPS ||
         angularEffect >= SOURCE_MIN_ANGULAR_CONTACT_EFFECT_RADPS;
 
-      if (asymmetricGeometry && actualContactResponse) {
+      if (oneLobeGeometry && actualContactResponse) {
         sourceSnapshot = grounded;
-        contactChildId = lower.child.id;
-        airborneChildId = upper.child.id;
         sourceStep = step;
-        sourceContactBottomM = lower.bottomY;
-        sourceAirborneBottomM = upper.bottomY;
+        sourceContactBounds = right.bounds;
+        sourceAirborneBounds = left.bounds;
         sourceLinearContactEffectMps = linearEffect;
         sourceAngularContactEffectRadps = angularEffect;
         break;
@@ -279,10 +341,9 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
 
   assert.ok(
     sourceSnapshot,
-    `failed to find real one-lobe contact state; best=${JSON.stringify(bestCandidate)}`,
+    `failed to find active one-lobe edge contact; best=${JSON.stringify(bestCandidate)}`,
   );
-  assert.notEqual(contactChildId, airborneChildId);
-  assert.ok(sourceAirborneBottomM - sourceContactBottomM >= AIRBORNE_BOTTOM_MIN_M - CONTACT_BOTTOM_MAX_M);
+  assert.ok(sourceContactBounds && sourceAirborneBounds);
 
   const splitInitialMotion = childMotionsFromParent(
     parentPlan,
@@ -306,22 +367,27 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
     assert.equal(groundedInitial.length, 2);
     assert.equal(freeInitial.length, 2);
 
-    const contactPlan = afterPlan.bodies.find((body) => body.id === contactChildId);
-    const airbornePlan = afterPlan.bodies.find((body) => body.id === airborneChildId);
-    const groundedContactInitial = groundedInitial.find((body) => body.planBodyId === contactChildId);
-    const groundedAirborneInitial = groundedInitial.find((body) => body.planBodyId === airborneChildId);
-    assert.ok(contactPlan && airbornePlan && groundedContactInitial && groundedAirborneInitial);
-
-    const initialContactBottomM = lowestWorldY(contactPlan, groundedContactInitial);
-    const initialAirborneBottomM = lowestWorldY(airbornePlan, groundedAirborneInitial);
+    const groundedContactInitial = groundedInitial.find((body) => body.planBodyId === rightChild.id);
+    const groundedAirborneInitial = groundedInitial.find((body) => body.planBodyId === leftChild.id);
+    assert.ok(groundedContactInitial && groundedAirborneInitial);
+    const initialContactBounds = worldBounds(rightChild, groundedContactInitial);
+    const initialAirborneBounds = worldBounds(leftChild, groundedAirborneInitial);
     assert.ok(
-      initialContactBottomM >= INITIAL_CONTACT_BOTTOM_MIN_M &&
-        initialContactBottomM <= INITIAL_CONTACT_BOTTOM_MAX_M,
-      `reconstructed contact child is not at ground: ${initialContactBottomM} m`,
+      initialContactBounds.minY >= INITIAL_CONTACT_BOTTOM_MIN_M &&
+        initialContactBounds.minY <= INITIAL_CONTACT_BOTTOM_MAX_M,
+      `reconstructed supported child is not at ground: ${initialContactBounds.minY} m`,
     );
     assert.ok(
-      initialAirborneBottomM >= INITIAL_AIRBORNE_BOTTOM_MIN_M,
-      `reconstructed airborne child is too close to ground: ${initialAirborneBottomM} m`,
+      initialContactBounds.maxX >= CONTACT_MIN_X_REACH_M,
+      `reconstructed supported child no longer reaches ground footprint: ${initialContactBounds.maxX}`,
+    );
+    assert.ok(
+      initialAirborneBounds.minY >= INITIAL_AIRBORNE_BOTTOM_MIN_M,
+      `reconstructed airborne child is too low: ${initialAirborneBounds.minY} m`,
+    );
+    assert.ok(
+      initialAirborneBounds.maxX <= INITIAL_AIRBORNE_MAX_X_M,
+      `reconstructed airborne child overlaps ground footprint: maxX=${initialAirborneBounds.maxX}`,
     );
 
     groundedSplitRuntime.step(1);
@@ -335,13 +401,13 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
     const externalContactImpulseKgMps = magnitude(subtract(groundedMomentum, freeMomentum));
     assert.ok(
       externalContactImpulseKgMps >= MIN_EXTERNAL_CONTACT_IMPULSE_KG_MPS,
-      `reconstructed split did not expose a measurable ground impulse: ${externalContactImpulseKgMps} kg·m/s`,
+      `reconstructed split did not expose measurable ground impulse: ${externalContactImpulseKgMps} kg·m/s`,
     );
 
-    const groundedContact = groundedOne.find((body) => body.planBodyId === contactChildId);
-    const freeContact = freeOne.find((body) => body.planBodyId === contactChildId);
-    const groundedAirborne = groundedOne.find((body) => body.planBodyId === airborneChildId);
-    const freeAirborne = freeOne.find((body) => body.planBodyId === airborneChildId);
+    const groundedContact = groundedOne.find((body) => body.planBodyId === rightChild.id);
+    const freeContact = freeOne.find((body) => body.planBodyId === rightChild.id);
+    const groundedAirborne = groundedOne.find((body) => body.planBodyId === leftChild.id);
+    const freeAirborne = freeOne.find((body) => body.planBodyId === leftChild.id);
     assert.ok(groundedContact && freeContact && groundedAirborne && freeAirborne);
 
     const contactChildVelocityEffectMps = magnitude(
@@ -350,26 +416,25 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
     const airborneChildVelocityEffectMps = magnitude(
       subtract(groundedAirborne.linearVelocity, freeAirborne.linearVelocity),
     );
-    const contactChildUpwardEffectMps =
-      groundedContact.linearVelocity.y - freeContact.linearVelocity.y;
+    const contactChildUpwardEffectMps = groundedContact.linearVelocity.y - freeContact.linearVelocity.y;
     assert.ok(
       contactChildVelocityEffectMps >= MIN_CONTACT_CHILD_VELOCITY_EFFECT_MPS,
-      `contact child did not respond measurably to ground: ${contactChildVelocityEffectMps} m/s`,
+      `supported child did not respond measurably to ground: ${contactChildVelocityEffectMps} m/s`,
     );
     assert.ok(
       contactChildUpwardEffectMps >= MIN_CONTACT_CHILD_UPWARD_EFFECT_MPS,
-      `ground did not provide the expected upward effect: ${contactChildUpwardEffectMps} m/s`,
+      `ground did not provide expected upward effect: ${contactChildUpwardEffectMps} m/s`,
     );
 
-    const contactBottomAfterOneM = lowestWorldY(contactPlan, groundedContact);
-    const airborneBottomAfterOneM = lowestWorldY(airbornePlan, groundedAirborne);
+    const contactBoundsAfterOne = worldBounds(rightChild, groundedContact);
+    const airborneBoundsAfterOne = worldBounds(leftChild, groundedAirborne);
     assert.ok(
-      contactBottomAfterOneM >= POST_STEP_MIN_BOTTOM_M,
-      `contact child sank too deeply after reconstruction: ${contactBottomAfterOneM} m`,
+      contactBoundsAfterOne.minY >= POST_STEP_MIN_BOTTOM_M,
+      `supported child sank too deeply after reconstruction: ${contactBoundsAfterOne.minY} m`,
     );
     assert.ok(
-      airborneBottomAfterOneM > contactBottomAfterOneM,
-      "one-lobe spatial ordering was lost immediately after reconstruction",
+      airborneBoundsAfterOne.minY > contactBoundsAfterOne.minY,
+      "one-lobe vertical ordering was lost immediately after reconstruction",
     );
 
     groundedSplitRuntime.step(FOLLOWUP_STEPS);
@@ -379,7 +444,7 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
       ...afterPlan.bodies.map((child) => {
         const snapshot = followup.find((body) => body.planBodyId === child.id);
         assert.ok(snapshot);
-        return lowestWorldY(child, snapshot);
+        return worldBounds(child, snapshot).minY;
       }),
     );
     assert.ok(
@@ -391,20 +456,23 @@ test("CUT reconstructs a real one-lobe ground contact and exposes its external i
       JSON.stringify({
         probe: "ANVIL-01/CUT-2D3",
         sourceStep,
-        contactChildId,
-        airborneChildId,
-        sourceContactBottomM,
-        sourceAirborneBottomM,
+        contactChildId: rightChild.id,
+        airborneChildId: leftChild.id,
+        sourceContactBottomM: sourceContactBounds.minY,
+        sourceAirborneBottomM: sourceAirborneBounds.minY,
+        sourceAirborneMaxX: sourceAirborneBounds.maxX,
+        sourceContactMaxX: sourceContactBounds.maxX,
         sourceLinearContactEffectMps,
         sourceAngularContactEffectRadps,
-        initialContactBottomM,
-        initialAirborneBottomM,
+        initialContactBottomM: initialContactBounds.minY,
+        initialAirborneBottomM: initialAirborneBounds.minY,
+        initialAirborneMaxX: initialAirborneBounds.maxX,
         externalContactImpulseKgMps,
         contactChildVelocityEffectMps,
         airborneChildVelocityEffectMps,
         contactChildUpwardEffectMps,
-        contactBottomAfterOneM,
-        airborneBottomAfterOneM,
+        contactBottomAfterOneM: contactBoundsAfterOne.minY,
+        airborneBottomAfterOneM: airborneBoundsAfterOne.minY,
         minFollowupBottomM,
       }),
     );
