@@ -27,14 +27,14 @@ test("CUT owner gate keeps technical evidence secondary and produces a paste-rea
   await page.locator('[data-owner-verdict="ACCEPT"]').click();
 
   const report = page.locator("#owner-report");
-  await expect(report).toContainText("FORGE OWNER REPORT");
-  await expect(report).toContainText("gate: ANVIL-01 / CUT");
-  await expect(report).toContainText("owner verdict: ACCEPT");
-  await expect(report).toContainText("observed CUT runs: 2");
-  await expect(report).toContainText("automated evidence: PASS");
-  await expect(report).toContainText("source cells: 51 → 51");
-  await expect(report).toContainText("runtime bodies: 1 → 2");
-  await expect(report).toContainText("Ruch wygląda ciągle");
+  await expect(report).toHaveValue(/FORGE OWNER REPORT/);
+  await expect(report).toHaveValue(/gate: ANVIL-01 \/ CUT/);
+  await expect(report).toHaveValue(/owner verdict: ACCEPT/);
+  await expect(report).toHaveValue(/observed CUT runs: 2/);
+  await expect(report).toHaveValue(/automated evidence: PASS/);
+  await expect(report).toHaveValue(/source cells: 51 → 51/);
+  await expect(report).toHaveValue(/runtime bodies: 1 → 2/);
+  await expect(report).toHaveValue(/Ruch wygląda ciągle/);
   await expect(page.locator("#owner-copy-report")).toBeEnabled();
   expect(pageErrors).toEqual([]);
 });
