@@ -1,17 +1,33 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last grounding: 2026-08-17.
+Last grounding: 2026-08-18.
 
-## Repository identity and current gate
+## Identity and source of truth
 
-- Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
-- `main` is the latest owner-accepted checkpoint; do not treat it as an agent worktree.
-- ANVIL-00 / COLLAPSE and the reusable laboratory foundation are accepted on `main`.
-- Active research branch: `experiment/anvil-01-cut`.
-- ANVIL-01 solver core and CUT-specific production-browser path are **SUPPORTED FOR THEIR BOUNDED FIXTURES**.
-- ANVIL-01 is **NOT YET OWNER-ACCEPTED** and must not be merged/promoted before Evidence Class E owner validation.
+Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 
-Always resolve live Git before changes. Documentation heads after the validated package do not redefine the package checkpoint.
+Always resolve live Git before meaningful work. Authority order:
+
+1. live repository/code and exact artifacts;
+2. executed evidence;
+3. direct owner feedback;
+4. canonical documentation;
+5. historical chat/branch names only as leads.
+
+Do not treat an agent work branch as `main`, and do not let later documentation/tooling commits redefine which artifact the owner actually tested.
+
+## Current repository state
+
+- `main` accepted checkpoint: ANVIL-00 / COLLAPSE + promoted laboratory foundation.
+- accepted `main` head at last grounding: `f03a6f09c090ca0f20bc492de8de72150ca5945b`.
+- ANVIL-01 research branch: `experiment/anvil-01-cut`.
+- exact CUT owner-accepted package head: `9c4b3372ad60e20ade2d7d9a31dd373a356263d0`.
+- Forge hardening branch: `foundation/forge-cut-field-trial`, draft PR `#3` into `experiment/anvil-01-cut`.
+- Forge V0.1 validated proposal head before documentation grounding: `fbe08910f9ac5423b89210b80541b38a7f4ce432`.
+
+ANVIL-01 / CUT is now **OWNER ACCEPTED FOR ITS DECLARED BOUNDED CLAIM**. Do not continue saying it awaits Evidence Class E.
+
+Forge V0.1 is **AUTOMATED-VALIDATED / FIELD-TRIAL CANDIDATE**, not owner-accepted as a mature system and not a universal validation framework.
 
 ## Research intent
 
@@ -19,15 +35,15 @@ ANVIL is an R&D laboratory for **Machine Matter / Physical Fabric**.
 
 Working premise:
 
-> Persistent authored matter and physical intent may compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
+> persistent authored matter and physical intent may compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
 
-Long-horizon direction: machines should increasingly emerge from matter, local relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies/colliders/solver constructs are interpretations, not authoritative construction identity.
+Long-horizon direction: machines should increasingly emerge from matter, local relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies, colliders and solver constructs are interpretations, not authoritative construction identity.
 
-Do not promote an experiment-local trick into universal ontology merely because one fixture passes.
+Never promote an experiment-local trick into universal ontology because one fixture passes.
 
-## Accepted baseline — ANVIL-00 / COLLAPSE
+## Accepted ANVIL-00 / COLLAPSE baseline
 
-ANVIL-00 established, for its bounded sparse-cell fixture:
+For its bounded sparse-cell fixture ANVIL-00 established:
 
 - persistent cell/material identity without Box3D IDs in `MatterDocument`;
 - deterministic rigid-island compilation;
@@ -38,7 +54,7 @@ ANVIL-00 established, for its bounded sparse-cell fixture:
 - intact `51 cells → 1 body → 8 collision boxes`;
 - authoring edit `50 cells → 2 bodies → 9 collision boxes`;
 - strict TS, semantic tests, real Box3D, production build, Chromium runtime PASS;
-- owner manual validation.
+- owner manual acceptance.
 
 Boundary: COLLAPSE deletes one source cell and rebuilds neutral state. It is not dynamic state migration.
 
@@ -50,7 +66,7 @@ Promoted neutral capabilities:
 
 - `Vec3`, `Quat`, `RigidPose`, `RigidMotion`;
 - deterministic compensated mass/COM and current limited inertia diagonal;
-- source-provenance lineage independent of disposable IDs;
+- source-provenance lineage independent of disposable runtime IDs;
 - solver-neutral runtime observation/motion boundary;
 - pose/velocity, linear-momentum and translational-energy measurements;
 - fail-closed evidence primitives.
@@ -70,142 +86,69 @@ Still explicitly non-foundation:
 
 ## Toolchain control
 
-- Node `24.16.0`.
-- npm `>=11.13.0 <12`; tracked lockfile; CI uses `npm ci`.
-- exact `box3d.js@0.0.2`; runtime asserts Box3D `0.1.0`.
-- TypeScript `7.0.2`, Vite `8.1.5`, Playwright `1.61.1`.
+- Node `24.16.0`;
+- npm `>=11.13.0 <12`, tracked lockfile, CI uses `npm ci`;
+- exact `box3d.js@0.0.2`, runtime asserts Box3D `0.1.0`;
+- TypeScript `7.0.2`;
+- Vite `8.1.5`;
+- Playwright `1.61.1`.
 
-Upstream `box3d.js` has newer breaking API generations. Do not mix an upgrade into CUT unless the pinned binding becomes a reproduced blocker. Treat an upgrade as a separate controlled change.
+Do not mix a Box3D binding upgrade into an experiment unless the pinned binding is a reproduced blocker. Upstream API migration is a separate controlled change.
 
-## ANVIL-01 / CUT — authoritative experiment files
+## ANVIL-01 / CUT — accepted bounded result
 
-Read:
+Authoritative experiment docs:
 
-- `docs/experiments/ANVIL-01-CUT-PREFLIGHT.md` — historical plan and original boundaries;
-- `docs/experiments/ANVIL-01-CUT.md` — actual accumulated evidence, including failures and metrics;
-- `docs/experiments/ANVIL-01-CUT-OWNER-GATE.md` — exact owner validation procedure/package.
+- `docs/experiments/ANVIL-01-CUT-PREFLIGHT.md` — historical plan/boundaries;
+- `docs/experiments/ANVIL-01-CUT.md` — accumulated automated evidence/failures;
+- `docs/experiments/ANVIL-01-CUT-OWNER-GATE.md` — exact owner artifact and manual verdict.
 
-CUT tests disposable runtime continuity. It is not a destruction-game roadmap.
+CUT tests continuity when persistent source topology is recompiled into a different disposable runtime. It is not a destruction-game roadmap.
 
-The primary mass-preserving split keeps all 51 source cells and blocks only:
+Primary mass-preserving split keeps all 51 source cells and blocks only:
 
 `cell:-1:0:0 <-> cell:0:0:0`
 
 through experiment-local `blockedFaceConnections`. This is not a promoted generic Bond.
 
-## CUT automated solver evidence — SUPPORTED FOR FIXTURES
+### Automated solver progression
 
-Completed progression:
+Validated progression:
 
 ```text
 binding round-trip
-    ↓
-mass-preserving topology
-    ↓
-free translation
-    ↓
-free rotation / rigid velocity field
-    ↓
-uniform gravity
-    ↓
-settled support
-    ↓
-dynamic impact
-    ↓
-one-lobe active contact at transaction
+  → mass-preserving topology
+  → free translation
+  → free rotation / rigid velocity field
+  → uniform gravity
+  → settled support
+  → dynamic impact
+  → one-lobe active contact at transaction
 ```
 
-Key results:
+Key bounded evidence retained from the experiment:
 
-### CUT-0 — exact binding
+- topology: `51 cells / 1 body → 51 cells / 2 bodies`, no source additions/removals, one provenance split;
+- rotating transfer uses experiment-local rigid field:
+  - `r_world = R_parent · authored_child_COM_offset`
+  - `COM_child = COM_parent + r_world`
+  - `R_child = R_parent`
+  - `ω_child = ω_parent`
+  - `v_child = v_parent + ω_parent × r_world`;
+- rotation sensitivity: rotated COM effect `0.4195247840 m`, `ω×r` effect `1.4641147108 m/s`;
+- immediate/post-step rotation momentum error ≈ `4.219e-5 kg·m/s`;
+- gravity control: barycenter error `3.212e-8 m`, max child position error `1.574e-7 m`;
+- settled support: source falls `2.8505167 m`, 30-step barycenter error ≈ `4.596e-5 m`, max support gap ≈ `1.026e-4 m`;
+- dynamic impact: contact response `8.0958188 m/s`, reconstructed-vs-reference errors around `10^-7 m` / `10^-7 m/s`;
+- one-lobe active contact: first fixture correctly failed sensitivity; corrected finite-ground-edge fixture produced asymmetric active contact and external ground impulse `61.1181 kg·m/s` without relaxing the failed threshold.
 
-Real Box3D proves explicit/read-back pose, linear/angular velocity, mass/COM, mutation and continued stepping on the exact pinned browser binding.
+Do not claim full angular-momentum or rotational-energy conservation: current inertia representation does not support that honestly for arbitrary rotation.
 
-Negative evidence matters: initial quaternion threshold `1e-10` failed at alignment deficit `5.383741452646973e-9` while prior tests stayed green. It was calibrated to observed single-precision behavior (`2e-6` vector, `1e-7` quaternion alignment), not weakened to hide a physics failure.
+### Production browser path
 
-### CUT-1 — topology
+Normal `/` remains the accepted COLLAPSE control. `?experiment=cut` runs the dedicated moving+rotating CUT product path.
 
-`51 cells / 1 body → 51 cells / 2 bodies`, identical source IDs, zero additions/removals, unchanged compiled mass, exactly one provenance split covering all sources, deterministic/fail-closed connectivity seam.
-
-### CUT-2A — translation
-
-Real one-body world runs 23 steps; actual parent state is measured; disposable world A is retired; the same 51 source cells are rebuilt as two bodies in world B and stepped. Pose/velocity/mass/linear-momentum gates pass.
-
-### CUT-2B — rotation
-
-Experiment-local rigid-field transfer:
-
-```text
-r_world   = R_parent · authored_child_COM_offset
-COM_child = COM_parent + r_world
-R_child   = R_parent
-ω_child   = ω_parent
-v_child   = v_parent + ω_parent × r_world
-```
-
-Sensitivity/evidence:
-
-- rotated COM effect `0.4195247840 m`;
-- `ω×r` child velocity effect `1.4641147108 m/s`;
-- immediate/post-step total momentum error ≈ `4.219e-5 kg·m/s`;
-- severed-interface rigid velocity field agrees.
-
-Do not claim full angular-momentum or rotational-energy conservation; the current inertia representation cannot support that honestly for arbitrary rotation.
-
-### CUT-2C — gravity
-
-Matched split/unsplit next-step control under uniform gravity:
-
-- real gravity velocity effect `0.1636449357 m/s`;
-- momentum error `1.994e-4 kg·m/s`;
-- barycenter error `3.212e-8 m`;
-- mean velocity error `0`;
-- max child position error `1.574e-7 m`.
-
-### CUT-2D1 — settled support
-
-Source really falls `2.8505167 m` onto Box3D ground and settles. Split reconstruction remains supported/stable; 30-step barycenter error ≈ `4.596e-5 m`, max child support gap ≈ `1.026e-4 m`.
-
-### CUT-2D2 — dynamic impact
-
-Reference = split throughout free fall; candidate = same split reconstructed immediately before impact. Strong contact response `8.0958188 m/s`; reconstructed-vs-reference impact/post-impact errors remain around `10^-7 m` / `10^-7 m/s`, momentum error ≈ `4e-4 kg·m/s`.
-
-Boundary: reconstruction occurs before contact begins; no existing-manifold migration claim.
-
-### CUT-2D3 — active one-lobe contact
-
-Added because preflight explicitly required CUT while one future lobe is already contacting ground.
-
-First fixture correctly **FAILED**: it selected a post-impulse near-ground state; reconstructed ground-vs-no-ground momentum difference was only `1.941e-4 kg·m/s` against hard threshold `5 kg·m/s`. Threshold was not relaxed.
-
-Corrected finite-ground-edge fixture (`x=-8`) uses compiled child bounds and produced real active asymmetric contact:
-
-- source step 5;
-- contact child bottom `-0.0002896 m`;
-- airborne child bottom `0.3427233 m`, fully off ground (`maxX=-8.0646117`);
-- source ground effect `0.564412 m/s` linear and `0.459984 rad/s` angular;
-- reconstructed external ground impulse `61.1181 kg·m/s`;
-- supported-child effect `0.0768644 m/s`, upward `0.0741645 m/s`;
-- follow-up finite and non-penetrating.
-
-Strong solver checkpoint before product work:
-
-- head `6e227b4dab96d774d278162fa9da0fe14791fe2f`;
-- CI run `32070074736`;
-- 20/20 solver/compiler/foundation tests, strict TS, build, old browser regression and artifact PASS.
-
-## CUT production-browser evidence — SUPPORTED FOR FIXTURE
-
-A dedicated Class D path now exists without replacing the accepted COLLAPSE viewer:
-
-- `src/bootstrap.ts`: normal `/` loads unchanged `main.ts`; `?experiment=cut` loads `cut-demo.ts`;
-- `src/cut-demo.ts`: real production-browser moving+rotating 51→51 / 1→2 transaction;
-- `tests/browser/cut.spec.ts`: validates visible/numeric CUT gates;
-- `tests/browser/collapse.spec.ts`: unchanged independent ANVIL-00 control.
-
-The CUT browser path warms up real Box3D, snapshots at a solver-step boundary, recompiles the same 51 source cells into two bodies, destroys/rebuilds the disposable runtime with rigid-field transfer, checks eight gates, takes a real post-transaction Box3D step and continues visibly.
-
-Eight browser gates:
+CUT browser gate checks eight conditions:
 
 1. persistent source identity;
 2. mass-preserving 1→2 split;
@@ -216,74 +159,134 @@ Eight browser gates:
 7. total linear momentum;
 8. post-transaction solver step.
 
-Negative product evidence: first implementation head `112f0166...` failed strict TypeScript due unresolved fixture narrowing. No success was inferred. The demo was simplified and explicit fixture validation added; `strict` was not weakened.
+### Exact owner acceptance
 
-Corrected product head `e9882d5c00474046534f1c3ebf143d82949c240c` passed 20/20 solver tests, production build and **2/2** real Chromium tests (COLLAPSE + CUT), with no CUT page errors.
-
-## Exact owner validation package — READY
-
-Final package/code checkpoint:
+Canonical owner-tested artifact:
 
 ```text
-head            e1a0b4b0ff6570897603f51ea54cc2d953ae1a2d
-Actions run     32071241142
-artifact        anvil-browser-laboratory
-artifact ID     9301831216
-artifact size   376477 bytes
-SHA-256         9fa1ba669408e52462334ca1a72aad57a4582ef7e6dba8c7fa122b518a389dac
-expires         2026-08-31T21:29:32Z
+source head      9c4b3372ad60e20ade2d7d9a31dd373a356263d0
+Actions run      32073741628
+artifact         anvil-browser-laboratory
+artifact ID      9302675515
+artifact SHA256  34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40
 ```
 
-This exact package passed:
+Real owner evidence:
 
-- canonical Node/npm;
-- strict TypeScript;
-- 20/20 foundation/compiler/real-Box3D tests;
-- production Vite build;
-- packaged Windows owner-launcher self-test from `dist`;
-- 2/2 real Chromium tests: COLLAPSE control + CUT product runtime;
-- artifact upload.
+- Windows 10 / Chrome 151;
+- viewport `1920×911 @ DPR 1`;
+- 10 observed CUT repetitions;
+- page automated evidence PASS;
+- owner verdict **ACCEPT**;
+- screenshot + screen recording supplied;
+- no obvious large teleport, whole-scene reset, freeze, explosive jump or immediate runaway seen in manual/video inspection.
 
-Owner package includes:
+Owner acceptance is scoped only to this bounded artifact/claim.
 
-- `START_ANVIL_CUT.cmd` — double-click launcher;
-- `serve-anvil.ps1` — dependency-free localhost server using PowerShell/.NET.
+## Current CUT evidence boundary
 
-The runner uses no npm/Node/Python installation and does not modify a project folder. CI self-tests the script after it is copied to `dist`, including opening a real local listener.
-
-Manual gate: `docs/experiments/ANVIL-01-CUT-OWNER-GATE.md`.
-
-Documentation commits after `e1a0b4b...` are bookkeeping only; do not present them as a different validated package unless a later build is intentionally revalidated.
-
-## Current evidence boundary
-
-Current CUT runtime fixtures rebuild an isolated disposable Box3D world/runtime A → B around persistent source state. They do not prove:
+Current fixtures rebuild an isolated disposable Box3D world/runtime A → B around persistent source state. They do not prove:
 
 - in-place replacement inside one persistent populated Box3D world;
 - migration of Box3D manifold internals;
 - external joint/constraint state transfer;
 - arbitrary cut surfaces/topologies;
 - full angular-momentum/rotational-energy conservation;
-- damage/fracture propagation, debris, toughness, plasticity;
+- damage/fracture propagation, debris, toughness or plasticity;
 - deformable/compliant matter;
 - universal material/connection ontology.
 
-## Immediate next action — STOP IMPLEMENTATION
+## Forge — owner validation transport, not product ontology
 
-Do **not** add new CUT physics, joints, constraints, damage, or merge/promotion before owner verdict.
+Forge exists to reduce the recurring handoff cost between agent-completed browser work and owner-visible manual validation.
 
-Next action is exclusively Evidence Class E:
+Current intended loop:
 
-1. owner downloads artifact from Actions run `32071241142`;
-2. extracts it;
-3. double-clicks `START_ANVIL_CUT.cmd`;
-4. clicks `RUN CUT`, observes transaction and eight PASS gates, repeats via RESET;
-5. records `ACCEPT`, `REJECT`, or `INCONCLUSIVE` per `ANVIL-01-CUT-OWNER-GATE.md`.
+```text
+agent builds + automated evidence
+  → canonical browser artifact
+  → double-click owner launcher
+  → focused owner observation
+  → ACCEPT / REJECT / INCONCLUSIVE
+  → paste-ready provenance-complete report
+```
 
-Only owner `ACCEPT` permits evaluating ANVIL-01 for merge/promotion.
+Do not build a universal hub yet. Forge is being proven inside ANVIL first. Reuse elsewhere only after several real ANVIL field trials justify which parts are actually stable.
 
-## Strategic direction after a possible CUT acceptance
+### Forge V0 field result
 
-Do not turn CUT into a long destruction roadmap by default.
+The `9c4b337...` package proved real end-to-end usability on the owner's Windows machine: artifact extraction, `.cmd`, localhost PowerShell/.NET server, browser launch, CUT/RESET repetitions, verdict and report generation all worked.
 
-A likely next falsifier should return to the broader Machine Matter question: a bounded **RELATION/HINGE-like** experiment where two material structures plus a local mechanical property/interface cause the compiler to derive the needed solver relation. Do not introduce an abstract FRAME/JURE architecture phase merely because a donor has one; frame semantics should be earned by a real physical relation that requires them.
+The field test exposed real defects:
+
+- owner report lacked exact build provenance;
+- required metric lookup had successful fallback text if DOM evidence was missing;
+- ACCEPT was not fail-closed against incomplete provenance/evidence;
+- browser coverage was primarily happy-path;
+- launcher did not validate package identity;
+- CUT framing was visually small.
+
+### Forge V0.1 hardening
+
+Hardening lives on `foundation/forge-cut-field-trial`, draft PR `#3` into `experiment/anvil-01-cut`. It intentionally starts from the exact accepted CUT head so physics evidence stays separable from validation-tool changes.
+
+Validated proposal before this documentation commit:
+
+```text
+source head      fbe08910f9ac5423b89210b80541b38a7f4ce432
+PR checkout      b2ce9bce700c8e431f92fe75edbd11021934f549
+Actions run      32076544898
+artifact ID      9303653778
+artifact SHA256  2773c2aa324613bb682dd2296bf4e1356c4be06a8567b9e376206ce82a75b8e9
+```
+
+Evidence:
+
+- strict TypeScript PASS;
+- **20/20** solver/compiler/foundation tests PASS;
+- production build PASS;
+- CI-generated `forge-gate.json` recorded proposal source SHA and actual PR checkout SHA separately;
+- launcher manifest validation/self-test PASS;
+- **5/5** Chromium tests PASS;
+- negative browser evidence deliberately removes a required metric and proves ACCEPT becomes disabled and report becomes INVALID/UNAVAILABLE;
+- local/unverified manifest deliberately proves ACCEPT remains disabled;
+- artifact upload PASS.
+
+The first hardening attempt at `4270162b...` correctly failed strict TypeScript (`acceptButton` possibly null). Strictness was not weakened; the implementation was fixed and revalidated. Preserve this negative evidence.
+
+Forge V0.1 status: **AUTOMATED-VALIDATED FIELD-TRIAL CANDIDATE**. Do not call it owner-accepted until a future real owner gate exercises it naturally.
+
+### Forge invariants earned so far
+
+- canonical owner evidence must identify exact build provenance;
+- missing required evidence fails closed, never substitutes expected successful values;
+- local developer builds cannot masquerade as canonical owner-acceptance packages;
+- ACCEPT is impossible unless automated evidence is terminal PASS and required provenance/gates exist;
+- REJECT/INCONCLUSIVE must remain possible when evidence itself is broken;
+- owner report should capture machine context automatically rather than require manual SHA/log transcription;
+- launcher stays dependency-free for the owner when feasible;
+- owner-facing visualization may improve readability, but must not use camera behavior that hides discontinuities being judged;
+- every next owner gate should require no more manual engineering work from the owner than the previous one.
+
+These are ANVIL/Forge working invariants, not yet a cross-project universal contract.
+
+## JURE donor lesson for Forge
+
+JURE's history is evidence for process, not imported ontology:
+
+- small vertical slices + targeted tests + real owner gates produced useful checkpoints;
+- exact SOURCE revision/hash and fail-closed provenance mattered;
+- owner acceptance was explicitly scoped to inspected behavior;
+- BIND-00's real owner test falsified the singleton binding model, and JURE correctly did not generalize it mechanically into a framework;
+- JURE keeps authored truth, source provenance, representation binding, preview/evaluated/runtime state as distinct meanings.
+
+Apply the same discipline here: let repeated real Forge gates reveal the durable abstraction. Do not invent a plugin system, validation hub, cross-project DSL or backend before a concrete consumer requires it.
+
+## Immediate next direction
+
+1. Finish grounding/CI for Forge V0.1 PR #3.
+2. If still green, integrate that hardening into the active CUT branch without rewriting the exact `9c4b337...` owner evidence.
+3. Promote/merge accepted ANVIL-01 to `main` with evidence boundaries intact.
+4. Return to Machine Matter research rather than expanding CUT into a destruction roadmap.
+5. A likely next falsifier is a bounded **RELATION/HINGE-like** experiment: two material structures plus a local physical property/interface cause the compiler to derive the required solver relation. Frame semantics should be earned by the real relation that needs them, not imported abstractly from JURE.
+6. Use Forge V0.1 naturally for that next owner gate. That will be its first meaningful real field trial.
