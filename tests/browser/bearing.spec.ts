@@ -9,6 +9,7 @@ test("ANVIL-02 production browser derives a bearing and discriminates it from no
   await expect(page.locator("#bearing-status")).toHaveText("READY");
   await expect(page.locator("#bearing-run")).toBeEnabled();
   await expect(page.locator(".bearing-stage")).toHaveCount(2);
+  expect(await page.locator(".bearing-compare").evaluate((element) => getComputedStyle(element).display)).toBe("grid");
 
   const layout = await page.evaluate(() => {
     const rectOf = (selector: string) => {
@@ -32,7 +33,7 @@ test("ANVIL-02 production browser derives a bearing and discriminates it from no
 
   expect(stageSizes).toHaveLength(2);
   for (const size of stageSizes) {
-    expect(size.width).toBeGreaterThanOrEqual(300);
+    expect(size.width).toBeGreaterThan(300);
     expect(size.height).toBeGreaterThan(400);
   }
 

@@ -1,3 +1,5 @@
+import "./bearing-demo.css";
+
 const experiment = new URLSearchParams(window.location.search).get("experiment");
 
 if (experiment === "cut") {
