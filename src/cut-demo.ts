@@ -12,6 +12,7 @@ import type { Quat, RigidMotion } from "./foundation/spatial.js";
 
 const CUT_CONNECTION = ["cell:-1:0:0", "cell:0:0:0"] as const;
 const ZERO: Vec3 = { x: 0, y: 0, z: 0 };
+const VIEW_ORIGIN: Vec3 = { x: -2.8, y: 2.7, z: -0.7 };
 const WARMUP_STEPS = 19;
 const MASS_EPS_KG = 0.1;
 const POSITION_EPS_M = 7e-5;
@@ -177,14 +178,8 @@ function buildChildTransfer(
     const worldOffset = rotateVec3ByQuat(parentMotion.rotation, authoredOffset);
     const worldCom = add(parentMotion.position, worldOffset);
     const linearVelocity = rigidVelocityAtWorldPoint(parentMotion, worldCom);
-    maxRotatedOffsetEffectM = Math.max(
-      maxRotatedOffsetEffectM,
-      magnitude(subtract(worldOffset, authoredOffset)),
-    );
-    maxRigidFieldEffectMps = Math.max(
-      maxRigidFieldEffectMps,
-      magnitude(subtract(linearVelocity, parentMotion.linearVelocity)),
-    );
+    maxRotatedOffsetEffectM = Math.max(maxRotatedOffsetEffectM, magnitude(subtract(worldOffset, authoredOffset)));
+    maxRigidFieldEffectMps = Math.max(maxRigidFieldEffectMps, magnitude(subtract(linearVelocity, parentMotion.linearVelocity)));
     motions[child.id] = {
       position: worldCom,
       rotation: { ...parentMotion.rotation },
@@ -221,7 +216,7 @@ const parentPlan = requireSingleBody(beforePlan, "CUT browser source");
 if (afterPlan.bodies.length !== 2) throw new Error(`CUT browser expected two child bodies, got ${afterPlan.bodies.length}`);
 
 const initialMotion: RigidMotion = {
-  position: { x: -2.8, y: 2.7, z: -0.7 },
+  position: { ...VIEW_ORIGIN },
   rotation: axisAngleQuat({ x: 1, y: -2, z: 0.75 }, 0.71),
   linearVelocity: { x: 1.7, y: -0.45, z: 0.9 },
   angularVelocity: { x: 0.42, y: 0.95, z: -0.61 },
@@ -247,10 +242,11 @@ resizeCanvas();
 
 function project(point: Vec3): { x: number; y: number } {
   const rect = canvas.getBoundingClientRect();
-  const scale = Math.min(75, Math.max(34, rect.width / 16));
+  const scale = Math.min(92, Math.max(48, rect.width / 13));
+  const relative = subtract(point, VIEW_ORIGIN);
   return {
-    x: rect.width * 0.5 + (point.x - point.z * 0.35) * scale,
-    y: rect.height * 0.64 - point.y * scale + point.z * scale * 0.12,
+    x: rect.width * 0.5 + (relative.x - relative.z * 0.35) * scale,
+    y: rect.height * 0.56 - relative.y * scale + relative.z * scale * 0.12,
   };
 }
 
@@ -264,7 +260,7 @@ function drawScene(): void {
   const snapshotByBody = new Map(snapshots.map((snapshot) => [snapshot.planBodyId, snapshot] as const));
   const bodyById = new Map(activePlan.bodies.map((body) => [body.id, body] as const));
   const materialById = new Map(matter.materials.map((material) => [material.id, material] as const));
-  const cellRadius = Math.max(2.2, Math.min(5.2, rect.width / 170));
+  const cellRadius = Math.max(2.8, Math.min(6.2, rect.width / 155));
 
   for (const cell of matter.cells) {
     const bodyId = activePlan.cellToBody[cell.id];
@@ -276,7 +272,7 @@ function drawScene(): void {
     const world = add(snapshot.position, rotateVec3ByQuat(snapshot.rotation, local));
     const screen = project(world);
     context.fillStyle = materialById.get(cell.materialId)?.displayColor ?? "#8bd5ff";
-    context.globalAlpha = 0.72;
+    context.globalAlpha = 0.78;
     context.fillRect(screen.x - cellRadius, screen.y - cellRadius, cellRadius * 2, cellRadius * 2);
   }
   context.globalAlpha = 1;
@@ -287,7 +283,7 @@ function drawScene(): void {
     const screen = project(snapshot.position);
     context.fillStyle = index === 0 ? "#b6ff9e" : "#ffb86b";
     context.beginPath();
-    context.arc(screen.x, screen.y, 6, 0, Math.PI * 2);
+    context.arc(screen.x, screen.y, 7, 0, Math.PI * 2);
     context.fill();
     context.strokeStyle = "#ffffff";
     context.lineWidth = 1;
@@ -419,15 +415,10 @@ async function runCut(): Promise<void> {
     let maxInterfaceVelocityErrorMps = 0;
     for (const snapshot of immediate) {
       const actualVelocity = rigidVelocityAtWorldPoint(motionFromSnapshot(snapshot), interfaceWorld);
-      maxInterfaceVelocityErrorMps = Math.max(
-        maxInterfaceVelocityErrorMps,
-        magnitude(subtract(actualVelocity, expectedInterfaceVelocity)),
-      );
+      maxInterfaceVelocityErrorMps = Math.max(maxInterfaceVelocityErrorMps, magnitude(subtract(actualVelocity, expectedInterfaceVelocity)));
     }
 
-    const massErrorKg = Math.abs(
-      immediate.reduce((sum, snapshot) => sum + snapshot.massKg, 0) - parentSnapshot.massKg,
-    );
+    const massErrorKg = Math.abs(immediate.reduce((sum, snapshot) => sum + snapshot.massKg, 0) - parentSnapshot.massKg);
     const momentumErrorKgMps = magnitude(subtract(momentumOf(immediate), parentMomentum));
     physics.step(1);
     const postStepFinite = physics.snapshots().length === 2 && physics.snapshots().every(finiteSnapshot);
@@ -435,16 +426,12 @@ async function runCut(): Promise<void> {
     const sourceIdsBefore = Object.keys(beforePlan.cellToBody).sort();
     const sourceIdsAfter = Object.keys(afterPlan.cellToBody).sort();
     const identityPass =
-      sourceIdsBefore.length === 51 &&
-      sourceIdsAfter.length === 51 &&
+      sourceIdsBefore.length === 51 && sourceIdsAfter.length === 51 &&
       sourceIdsBefore.every((id, index) => id === sourceIdsAfter[index]) &&
-      lineage.addedSourceIds.length === 0 &&
-      lineage.removedSourceIds.length === 0;
+      lineage.addedSourceIds.length === 0 && lineage.removedSourceIds.length === 0;
     const lineageSplit =
-      lineage.components.length === 1 &&
-      lineage.components[0]?.kind === "split" &&
-      lineage.components[0].beforeEntityIds.length === 1 &&
-      lineage.components[0].afterEntityIds.length === 2;
+      lineage.components.length === 1 && lineage.components[0]?.kind === "split" &&
+      lineage.components[0].beforeEntityIds.length === 1 && lineage.components[0].afterEntityIds.length === 2;
 
     const gates: EvidenceGate[] = [
       { id: "identity", label: "PERSISTENT SOURCE IDENTITY", pass: identityPass, detail: `51 → 51 source cells; added ${lineage.addedSourceIds.length}, removed ${lineage.removedSourceIds.length}` },

@@ -32,7 +32,7 @@ function Write-Response(
     [byte[]] $Body,
     [bool] $HeadOnly = $false
 ) {
-    $Header = "HTTP/1.1 $StatusCode $StatusText`r`nContent-Type: $ContentType`r`nContent-Length: $($Body.Length)`r`nCache-Control: no-store`r`nConnection: close`r`n`r`n"
+    $Header = "HTTP/1.1 $StatusCode $StatusText`r`nContent-Type: $ContentType`r`nContent-Length: $($Body.Length)`r`nCache-Control: no-store`r`nX-Content-Type-Options: nosniff`r`nConnection: close`r`n`r`n"
     $HeaderBytes = [System.Text.Encoding]::ASCII.GetBytes($Header)
     $Stream.Write($HeaderBytes, 0, $HeaderBytes.Length)
     if (-not $HeadOnly -and $Body.Length -gt 0) {
@@ -41,11 +41,27 @@ function Write-Response(
     $Stream.Flush()
 }
 
-if (-not (Test-Path -LiteralPath (Join-Path $Root "index.html") -PathType Leaf)) {
-    throw "ANVIL artifact is incomplete: index.html is missing."
+$IndexPath = Join-Path $Root "index.html"
+$LauncherPath = Join-Path $Root "START_ANVIL_CUT.cmd"
+$ManifestPath = Join-Path $Root "forge-gate.json"
+if (-not (Test-Path -LiteralPath $IndexPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: index.html is missing." }
+if (-not (Test-Path -LiteralPath $LauncherPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: START_ANVIL_CUT.cmd is missing." }
+if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: forge-gate.json is missing." }
+
+try {
+    $ForgeManifest = Get-Content -LiteralPath $ManifestPath -Raw | ConvertFrom-Json
 }
-if (-not (Test-Path -LiteralPath (Join-Path $Root "START_ANVIL_CUT.cmd") -PathType Leaf)) {
-    throw "ANVIL artifact is incomplete: START_ANVIL_CUT.cmd is missing."
+catch {
+    throw "ANVIL artifact has an unreadable forge-gate.json: $($_.Exception.Message)"
+}
+foreach ($Field in @("schema", "project", "gate", "forgeRevision", "provenance", "sourceRepository", "sourceSha", "sourceRef", "ciRunId", "ciRunAttempt", "artifactName", "builtAt")) {
+    $Value = $ForgeManifest.$Field
+    if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string]$Value)) {
+        throw "ANVIL artifact forge-gate.json is missing required field: $Field"
+    }
+}
+if ($ForgeManifest.schema -ne "anvil-forge-owner-gate/v1" -or $ForgeManifest.gate -ne "ANVIL-01 / CUT") {
+    throw "ANVIL artifact forge-gate.json has the wrong gate identity."
 }
 
 foreach ($Port in 4173..4199) {
@@ -69,18 +85,19 @@ if ($null -eq $Listener -or $null -eq $SelectedPort) {
 }
 
 if ($SelfTest) {
-    Write-Host "ANVIL owner artifact self-test PASS: static files present; local listener opened on port $SelectedPort."
+    Write-Host "ANVIL Forge artifact self-test PASS: gate manifest valid; static files present; local listener opened on port $SelectedPort."
     $Listener.Stop()
     exit 0
 }
 
 $Url = "http://127.0.0.1:$SelectedPort/?experiment=cut"
-Write-Host "ANVIL-01 / CUT owner validation server" -ForegroundColor Cyan
-Write-Host "Root: $Root"
-Write-Host "URL : $Url" -ForegroundColor Green
+Write-Host "PROJECT ANVIL - Forge Owner Gate" -ForegroundColor Cyan
+Write-Host "Gate : $($ForgeManifest.gate)"
+Write-Host "Build: $($ForgeManifest.sourceSha)" -ForegroundColor Green
+Write-Host "Run  : $($ForgeManifest.ciRunId) attempt $($ForgeManifest.ciRunAttempt)"
+Write-Host "URL  : $Url"
 Write-Host ""
 Write-Host "The browser should open automatically."
-Write-Host "Run CUT, inspect the transaction and the eight evidence gates."
 Write-Host "Close this console window when validation is finished."
 Write-Host ""
 Start-Process $Url
@@ -98,9 +115,7 @@ try {
             $Stream = $Client.GetStream()
             $Reader = New-Object System.IO.StreamReader($Stream)
             $RequestLine = $Reader.ReadLine()
-            if ([string]::IsNullOrWhiteSpace($RequestLine)) {
-                continue
-            }
+            if ([string]::IsNullOrWhiteSpace($RequestLine)) { continue }
 
             while ($true) {
                 $Line = $Reader.ReadLine()

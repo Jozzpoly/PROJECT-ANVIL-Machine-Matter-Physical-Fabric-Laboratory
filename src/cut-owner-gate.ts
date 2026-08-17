@@ -1,6 +1,34 @@
 import "./cut-owner-gate.css";
 
 type OwnerVerdict = "ACCEPT" | "REJECT" | "INCONCLUSIVE";
+type ForgeProvenance = "github-actions" | "local-unverified";
+
+interface ForgeManifest {
+  readonly schema: "anvil-forge-owner-gate/v1";
+  readonly project: string;
+  readonly gate: string;
+  readonly forgeRevision: string;
+  readonly provenance: ForgeProvenance;
+  readonly sourceRepository: string;
+  readonly sourceSha: string;
+  readonly sourceRef: string;
+  readonly ciRunId: string;
+  readonly ciRunAttempt: string;
+  readonly artifactName: string;
+  readonly builtAt: string;
+}
+
+const REQUIRED_METRICS = ["source-count", "body-count", "source-delta"] as const;
+const REQUIRED_GATES = [
+  "identity",
+  "topology",
+  "sensitivity",
+  "mass",
+  "pose",
+  "rigid-field",
+  "momentum",
+  "post-step",
+] as const;
 
 function required<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
@@ -8,10 +36,68 @@ function required<T extends Element>(selector: string): T {
   return element;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function readString(record: Record<string, unknown>, key: string): string | null {
+  const value = record[key];
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+}
+
+function parseManifest(value: unknown): ForgeManifest {
+  if (!isRecord(value)) throw new Error("forge-gate.json is not an object");
+  const schema = readString(value, "schema");
+  const project = readString(value, "project");
+  const gate = readString(value, "gate");
+  const forgeRevision = readString(value, "forgeRevision");
+  const provenance = readString(value, "provenance");
+  const sourceRepository = readString(value, "sourceRepository");
+  const sourceSha = readString(value, "sourceSha");
+  const sourceRef = readString(value, "sourceRef");
+  const ciRunId = readString(value, "ciRunId");
+  const ciRunAttempt = readString(value, "ciRunAttempt");
+  const artifactName = readString(value, "artifactName");
+  const builtAt = readString(value, "builtAt");
+
+  if (schema !== "anvil-forge-owner-gate/v1") throw new Error(`unsupported Forge schema: ${schema ?? "missing"}`);
+  if (project !== "PROJECT ANVIL / Physical Fabric Laboratory") throw new Error("unexpected Forge project identity");
+  if (gate !== "ANVIL-01 / CUT") throw new Error("unexpected Forge gate identity");
+  if (provenance !== "github-actions" && provenance !== "local-unverified") throw new Error("invalid Forge provenance");
+  if (
+    forgeRevision === null || sourceRepository === null || sourceSha === null || sourceRef === null ||
+    ciRunId === null || ciRunAttempt === null || artifactName === null || builtAt === null
+  ) throw new Error("Forge manifest is missing required identity fields");
+  if (provenance === "github-actions") {
+    if (!/^[0-9a-f]{40}$/i.test(sourceSha)) throw new Error("Forge source SHA is not an exact 40-hex commit");
+    if (!/^\d+$/.test(ciRunId) || !/^\d+$/.test(ciRunAttempt)) throw new Error("Forge CI run identity is invalid");
+    if (sourceRepository !== "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory") {
+      throw new Error("Forge source repository does not match PROJECT ANVIL");
+    }
+  }
+
+  return {
+    schema,
+    project,
+    gate,
+    forgeRevision,
+    provenance,
+    sourceRepository,
+    sourceSha,
+    sourceRef,
+    ciRunId,
+    ciRunAttempt,
+    artifactName,
+    builtAt,
+  };
+}
+
 const panel = required<HTMLElement>(".panel");
 const status = required<HTMLElement>("#cut-status");
 const runButton = required<HTMLButtonElement>("#cut-run");
 const resetButton = required<HTMLButtonElement>("#cut-replay");
+const metricsElement = required<HTMLElement>("#cut-metrics");
+const gatesElement = required<HTMLElement>("#cut-gates");
 const originalSections = Array.from(panel.children).filter(
   (element): element is HTMLElement => element instanceof HTMLElement && element.tagName === "SECTION",
 );
@@ -23,20 +109,21 @@ if (transactionLabel !== null) transactionLabel.textContent = "OWNER TEST";
 const transactionNote = transactionSection.querySelector<HTMLElement>(".note");
 if (transactionNote !== null) {
   transactionNote.textContent =
-    "Najpierw patrz na sam moment rozdzielenia. Nie próbuj potwierdzać zielonych metryk: interesuje nas, czy coś teleportuje się, szarpie, resetuje albo po prostu wygląda fizycznie źle.";
+    "Najpierw patrz na sam moment rozdzielenia. Nie próbuj potwierdzać zielonych metryk: interesuje nas, czy coś teleportuje się, szarpie, resetuje albo wygląda fizycznie źle.";
 }
 
 const intro = document.createElement("section");
 intro.className = "owner-gate-intro";
 intro.innerHTML = `
-  <p class="section-label">FORGE OWNER GATE · V0</p>
-  <p class="owner-lead">Twój test ma być krótki: uruchom CUT, obejrzyj moment zmiany, zresetuj i powtórz kilka razy.</p>
+  <p class="section-label">FORGE OWNER GATE · V0.1 FIELD TRIAL</p>
+  <p class="owner-lead">Krótka pętla: uruchom CUT, obejrzyj moment zmiany, zresetuj i powtórz tylko tyle razy, ile potrzebujesz do decyzji.</p>
   <ol class="owner-steps">
     <li><strong>RUN CUT</strong> — obserwuj przede wszystkim chwilę 1 → 2.</li>
-    <li><strong>RESET</strong> — powtórz 2–3 razy, jeśli potrzebujesz.</li>
-    <li>Na końcu wybierz swój werdykt i skopiuj gotowy raport do rozmowy.</li>
+    <li><strong>RESET</strong> — powtórz, jeśli chcesz sprawdzić ciągłość jeszcze raz.</li>
+    <li>Wybierz werdykt i skopiuj raport. Forge samo dołączy tożsamość builda i evidence.</li>
   </ol>
-  <p class="owner-hint">Automatyczne PASS nie jest Twoim ACCEPT. Jeśli coś wygląda podejrzanie, odrzuć albo oznacz jako niejednoznaczne.</p>
+  <p class="owner-hint">Automatyczne PASS nie jest Twoim ACCEPT. Forge zablokuje ACCEPT, jeżeli build albo wymagane evidence są niepełne.</p>
+  <p id="forge-build-state" class="forge-build-state">BUILD IDENTITY · VERIFYING…</p>
 `;
 panel.insertBefore(intro, transactionSection);
 
@@ -66,45 +153,95 @@ technicalDetails.innerHTML = `<summary>TECHNICZNE EVIDENCE — opcjonalne</summa
 for (const section of originalSections.slice(1)) technicalDetails.append(section);
 verdictSection.insertAdjacentElement("afterend", technicalDetails);
 
+const buildState = required<HTMLElement>("#forge-build-state");
 const ownerState = required<HTMLElement>("#owner-gate-state");
 const notes = required<HTMLTextAreaElement>("#owner-notes");
 const report = required<HTMLTextAreaElement>("#owner-report");
 const copyButton = required<HTMLButtonElement>("#owner-copy-report");
 const copyStatus = required<HTMLElement>("#owner-copy-status");
-const verdictButtons = Array.from(
-  verdictSection.querySelectorAll<HTMLButtonElement>("[data-owner-verdict]"),
-);
+const verdictButtons = Array.from(verdictSection.querySelectorAll<HTMLButtonElement>("[data-owner-verdict]"));
+const acceptButton = verdictSection.querySelector<HTMLButtonElement>('[data-owner-verdict="ACCEPT"]');
+if (acceptButton === null) throw new Error("CUT owner gate missing ACCEPT button");
 
 let selectedVerdict: OwnerVerdict | null = null;
 let completedRuns = 0;
 let countedCurrentRun = false;
 let lastStatus = status.textContent?.trim() ?? "";
+let manifest: ForgeManifest | null = null;
+let manifestError: string | null = "manifest not loaded";
+const sessionId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `session-${Date.now()}`;
 
-function metricText(id: string, fallback: string): string {
-  return document.querySelector<HTMLElement>(`#metric-${id}`)?.textContent?.trim() || fallback;
+function metricText(id: string): string | null {
+  const element = document.querySelector<HTMLElement>(`#metric-${id}`);
+  const text = element?.textContent?.trim();
+  return text && text.length > 0 ? text : null;
+}
+
+function gatePass(id: string): boolean | null {
+  const element = document.querySelector<HTMLElement>(`[data-gate="${id}"]`);
+  if (element === null) return null;
+  const value = element.dataset.pass;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return null;
 }
 
 function automatedEvidenceLabel(): string {
   const value = status.textContent?.trim() ?? "UNKNOWN";
   if (value === "CUT EVIDENCE PASS") return "PASS";
   if (value === "CUT EVIDENCE FAIL") return "FAIL";
-  return value;
+  return value || "UNKNOWN";
+}
+
+function forgeIssues(): string[] {
+  const issues: string[] = [];
+  if (manifest === null) issues.push(`provenance unavailable: ${manifestError ?? "unknown error"}`);
+  else if (manifest.provenance !== "github-actions") issues.push("build provenance is local/unverified, not a canonical GitHub Actions artifact");
+
+  const terminal = automatedEvidenceLabel();
+  if (terminal === "PASS" || terminal === "FAIL") {
+    for (const id of REQUIRED_METRICS) if (metricText(id) === null) issues.push(`missing required metric: ${id}`);
+    for (const id of REQUIRED_GATES) if (gatePass(id) === null) issues.push(`missing required gate: ${id}`);
+    if (terminal === "PASS") {
+      for (const id of REQUIRED_GATES) if (gatePass(id) === false) issues.push(`status says PASS but gate failed: ${id}`);
+    }
+  }
+  return issues;
+}
+
+function canonicalAcceptAllowed(): boolean {
+  return automatedEvidenceLabel() === "PASS" && forgeIssues().length === 0;
 }
 
 function buildReport(): string {
   const verdict = selectedVerdict ?? "NOT_SELECTED";
   const noteText = notes.value.trim() || "(brak dodatkowych uwag)";
   const viewport = `${window.innerWidth}x${window.innerHeight} @ DPR ${window.devicePixelRatio || 1}`;
+  const issues = forgeIssues();
+  const passedGates = REQUIRED_GATES.filter((id) => gatePass(id) === true).length;
   return [
     "FORGE OWNER REPORT",
-    "project: PROJECT ANVIL / Physical Fabric Laboratory",
-    "gate: ANVIL-01 / CUT",
+    `forge report validity: ${issues.length === 0 ? "VALID" : "INVALID"}`,
+    `forge issues: ${issues.length === 0 ? "none" : issues.join(" | ")}`,
+    `forge schema: ${manifest?.schema ?? "UNAVAILABLE"}`,
+    `forge revision: ${manifest?.forgeRevision ?? "UNAVAILABLE"}`,
+    `session id: ${sessionId}`,
+    `project: ${manifest?.project ?? "PROJECT ANVIL / Physical Fabric Laboratory"}`,
+    `gate: ${manifest?.gate ?? "ANVIL-01 / CUT"}`,
+    `source repository: ${manifest?.sourceRepository ?? "UNAVAILABLE"}`,
+    `source sha: ${manifest?.sourceSha ?? "UNAVAILABLE"}`,
+    `source ref: ${manifest?.sourceRef ?? "UNAVAILABLE"}`,
+    `ci run: ${manifest === null ? "UNAVAILABLE" : `${manifest.ciRunId} attempt ${manifest.ciRunAttempt}`}`,
+    `artifact: ${manifest?.artifactName ?? "UNAVAILABLE"}`,
+    `build provenance: ${manifest?.provenance ?? "UNAVAILABLE"}`,
+    `built at: ${manifest?.builtAt ?? "UNAVAILABLE"}`,
     `owner verdict: ${verdict}`,
     `observed CUT runs: ${completedRuns}`,
     `automated evidence: ${automatedEvidenceLabel()}`,
-    `source cells: ${metricText("source-count", "51 → 51")}`,
-    `runtime bodies: ${metricText("body-count", "1 → 2")}`,
-    `source add / remove: ${metricText("source-delta", "0 / 0")}`,
+    `automated gates: ${passedGates}/${REQUIRED_GATES.length} PASS`,
+    `source cells: ${metricText("source-count") ?? "UNAVAILABLE"}`,
+    `runtime bodies: ${metricText("body-count") ?? "UNAVAILABLE"}`,
+    `source add / remove: ${metricText("source-delta") ?? "UNAVAILABLE"}`,
     `viewport: ${viewport}`,
     `browser: ${navigator.userAgent}`,
     `timestamp: ${new Date().toISOString()}`,
@@ -130,44 +267,48 @@ function clearDecision(): void {
   refreshReport();
 }
 
-function enableVerdict(enabled: boolean): void {
-  for (const button of verdictButtons) button.disabled = !enabled;
+function refreshDecisionAvailability(): void {
+  const terminal = automatedEvidenceLabel();
+  const finished = terminal === "PASS" || terminal === "FAIL";
+  for (const button of verdictButtons) button.disabled = !finished;
+  if (!canonicalAcceptAllowed()) acceptButton.disabled = true;
+
+  if (!finished) return;
+  const issues = forgeIssues();
+  if (terminal === "FAIL") ownerState.textContent = `CUT zakończył się FAIL · powtórki: ${completedRuns}. ACCEPT jest zablokowany.`;
+  else if (issues.length > 0) ownerState.textContent = `CUT zakończony · Forge blokuje ACCEPT: ${issues[0]}`;
+  else ownerState.textContent = `CUT zakończony · powtórki: ${completedRuns}. Możesz RESET i powtórzyć albo wybrać werdykt.`;
 }
 
 function syncOwnerState(): void {
   const current = status.textContent?.trim() ?? "";
-  if (current === lastStatus) return;
-  lastStatus = current;
-
-  if (current === "RUNNING") {
-    countedCurrentRun = false;
-    enableVerdict(false);
-    ownerState.textContent = "Obserwuj moment CUT — werdykt wybierz po zakończeniu.";
-    clearDecision();
-    return;
-  }
-
-  if (current === "CUT EVIDENCE PASS" || current === "CUT EVIDENCE FAIL") {
-    if (!countedCurrentRun) {
-      completedRuns += 1;
-      countedCurrentRun = true;
+  if (current !== lastStatus) {
+    lastStatus = current;
+    if (current === "RUNNING") {
+      countedCurrentRun = false;
+      ownerState.textContent = "Obserwuj moment CUT — werdykt wybierz po zakończeniu.";
+      clearDecision();
+    } else if (current === "CUT EVIDENCE PASS" || current === "CUT EVIDENCE FAIL") {
+      if (!countedCurrentRun) {
+        completedRuns += 1;
+        countedCurrentRun = true;
+      }
+    } else if (current === "READY") {
+      ownerState.textContent = completedRuns === 0 ? "Najpierw wykonaj CUT." : `Gotowe do kolejnej powtórki · wykonane: ${completedRuns}.`;
     }
-    enableVerdict(true);
-    ownerState.textContent = `CUT zakończony · powtórki: ${completedRuns}. Możesz RESET i powtórzyć albo wybrać werdykt.`;
-    refreshReport();
-    return;
   }
-
-  if (current === "READY") {
-    enableVerdict(false);
-    ownerState.textContent = completedRuns === 0 ? "Najpierw wykonaj CUT." : `Gotowe do kolejnej powtórki · wykonane: ${completedRuns}.`;
-  }
+  refreshDecisionAvailability();
+  refreshReport();
 }
 
 for (const button of verdictButtons) {
   button.addEventListener("click", () => {
     const verdict = button.dataset.ownerVerdict as OwnerVerdict | undefined;
     if (verdict === undefined) return;
+    if (verdict === "ACCEPT" && !canonicalAcceptAllowed()) {
+      ownerState.textContent = `ACCEPT zablokowany: ${forgeIssues()[0] ?? "automated evidence is not PASS"}`;
+      return;
+    }
     selectedVerdict = verdict;
     for (const candidate of verdictButtons) candidate.classList.toggle("selected", candidate === button);
     copyStatus.textContent = "";
@@ -182,7 +323,7 @@ runButton.addEventListener("click", () => {
 });
 resetButton.addEventListener("click", () => {
   clearDecision();
-  enableVerdict(false);
+  for (const button of verdictButtons) button.disabled = true;
 });
 
 copyButton.addEventListener("click", async () => {
@@ -198,6 +339,32 @@ copyButton.addEventListener("click", async () => {
   }
 });
 
-const observer = new MutationObserver(syncOwnerState);
-observer.observe(status, { childList: true, characterData: true, subtree: true });
+const statusObserver = new MutationObserver(syncOwnerState);
+statusObserver.observe(status, { childList: true, characterData: true, subtree: true });
+const evidenceObserver = new MutationObserver(syncOwnerState);
+evidenceObserver.observe(metricsElement, { childList: true, characterData: true, subtree: true, attributes: true });
+evidenceObserver.observe(gatesElement, { childList: true, characterData: true, subtree: true, attributes: true });
+
+void (async () => {
+  try {
+    const response = await fetch("/forge-gate.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    manifest = parseManifest(await response.json());
+    manifestError = null;
+    if (manifest.provenance === "github-actions") {
+      buildState.textContent = `BUILD VERIFIED · ${manifest.sourceSha.slice(0, 12)} · RUN ${manifest.ciRunId}`;
+      buildState.classList.add("verified");
+    } else {
+      buildState.textContent = "BUILD UNVERIFIED · local build · ACCEPT disabled";
+      buildState.classList.add("blocked");
+    }
+  } catch (error: unknown) {
+    manifest = null;
+    manifestError = error instanceof Error ? error.message : String(error);
+    buildState.textContent = `BUILD IDENTITY BLOCKED · ${manifestError}`;
+    buildState.classList.add("blocked");
+  }
+  syncOwnerState();
+})();
+
 syncOwnerState();
