@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $Root = (Resolve-Path -LiteralPath $PSScriptRoot).Path
 $Listener = $null
 $SelectedPort = $null
+$ExpectedProject = "PROJECT ANVIL / Physical Fabric Laboratory"
 
 function Get-ContentType([string] $Path) {
     switch ([System.IO.Path]::GetExtension($Path).ToLowerInvariant()) {
@@ -42,10 +43,10 @@ function Write-Response(
 }
 
 $IndexPath = Join-Path $Root "index.html"
-$LauncherPath = Join-Path $Root "START_ANVIL_CUT.cmd"
+$LauncherPath = Join-Path $Root "START_ANVIL.cmd"
 $ManifestPath = Join-Path $Root "forge-gate.json"
 if (-not (Test-Path -LiteralPath $IndexPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: index.html is missing." }
-if (-not (Test-Path -LiteralPath $LauncherPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: START_ANVIL_CUT.cmd is missing." }
+if (-not (Test-Path -LiteralPath $LauncherPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: START_ANVIL.cmd is missing." }
 if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) { throw "ANVIL artifact is incomplete: forge-gate.json is missing." }
 
 try {
@@ -54,14 +55,19 @@ try {
 catch {
     throw "ANVIL artifact has an unreadable forge-gate.json: $($_.Exception.Message)"
 }
-foreach ($Field in @("schema", "project", "gate", "forgeRevision", "provenance", "sourceRepository", "sourceSha", "checkoutSha", "sourceRef", "ciEvent", "ciRunId", "ciRunAttempt", "artifactName", "builtAt")) {
+foreach ($Field in @("schema", "project", "gate", "entryPath", "forgeRevision", "provenance", "sourceRepository", "sourceSha", "checkoutSha", "sourceRef", "ciEvent", "ciRunId", "ciRunAttempt", "artifactName", "builtAt")) {
     $Value = $ForgeManifest.$Field
     if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string]$Value)) {
         throw "ANVIL artifact forge-gate.json is missing required field: $Field"
     }
 }
-if ($ForgeManifest.schema -ne "anvil-forge-owner-gate/v1" -or $ForgeManifest.gate -ne "ANVIL-01 / CUT") {
-    throw "ANVIL artifact forge-gate.json has the wrong gate identity."
+if ($ForgeManifest.schema -ne "anvil-forge-owner-gate/v2" -or $ForgeManifest.project -ne $ExpectedProject) {
+    throw "ANVIL artifact forge-gate.json has the wrong schema or project identity."
+}
+
+$EntryPath = [string]$ForgeManifest.entryPath
+if (-not $EntryPath.StartsWith("/") -or $EntryPath.StartsWith("//") -or $EntryPath.Contains("://") -or $EntryPath.Contains("\") -or $EntryPath -match "[\r\n\x00]") {
+    throw "ANVIL artifact forge-gate.json contains an unsafe entryPath."
 }
 
 foreach ($Port in 4173..4199) {
@@ -85,15 +91,16 @@ if ($null -eq $Listener -or $null -eq $SelectedPort) {
 }
 
 if ($SelfTest) {
-    Write-Host "ANVIL Forge artifact self-test PASS: gate manifest valid; static files present; local listener opened on port $SelectedPort."
+    Write-Host "ANVIL Forge V0.2 artifact self-test PASS: $($ForgeManifest.gate) -> $EntryPath; manifest valid; static files present; local listener opened on port $SelectedPort."
     $Listener.Stop()
     exit 0
 }
 
-$Url = "http://127.0.0.1:$SelectedPort/?experiment=cut"
+$Url = "http://127.0.0.1:$SelectedPort$EntryPath"
 Write-Host "PROJECT ANVIL - Forge Owner Gate" -ForegroundColor Cyan
-Write-Host "Gate    : $($ForgeManifest.gate)"
-Write-Host "Source  : $($ForgeManifest.sourceSha)" -ForegroundColor Green
+Write-Host "Gate    : $($ForgeManifest.gate)" -ForegroundColor Green
+Write-Host "Entry   : $EntryPath"
+Write-Host "Source  : $($ForgeManifest.sourceSha)"
 Write-Host "Checkout: $($ForgeManifest.checkoutSha)"
 Write-Host "Run     : $($ForgeManifest.ciRunId) attempt $($ForgeManifest.ciRunAttempt)"
 Write-Host "URL     : $Url"

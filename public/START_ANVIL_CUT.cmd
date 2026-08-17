@@ -1,14 +1,8 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title PROJECT ANVIL - CUT owner validation
-echo PROJECT ANVIL - ANVIL-01 / CUT
-echo Starting the owner validation build...
+echo NOTE: START_ANVIL_CUT.cmd is a legacy launcher name.
+echo The artifact manifest decides which owner gate is active.
 echo.
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0serve-anvil.ps1"
-if errorlevel 1 (
-  echo.
-  echo ANVIL launcher stopped with an error.
-  pause
-)
+call "%~dp0START_ANVIL.cmd"
 endlocal
