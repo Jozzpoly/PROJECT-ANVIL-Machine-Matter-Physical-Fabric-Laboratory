@@ -6,201 +6,213 @@ Last grounding: 2026-08-17.
 
 - Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 - `main` is the latest accepted checkpoint, not an agent worktree.
-- `ANVIL-00 / COLLAPSE` was owner-accepted within its stated scope and squash-merged to `main` on 2026-08-17.
-- Historical ANVIL-00 checkpoint merge: `d67d8270839d713c6f2f5b78890b0172d6afb5c0`.
-- The reusable laboratory foundation was validated on branch + exact PR head + post-merge `main` and squash-merged as PR #2 on 2026-08-17.
-- Historical foundation checkpoint merge: `0f35241001799c00a66629946b3252886b1a4d30`.
+- ANVIL-00 / COLLAPSE is owner-accepted within its stated scope.
+- Reusable laboratory foundation is accepted on `main`.
+- Active research branch: `experiment/anvil-01-cut`.
+- ANVIL-01 is **IN PROGRESS** and must not be described as accepted/merged until its eventual experiment gate and owner-facing evidence justify that.
 
-Commit hashes here are historical checkpoint identifiers only. Always resolve live Git before changes.
+Historical hashes are useful checkpoint identifiers only. Always resolve live Git before work.
 
 ## Research intent
 
-ANVIL is an R&D laboratory for **Machine Matter / Physical Fabric**. Its working premise is:
+ANVIL is an R&D laboratory for **Machine Matter / Physical Fabric**.
 
-> Persistent authored matter/physical intent may compile into disposable runtime representations whose resolution and identity domains differ from authored truth.
+Working premise:
 
-Authored resolution, mass representation, collision representation, runtime rigid bodies and visual representation are not required to be identical.
+> Persistent authored matter and physical intent may compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
 
-This is a research direction, not proof that one universal ontology or one solver can span every future physical domain.
+The long-horizon goal is not a catalog of vehicle/machine parts. Machines should increasingly emerge from matter, relations, interfaces and function. Runtime bodies, colliders and later solver constructs are interpretations, not authoritative construction identity.
 
-## Accepted evidence — ANVIL-00 / COLLAPSE
+ANVIL is falsification-driven. Do not promote an experiment-local trick into universal ontology merely because it makes one demo work.
 
-ANVIL-00 demonstrated, for its bounded sparse-cell fixture:
+## Accepted baseline — ANVIL-00 / COLLAPSE
 
-1. `MatterDocument` contains stable authored cells/materials and no Box3D IDs.
-2. Compiler finds face-connected rigid components deterministically.
-3. Each component becomes one `RigidBodyPlan` with integrated mass and COM.
-4. Exact occupied volume is compacted into fewer material-homogeneous cuboid collider plans.
-5. Box3D lowering creates dynamic bodies and convex hull shapes from the disposable plan.
-6. Compiler mass agrees with mass independently reconstructed by Box3D within the experiment tolerance.
-7. Compiler-selected COM agrees with Box3D's independently reconstructed local COM within the experiment tolerance.
-8. Intact fixture: `51 authored cells → 1 rigid body → 8 collision boxes`.
-9. One-cell authoring edit: `50 surviving authored cells → 2 rigid bodies → 9 collision boxes`.
-10. Strict TypeScript, semantic tests, real Box3D stepping, production build and real Chromium runtime all passed.
-11. The owner manually ran the packaged validated browser artifact and supplied visual evidence showing `LIVE EVIDENCE`, the edited `50 / 2 / 9` state, all displayed gates PASS and continued runtime stepping.
+For its bounded sparse-cell fixture ANVIL-00 demonstrated:
 
-Verdict: **SUPPORTED FOR THE ANVIL-00 FIXTURE AND OWNER-ACCEPTED WITHIN ITS STATED SCOPE**.
+- persistent cell/material identity with no Box3D IDs in `MatterDocument`;
+- deterministic face-connectivity rigidification;
+- integrated mass/COM;
+- separate compact collision representation;
+- disposable Box3D runtime lowering;
+- independent Box3D mass/COM cross-checks;
+- intact `51 cells → 1 body → 8 collision boxes`;
+- authoring edit `50 cells → 2 bodies → 9 collision boxes`;
+- strict TS, semantic tests, real Box3D stepping, production build and Chromium runtime PASS;
+- owner manual execution/visual validation of the packaged artifact.
 
-This is **not runtime fracture**. The COLLAPSE cut deletes an authored bridge cell and rebuilds from a neutral fixture; it does not preserve mass or migrate a moving body's state.
+Boundary: COLLAPSE deletes one bridge cell and rebuilds from neutral state. It is **not dynamic fracture/state migration**.
 
-## Toolchain truth
+## Accepted laboratory foundation
 
-- Node: `24.16.0`.
-- npm: `>=11.13.0 <12`; tracked lockfile; CI uses `npm ci`.
-- Browser physics binding: exact `box3d.js@0.0.2`, validated at runtime as Box3D `0.1.0`.
-- TypeScript: `7.0.2`; Vite: `8.1.5`; Playwright: `1.61.1`.
-- GitHub Actions may be used freely in this public laboratory.
+Read `docs/FOUNDATION.md`, `AGENTS.md`, `docs/EXPERIMENT_PROTOCOL.md` and `docs/DONOR_MAP.md` before expanding architecture.
 
-## Promoted laboratory foundation
+Promoted building blocks:
 
-Read `docs/FOUNDATION.md` before expanding the global architecture.
+- solver-neutral `Vec3`, `Quat`, `RigidPose`, `RigidMotion`;
+- deterministic compensated mass/COM and current limited inertia diagonal;
+- source-based provenance lineage independent of disposable body IDs;
+- solver-neutral runtime observation/motion contracts;
+- continuity primitives for pose/velocity, linear momentum and translational kinetic energy;
+- fail-closed evidence report primitives.
 
-### `src/foundation/spatial.ts`
+Explicitly **not foundation yet**:
 
-Solver-neutral `Vec3`, `Quat` (`x/y/z/w`), `RigidPose`, `RigidMotion`, minimal vector operations and `rigidVelocityAtWorldPoint`.
-
-`rigidVelocityAtWorldPoint` is a **measurement/kinematics primitive**, not an accepted topology-transfer policy.
-
-### `src/foundation/mass-properties.ts`
-
-Deterministic mass/COM calculation for the current axis-aligned box-element model:
-
-- stable-ID canonical ordering;
-- compensated/Kahan summation;
-- COM;
-- axis-aligned inertia diagonal with parallel-axis contribution.
-
-The numerical discipline is adapted from VAW's proven mass-property implementation but rewritten as typed ANVIL code.
-
-Important: `inertiaDiagonalKgM2` is not yet a universal inertia tensor for arbitrary rotated/continuous matter.
-
-### `src/foundation/provenance.ts`
-
-Persistent-source provenance analysis independent of disposable body IDs. Compiled lineage classifications:
-
-- `continued`;
-- `split`;
-- `merge`;
-- `repartitioned`;
-- `appeared`;
-- `disappeared`.
-
-The ANVIL-00 intact→edited comparison is correctly described as a body `split` plus one removed source ID. CUT must use a mass-preserving topology change so its primary lineage gate becomes one `split` with zero source additions/removals.
-
-### `src/foundation/runtime.ts`
-
-Solver-neutral runtime observation contracts and a generic step/snapshot/dispose boundary. Future continuity work requires neutral linear/angular velocity (`RuntimeBodyMotionState`) before it may claim state transfer.
-
-No Box3D handle or Box3D math type is foundation truth. ANVIL-00's viewer retains a local compatibility quaternion alias only so the accepted demo does not need an unrelated rewrite.
-
-### `src/foundation/continuity.ts`
-
-Measurement primitives for:
-
-- pose/linear/angular velocity errors;
-- linear momentum;
-- total linear momentum;
-- translational kinetic energy.
-
-Rotational energy and full angular-momentum accounting are deliberately deferred until the inertia representation can support them honestly.
-
-### `src/foundation/evidence.ts`
-
-Stable evidence-check IDs, pass/fail state, summaries, finite numeric metrics and fail-closed aggregate reports. This is a small experiment vocabulary, not a test-framework replacement.
-
-### `src/foundation/index.ts`
-
-Stable import surface for promoted foundation modules.
-
-## Foundation validation — ACCEPTED
-
-`tests/foundation.test.mjs` checks:
-
-- mass-property determinism under input reordering;
-- current COLLAPSE lineage: intact→cut = `split`, reverse = `merge`, unchanged = `continued`;
-- rigid point-velocity kinematics;
-- momentum/translational-energy primitives;
-- fail-closed evidence reports and duplicate check-ID rejection.
-
-Promotion validation passed at three useful levels:
-
-1. foundation branch head: strict TS, foundation + semantic tests, real Box3D smoke, production build and Chromium regression — PASS;
-2. exact PR #2 head: the same full pipeline — PASS;
-3. squash-merged `main` checkpoint `0f35241001799c00a66629946b3252886b1a4d30`: full post-merge pipeline including real Chromium — PASS.
-
-Therefore the laboratory foundation is **accepted infrastructure**, but it adds no new general physics verdict beyond ANVIL-00.
-
-## Process foundation
-
-Read these files before material experiments:
-
-- `AGENTS.md` — truth hierarchy, Git/architecture/promotion rules;
-- `docs/EXPERIMENT_PROTOCOL.md` — falsification-first workflow and evidence classes;
-- `docs/FOUNDATION.md` — promoted global boundaries and explicit non-promotions;
-- `docs/DONOR_MAP.md` — current evidence-backed donor capabilities;
-- `docs/experiments/TEMPLATE.md` — experiment record skeleton;
-- `.github/pull_request_template.md` — evidence-focused PR contract.
-
-Evidence classes are explicitly separated: static/structural, pure synthetic, real solver, real product runtime and owner manual validation.
-
-Verdict vocabulary: `SUPPORTED FOR FIXTURE`, `REJECTED`, `INCONCLUSIVE`, `BLOCKED`, `REGRESSION`.
-
-## Explicit non-foundation
-
-Do **not** globally add these until a bounded experiment earns them:
-
-- generic `Bond` / `Joint` / `Constraint` ontology;
-- SurfaceLaw/custom contact law;
+- generic Bond/Joint/Constraint ontology;
+- SurfaceLaw/custom contact model;
 - damage/fracture propagation;
-- compliant/deformable matter;
+- deformable/compliant matter;
 - mechanism inference;
 - power/control networks;
 - adaptive rigid↔deformable switching;
-- universal material schema;
-- universal voxel/grid requirement;
+- universal materials or universal voxels;
 - vehicle-specific compiler concepts;
 - generic scene/entity framework.
 
-Sparse cubic cells and face-adjacency-as-rigidity remain ANVIL-00 fixture choices, not Machine Matter doctrine.
+## Toolchain control
 
-## Donor evidence
+- Node `24.16.0`.
+- npm `>=11.13.0 <12`, tracked lockfile, CI uses `npm ci`.
+- exact browser binding `box3d.js@0.0.2`.
+- runtime version asserted as Box3D `0.1.0`.
+- TypeScript `7.0.2`, Vite `8.1.5`, Playwright `1.61.1`.
 
-- **VAW**: authored→structural/mechanical→rigid-island→runtime separation, provenance, assembly ownership, compensated mass properties and diagnostics. Harvest techniques minimally; do not merge the craft compiler.
-- **JURE**: solver-neutral authored poses/frames/relations, stable IDs, source provenance, validation and canonical serialization. Use its discipline; do not import its frame ontology before FRAME demonstrates ANVIL needs it.
-- **Native JV / Box3D**: proves deep Box3D modification is practical in this ecosystem. ANVIL still follows the shallowest-sufficient intervention ladder.
-- **JV-Web**: proven browser/TypeScript `box3d.js` boundary and production-runtime validation discipline.
-- **JES**: workflow/evidence/source-of-truth donor rather than physics code donor.
-- **HomeScan / Splat / Planet Matter**: reinforce representation separation; not implementation dependencies until an experiment needs their representation class.
+Upstream `box3d.js` was observed on 2026-08-17 to have newer breaking API generations. Do **not** mix a binding upgrade into CUT unless the pinned boundary becomes a reproduced blocker. Binding upgrade should be a separate controlled change/experiment.
 
-See `docs/DONOR_MAP.md` for the current harvest boundary.
+## ANVIL-01 / CUT — current evidence
 
-## Prepared next falsifier — ANVIL-01 / CUT
+Read both:
 
-Read `docs/experiments/ANVIL-01-CUT-PREFLIGHT.md` before implementation.
+- `docs/experiments/ANVIL-01-CUT-PREFLIGHT.md` — planned falsifier/boundaries;
+- `docs/experiments/ANVIL-01-CUT.md` — actual evolving evidence.
 
-The key correction relative to COLLAPSE is **mass preservation**: CUT v1 must keep all authored matter and sever only structural connectivity (e.g. an experiment-local cut mask over one adjacency edge). Do not delete a cell in the primary CUT fixture because mass loss would confound continuity evidence.
+CUT exists to test disposable runtime continuity, not to begin a destruction-game roadmap.
 
-Planned transaction boundary is between solver steps:
+Current staged sequence:
 
-1. finish step N;
-2. snapshot neutral old runtime state;
-3. apply authored topology intervention and compile new plan;
-4. analyze source-provenance lineage;
-5. construct replacement runtime and apply one explicit candidate transfer policy;
-6. retire old runtime representation;
-7. measure immediate discontinuities;
-8. run step N+1 and measure post-step behavior.
+```text
+binding round-trip
+    ↓
+mass-preserving topology
+    ↓
+free translation transfer
+    ↓
+free rotation transfer
+    ↓
+gravity
+    ↓
+contact
+```
 
-Before state transfer, probe the exact current Box3D binding for reliable round-trip access to position, rotation, linear velocity, angular velocity, mass/COM observation and explicit replacement-body initialization. A binding limitation is evidence, not permission to guess APIs.
+Do not skip stages casually; the sequence isolates failure causes.
 
-CUT's candidate rigid-field transfer (`v_child = v_old + ω × r`, inherited angular velocity/orientation, transformed child COM) is only a hypothesis to test inside CUT, not foundation truth.
+### CUT-0 — exact binding round-trip — SUPPORTED
 
-Initial CUT gates should cover source identity, 1→2 lineage with zero source additions/removals, pose continuity, velocity-field continuity, mass, linear momentum and post-step solver validity. Energy and angular-momentum metrics must not claim more precision than the inertia representation supports.
+`tests/cut-binding-capability.mjs` uses real Box3D and proves on exact `box3d.js@0.0.2`:
 
-Fixture escalation should be: translating free body → translating+rotating → gravity → contact → only then external constraints/mechanisms.
+- explicit initial position/rotation;
+- explicit initial linear/angular velocity;
+- read-back of position/rotation/linear/angular velocity;
+- mass/COM observation;
+- explicit `SetTransform`, linear-velocity and angular-velocity mutation;
+- subsequent real solver stepping with finite advancing state.
 
-## Next operational starting point
+The first deliberately over-tight quaternion gate failed at:
 
-Start ANVIL-01 on a fresh `experiment/anvil-01-cut` branch from the latest accepted `main` foundation checkpoint.
+`1 - abs(dot(q_expected, q_actual)) = 5.383741452646973e-9`
 
-First executable task is **not state transfer**. It is the Box3D binding capability probe required by CUT: prove observation and explicit initialization of neutral pose, linear velocity and angular velocity on the exact current browser binding. Only after that gate passes should the mass-preserving connectivity cut and topology transaction be implemented.
+against threshold `1e-10`, while all prior tests passed. This was classified as float-state precision calibration, not missing capability. Current binding probe tolerances are `2e-6` vector state and `1e-7` quaternion alignment. Re-run passed full CI including Chromium regression.
+
+### CUT-1 — mass-preserving topology — SUPPORTED FOR FIXTURE
+
+Compiler gained an **experiment-local** `blockedFaceConnections` option. It suppresses one implicit rigid face connection but does not modify/persist `MatterDocument` and is not a promoted generic Bond object.
+
+Primary cut blocks:
+
+`cell:-1:0:0 <-> cell:0:0:0`
+
+with all source cells retained.
+
+`tests/cut-topology.test.mjs` validates:
+
+- `51 cells / 1 body → 51 cells / 2 bodies`;
+- identical source-ID set;
+- zero source IDs added/removed;
+- unchanged total compiled mass within `1e-9 kg` test tolerance;
+- exactly one provenance `split` covering all 51 source IDs;
+- deterministic output under source-array and connection-pair reversal;
+- invalid/non-face/duplicate blocked connections fail closed.
+
+Full CI including ANVIL-00 browser regression passed.
+
+### CUT-2A — free translation state transfer — SUPPORTED FOR FIXTURE
+
+`src/physics.ts` now exposes neutral linear/angular velocity and accepts explicit solver-neutral initial body motion. Defaults preserve accepted ANVIL-00 behavior.
+
+`tests/cut-translation-transfer.mjs` is a **REAL SOLVER** test:
+
+1. create one-body intact runtime with non-zero linear velocity, zero gravity/contact and `ω=0`;
+2. step 23 real Box3D frames;
+3. snapshot actual parent state;
+4. retire runtime A;
+5. compile same 51 cells as two bodies through blocked connectivity;
+6. reconstruct child COM positions from the parent COM plus authored child-COM offsets;
+7. inherit orientation/linear velocity/zero angular velocity;
+8. create runtime B from explicit state;
+9. measure immediate mass, position, velocity and total linear momentum;
+10. execute the next real Box3D step and measure post-step state/momentum.
+
+Hard gate scales currently encoded:
+
+- position `< 5e-5 m`;
+- linear velocity `< 5e-6 m/s`;
+- angular velocity `< 5e-6 rad/s`;
+- total runtime mass delta `<= 0.1 kg`;
+- immediate linear momentum error `< 0.5 kg·m/s`;
+- post-step linear momentum error `< 1.0 kg·m/s`;
+- all post-step state finite.
+
+Exact branch-head CI passed strict TypeScript, all foundation/compiler/real-Box3D tests including this transfer, production build and real Chromium ANVIL-00 regression.
+
+Important boundary: CUT-2A rebuilds an **isolated whole runtime/world A → runtime/world B**. It does not prove in-place body replacement inside a populated world, contact-manifold transfer or constraint state continuity.
+
+## Next falsifier — CUT-2B / free rotation
+
+Do not add gravity/contact before this is understood.
+
+Use the same mass-preserving split with non-zero parent linear and angular velocity. Candidate policy remains experiment-local:
+
+```text
+child world COM = parent pose applied to authored child-COM offset
+child rotation  = parent rotation
+child ω         = parent ω
+child v         = parent v + parent ω × worldOffset
+```
+
+Required next evidence:
+
+- rotated child-COM pose continuity;
+- rigid velocity-field continuity at child COMs;
+- angular-velocity continuity;
+- mass and total linear momentum;
+- post-step solver validity and impulse/drift diagnostics;
+- translational kinetic-energy delta as diagnostic.
+
+Do not claim full angular-momentum or rotational-energy conservation from the current inertia diagonal for arbitrary rotated bodies. A stronger inertia representation/measurement gate is required first.
+
+## Critical roadmap interpretation
+
+CUT is valuable because it tests that runtime body identity is temporary. It should **not** pull the project into a long damage/crack/debris track by default.
+
+After CUT earns the minimum topology/state-continuity capability, the project should return toward the broader Machine Matter question: how material properties, structural relations, interfaces and function compile into mechanical behavior without requiring a catalog of ready-made parts.
+
+Donor repos remain evidence/capability sources, not architectures to merge:
+
+- VAW — rigid-island/provenance/mass-property lessons;
+- JURE — solver-neutral frames/relations/source discipline when FRAME actually needs them;
+- Native JV — evidence that deeper Box3D modification is possible when justified;
+- JV-Web — browser/Box3D and runtime-validation discipline;
+- JES — workflow/evidence discipline.
+
+## Current branch status
+
+`experiment/anvil-01-cut` is deliberately **not merged**. Current supported sub-results are CUT-0, CUT-1 and CUT-2A only. CUT-2B (non-zero rotation) is the immediate next experimental task.
