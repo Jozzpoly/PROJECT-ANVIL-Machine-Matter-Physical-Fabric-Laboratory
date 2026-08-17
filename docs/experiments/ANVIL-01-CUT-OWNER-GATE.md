@@ -1,138 +1,119 @@
 # ANVIL-01 / CUT — Owner Validation Gate
 
-Status: **READY FOR OWNER VALIDATION — NOT YET ACCEPTED**
+Status: **OWNER ACCEPTED FOR THE BOUNDED CUT CLAIM**
 
-This gate is Evidence Class **E — Owner Manual Validation**. Automated solver and production-browser evidence are already green; this step exists for observations that should not be silently replaced by CI assertions.
+This file records Evidence Class **E — Owner Manual Validation**. Owner acceptance is tied to the exact artifact that was actually inspected; later Forge/tooling changes do not retroactively redefine that evidence.
 
-## Exact validation artifact
+## Exact owner-tested artifact — canonical acceptance evidence
 
-Use only this checkpoint for the current owner verdict:
+The owner tested this exact package:
 
-- branch: `experiment/anvil-01-cut`
-- code/package head: `e1a0b4b0ff6570897603f51ea54cc2d953ae1a2d`
-- GitHub Actions run: `32071241142`
-- artifact: `anvil-browser-laboratory`
-- artifact ID: `9301831216`
-- artifact SHA-256: `9fa1ba669408e52462334ca1a72aad57a4582ef7e6dba8c7fa122b518a389dac`
-- artifact expiry: `2026-08-31T21:29:32Z`
+- branch: `experiment/anvil-01-cut`;
+- source/package head: `9c4b3372ad60e20ade2d7d9a31dd373a356263d0`;
+- GitHub Actions run: `32073741628`;
+- artifact: `anvil-browser-laboratory`;
+- artifact ID: `9302675515`;
+- artifact SHA-256: `34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40`;
+- artifact expiry: `2026-08-31T21:58:49Z`.
 
-CI for this exact package passed:
+CI for that exact head passed locked dependency installation, strict TypeScript and solver/compiler/foundation tests, production build, packaged Windows launcher self-test, real Chromium evidence, and artifact upload.
 
-- canonical Node/npm;
-- strict TypeScript;
-- 20/20 foundation/compiler/real-Box3D tests;
-- production Vite build;
-- packaged Windows owner-launcher self-test from `dist`;
-- 2/2 real Chromium tests: accepted ANVIL-00 regression + CUT product-runtime evidence;
-- artifact upload.
+### Real owner environment and verdict
 
-## How to run on Windows
+Owner report received 2026-08-17:
 
-No terminal commands are required.
-
-1. Download the `anvil-browser-laboratory` artifact from Actions run `32071241142`.
-2. Extract the ZIP to any temporary folder.
-3. Double-click `START_ANVIL_CUT.cmd`.
-4. A console window should remain open and the browser should open automatically on ANVIL-01 / CUT.
-5. Leave the console open while testing. Closing it stops the local server.
-
-The launcher uses Windows PowerShell/.NET only. It chooses an available localhost port in `4173..4199`; it does not install dependencies or modify an existing project folder.
-
-## What the page must show before CUT
-
-Expected initial state:
-
-- status: `READY`;
-- persistent source: `51 authored cells`;
-- runtime: one moving + rotating Box3D body;
-- button: `RUN CUT`;
-- the visualization should visibly move/rotate rather than present a static fabricated result.
-
-## Perform the transaction
-
-Click `RUN CUT` once.
-
-The page deliberately warms up the one-body runtime for real Box3D solver steps, snapshots it at a step boundary, compiles the same 51 source cells into two bodies, disposes the old runtime, initializes the two replacement bodies with the tested rigid-field transfer, and continues stepping the replacement runtime.
-
-Expected automated result on the page:
-
-- status: `CUT EVIDENCE PASS`;
+- verdict: **ACCEPT**;
+- observed CUT runs: **10**;
+- automated evidence shown by the tested build: **PASS**;
 - source cells: `51 → 51`;
 - runtime bodies: `1 → 2`;
 - source add/remove: `0 / 0`;
-- all **8 falsification gates** show PASS:
-  1. persistent source identity;
-  2. mass-preserving 1→2 split;
-  3. nontrivial rotating fixture;
-  4. runtime mass continuity;
-  5. child pose continuity;
-  6. rigid velocity field;
-  7. total linear momentum;
-  8. post-transaction solver step.
+- viewport: `1920×911 @ DPR 1`;
+- browser: Chrome `151` on Windows 10;
+- screenshot and screen recording were supplied as additional visual evidence in the owner conversation.
 
-## Owner observations that matter
+Owner observation, paraphrased: the visualization visibly begins with one runtime COM marker and after the split has two; the event was repeated multiple times. Review of the supplied recording did not reveal an obvious whole-scene reset, large teleport, full stop, explosive velocity jump, disappearing matter, or immediate post-split numerical runaway. A 30 FPS recording is not evidence that sub-frame or microscopic numerical errors are absent; the numeric gates cover that class of evidence.
 
-The following are intentionally manual judgements.
+**Acceptance conclusion:** the manual gate is satisfied for the experiment's declared bounded claim. Repeating the same owner test is not required merely to accumulate more repetitions.
 
-### A. Visual continuity at the transaction
+## What was accepted
 
-Watch the object immediately before and after `RUN CUT` reaches the split boundary.
+The tested production-browser path demonstrates, for the bounded deterministic fixture:
 
-Reject if you see an obvious unexplained:
+1. one moving + rotating Box3D runtime body is warmed up in the real solver;
+2. the same 51 persistent authored cells survive a topology change;
+3. the disposable runtime changes `1 body → 2 bodies` at a solver-step boundary;
+4. replacement body state is initialized from the tested rigid velocity field;
+5. eight browser falsification gates pass:
+   - persistent source identity;
+   - mass-preserving 1→2 split;
+   - nontrivial rotating fixture;
+   - runtime mass continuity;
+   - child pose continuity;
+   - rigid velocity field;
+   - total linear momentum;
+   - post-transaction solver step;
+6. the two replacement bodies remain live and visibly simulated after the transaction.
 
-- teleport;
-- orientation reset;
-- full stop/freeze;
-- explosive velocity jump;
-- disappearing source matter;
-- unrelated scene reset that makes continuity impossible to judge.
+Owner ACCEPT means the manual behavior was acceptable **within this scope**. It is not a blanket approval of future CUT variants or Forge versions.
 
-Tiny visual differences from converting one runtime representation into two are not automatically failures; the question is whether the same moving matter appears to continue naturally through the transaction.
+## Evidence boundary
 
-### B. Persistent-matter interpretation
-
-Judge whether the demo communicates the intended relationship:
-
-> the authored matter remains the same while the disposable runtime representation changes from one body to two.
-
-Reject if the result instead reads as "delete old object and spawn unrelated debris" or otherwise contradicts that intended interpretation.
-
-### C. Continued live behavior
-
-After the split, watch for several seconds.
-
-The two replacement bodies should remain live, finite and visibly simulated. Reject obvious numerical instability, runaway motion unrelated to the pre-cut state, rendering corruption, or a hidden reset shortly after PASS.
-
-### D. Replay
-
-Click `RESET`, then run CUT again at least twice.
-
-The qualitative event should be repeatable. The exact pixels need not match frame-for-frame, but the experiment should not sometimes succeed and sometimes visibly fail under the same deterministic fixture.
-
-### E. Regression control
-
-Optionally use the `Open accepted ANVIL-00 / COLLAPSE` link. The old viewer is intentionally preserved as a separate control and should still behave as before.
-
-## Evidence boundary shown to the owner
-
-A PASS here still means only the bounded ANVIL-01 claim.
-
-It does **not** demonstrate:
+The accepted result still does **not** demonstrate:
 
 - in-place body replacement inside one persistent populated Box3D world;
 - migration of Box3D contact-manifold internals;
 - external joint/constraint state transfer;
-- arbitrary cut surfaces or fracture geometry;
-- damage propagation, toughness, debris or plasticity;
+- arbitrary cut surfaces/topologies or fracture geometry;
+- damage propagation, toughness, debris, plasticity;
 - deformable/compliant matter;
-- full angular-momentum or rotational-energy conservation for arbitrary rotated matter.
+- full angular-momentum or rotational-energy conservation for arbitrary rotated matter;
+- a generic Bond/Joint/Constraint ontology.
 
-## Owner verdict
+CUT remains a continuity experiment, not a destruction roadmap.
 
-Record one of:
+## Forge V0.1 hardening after owner acceptance
 
-- **ACCEPT** — the automated evidence and manual behavior are acceptable within the stated scope;
-- **REJECT** — include the observed failure and, if possible, whether it is visual continuity, behavior after split, repeatability, launcher/runtime, or interpretation;
-- **INCONCLUSIVE** — include what prevented a meaningful judgement.
+The first real owner test also exposed validation-workflow weaknesses in Forge V0:
 
-Do not merge/promote ANVIL-01 based on CI alone. Owner ACCEPT is the final required gate for the current experiment lifecycle.
+- reports did not identify the exact source/build/run;
+- missing DOM evidence could fall back to expected successful text;
+- ACCEPT was not structurally guarded against incomplete provenance/evidence;
+- only the happy report path had a browser test;
+- the launcher did not validate a package manifest;
+- the fixture was unnecessarily small in the fixed viewport.
+
+These are tooling/evidence defects, not failures of the already accepted CUT transaction.
+
+They are addressed separately on:
+
+- branch: `foundation/forge-cut-field-trial`;
+- draft PR: `#3`;
+- validated proposal head before this documentation grounding: `fbe08910f9ac5423b89210b80541b38a7f4ce432`;
+- PR CI run: `32076544898`;
+- artifact ID: `9303653778`;
+- artifact SHA-256: `2773c2aa324613bb682dd2296bf4e1356c4be06a8567b9e376206ce82a75b8e9`.
+
+That run passed:
+
+- strict TypeScript;
+- **20/20** solver/compiler/foundation tests;
+- production Vite build;
+- CI-generated `forge-gate.json` provenance (`source SHA`, actual checkout SHA, ref, event, run, artifact name);
+- packaged PowerShell/.NET launcher manifest self-test;
+- **5/5** real Chromium tests, including deliberate negative cases where required evidence disappears or provenance is local/unverified;
+- artifact upload.
+
+Forge V0.1 therefore has **automated support as a field-trial candidate**. It is not yet owner-accepted as a mature validation system and is not a universal cross-project framework.
+
+### Forge V0.1 policy
+
+For owner acceptance from a canonical package:
+
+- required evidence must exist; missing evidence is `UNAVAILABLE/INVALID`, never a successful fallback;
+- canonical `ACCEPT` is disabled unless automated CUT status is PASS, all required gates are present, and build provenance is a GitHub Actions artifact;
+- `REJECT` and `INCONCLUSIVE` remain possible when evidence/provenance is broken;
+- the owner report includes exact source SHA, actual CI checkout SHA, source ref, CI event/run, artifact name, Forge revision, session ID, browser, viewport and timestamp;
+- local development builds are useful for engineering but cannot masquerade as canonical owner acceptance packages.
+
+The next useful validation of Forge itself should come naturally from the next real ANVIL owner gate rather than by repeatedly re-testing accepted CUT only to validate tooling polish.
