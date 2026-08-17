@@ -18,15 +18,18 @@ Resolve live Git before meaningful work. Do not let later documentation/tooling 
 
 ## Current state
 
-- `main` accepted checkpoint at last grounding: `f03a6f09c090ca0f20bc492de8de72150ca5945b` — ANVIL-00 / COLLAPSE + laboratory foundation.
-- active research branch: `experiment/anvil-01-cut`.
-- integrated CUT/Forge branch head before this grounding commit: `95dabaf2d28439d82550566d83cfb1c221c09130`.
-- exact owner-accepted CUT package remains `9c4b3372ad60e20ade2d7d9a31dd373a356263d0`.
-- Forge V0.1 hardening PR `#3` is merged into the CUT branch.
+- accepted `main` checkpoint before this memory-only grounding commit: `3696f884cfdb3010c91540a834ce541adab049f0`;
+- that checkpoint contains ANVIL-00 / COLLAPSE, the promoted laboratory foundation, owner-accepted ANVIL-01 / CUT, and integrated Forge V0.1 validation infrastructure;
+- promotion PR: `#4 — ANVIL-01: promote accepted CUT continuity experiment`;
+- final tested PR source head: `ec4bf67817625e3c7af5333af11a91e248ef7a2e`;
+- final tested PR synthetic merge checkout: `75539187597843541ed016dd4cac342d7f4900cf`;
+- tested PR tree and actual `main` merge tree are identical: `62c1079569c093a106cdf428dfe03e4f62c7502a`;
+- exact owner-accepted CUT package remains `9c4b3372ad60e20ade2d7d9a31dd373a356263d0` and must not be redefined by later Forge changes;
+- `experiment/anvil-01-cut` is now historical experiment history, not the default base for the next research experiment; start future work from live `main` unless a specific forensic task requires otherwise.
 
-**ANVIL-01 / CUT is OWNER ACCEPTED for its declared bounded claim.**
+**ANVIL-01 / CUT is OWNER ACCEPTED and PROMOTED TO `main` for its declared bounded claim.**
 
-**Forge V0.1 is an AUTOMATED-VALIDATED FIELD-TRIAL BASELINE.** It is not yet a universal framework and does not need a dedicated re-test of accepted CUT merely for tooling polish.
+**Forge V0.1 is an AUTOMATED-VALIDATED FIELD-TRIAL BASELINE.** It is not yet a universal framework and should earn further changes through real future owner gates.
 
 ## Research intent
 
@@ -139,7 +142,7 @@ source head      9c4b3372ad60e20ade2d7d9a31dd373a356263d0
 Actions run      32073741628
 artifact ID      9302675515
 artifact SHA256  34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40
-owner             ACCEPT after 10 observed CUT runs
+owner            ACCEPT after 10 observed CUT runs
 owner environment Windows 10 / Chrome 151 / 1920×911 DPR1
 ```
 
@@ -190,9 +193,9 @@ That field test exposed:
 
 ### Forge V0.1 integrated hardening
 
-Merged via PR `#3` into `experiment/anvil-01-cut`.
+Developed in PR `#3` from the exact accepted CUT checkpoint and merged into the CUT branch before promotion to `main`.
 
-Final pre-merge validation:
+Final pre-integration validation:
 
 ```text
 proposal head     0f8533a7641608960dc504642644664cf5f9f8ec
@@ -203,14 +206,14 @@ artifact ID       9303786754
 artifact SHA256   27150515907128f6f5e60eb21c52fc04fd2d62211797defe4a9c10d965f41b51
 ```
 
-Actual merge:
+Integration into the CUT branch:
 
 ```text
 merge commit      95dabaf2d28439d82550566d83cfb1c221c09130
 integrated tree   2486a339388f69b26bd3c32d7edb9167c29f86ac
 ```
 
-The tested PR checkout and actual integrated merge have the same tree SHA. Final CI passed strict TS, **20/20** solver/compiler/foundation tests, build, launcher self-test, **7/7** Chromium tests and artifact upload.
+The tested PR checkout and actual integrated merge have the same tree SHA. Validation passed strict TS, **20/20** solver/compiler/foundation tests, build, launcher self-test, **7/7** Chromium tests and artifact upload.
 
 Forge V0.1 now:
 
@@ -226,6 +229,39 @@ Forge V0.1 now:
 - uses fixed larger framing without camera-follow that could hide a discontinuity.
 
 First hardening head `4270162b...` failed strict TS (`acceptButton` possibly null). Strictness was not relaxed. Preserve this negative evidence.
+
+### Final promotion validation to `main`
+
+PR `#4` independently revalidated the complete CUT + Forge state against the previous accepted `main`:
+
+```text
+source head       ec4bf67817625e3c7af5333af11a91e248ef7a2e
+PR checkout       75539187597843541ed016dd4cac342d7f4900cf
+validated tree    62c1079569c093a106cdf428dfe03e4f62c7502a
+Actions run       32077284920
+artifact ID       9303957477
+artifact SHA256   f69af499f4f569c175fe3d0b20da5ba74a54ee40360919ef8f42728f6b160fbe
+```
+
+Final promotion evidence:
+
+- canonical Node `24.16.0` / npm `11.13.0`;
+- strict TypeScript PASS;
+- **20/20** solver/compiler/foundation tests PASS;
+- production build PASS;
+- manifest recorded `source=ec4bf678...`, `checkout=755391875...`, run `32077284920`;
+- packaged Windows launcher self-test PASS;
+- **7/7** real Chromium tests PASS;
+- artifact upload PASS.
+
+Actual `main` merge:
+
+```text
+merge commit      3696f884cfdb3010c91540a834ce541adab049f0
+merged tree       62c1079569c093a106cdf428dfe03e4f62c7502a
+```
+
+The actual `main` merge tree exactly equals the final tested PR merge tree. This establishes direct content identity between the final promotion gate and the promoted checkpoint.
 
 ### Provenance handshake
 
@@ -255,9 +291,9 @@ Apply the same discipline to Forge: repeated real consumers reveal durable abstr
 
 ## Immediate next direction
 
-1. Promote accepted ANVIL-01 to `main` through a final evidence-oriented PR and exact PR CI.
-2. Preserve `9c4b337...` as the owner acceptance artifact even though Forge V0.1 is now integrated later in branch history.
-3. After promotion, return to Machine Matter rather than extending CUT into a destruction roadmap.
-4. Likely next falsifier: bounded **RELATION/HINGE-like** experiment where two material structures plus a local physical property/interface cause the compiler to derive the required solver relation.
-5. Frame semantics should be earned by the physical relation that needs them, not imported abstractly from JURE.
-6. Use Forge V0.1 naturally for that next owner gate; its report provenance must be externally cross-checked by the agent after handoff.
+1. Treat live `main` as the accepted starting point for new work; do not continue from the historical CUT branch by default.
+2. Do **not** extend CUT into a destruction roadmap unless a future Machine Matter hypothesis specifically requires it.
+3. Design the next bounded falsifier around a **RELATION/HINGE-like** physical question: two material structures plus a local physical property/interface should cause compilation into the required solver relation without introducing a machine-specific compiler.
+4. Earn any frame/axis semantics from that concrete physical relation instead of importing an abstract JURE architecture phase.
+5. Use Forge V0.1 naturally for the next owner-visible gate. Cross-check its pasted provenance live on GitHub.
+6. Treat that next real field trial as the source of truth for further Forge improvements; do not add infrastructure solely because it is imaginable.
