@@ -38,6 +38,10 @@ jobs:
       - name: Build browser laboratory
         run: npm run build
 
+      - name: Validate packaged Windows owner launcher
+        shell: pwsh
+        run: ./dist/serve-anvil.ps1 -SelfTest
+
       - name: Install Chromium for runtime evidence
         run: npx playwright install --with-deps chromium
 
