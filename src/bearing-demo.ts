@@ -69,9 +69,13 @@ const baseline = compileMatter(fixture.matter);
 const compilation = compileBearing(fixture);
 const relation = compilation.relation;
 const bodyById = new Map(compilation.physicalPlan.bodies.map((body) => [body.id, body] as const));
-const bodyA = bodyById.get(relation.bodyAId);
-const bodyB = bodyById.get(relation.bodyBId);
-if (bodyA === undefined || bodyB === undefined) throw new Error("BEARING browser fixture missing compiled relation body");
+function requiredCompiledBody(bodyId: string): RigidBodyPlan {
+  const body = bodyById.get(bodyId);
+  if (body === undefined) throw new Error(`BEARING browser fixture missing compiled body ${bodyId}`);
+  return body;
+}
+const bodyA = requiredCompiledBody(relation.bodyAId);
+const bodyB = requiredCompiledBody(relation.bodyBId);
 
 const root = required<HTMLDivElement>("#app");
 document.title = "PROJECT ANVIL — BEARING";
