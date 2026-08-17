@@ -17,6 +17,7 @@ export interface RuntimeBodySnapshot {
 export interface RuntimeReceipt {
   readonly engineVersion: string;
   readonly bodyMassErrorsKg: Readonly<Record<string, number>>;
+  readonly bodyLocalCenterErrorsM: Readonly<Record<string, number>>;
 }
 
 function boxHullPoints(body: RigidBodyPlan, colliderIndex: number): number[] {
@@ -77,6 +78,7 @@ export class CollapsePhysics {
     const worldId = b3.b3CreateWorld(worldDef);
     const bodyIds = new Map<string, b3BodyId>();
     const massErrors: Record<string, number> = {};
+    const centerErrors: Record<string, number> = {};
 
     try {
       const groundDef = b3.b3DefaultBodyDef();
@@ -118,11 +120,17 @@ export class CollapsePhysics {
 
         const massData = b3.b3Body_GetMassData(bodyId);
         massErrors[body.id] = massData.mass - body.massKg;
+        centerErrors[body.id] = Math.hypot(
+          massData.center.x,
+          massData.center.y,
+          massData.center.z,
+        );
       }
 
       return new CollapsePhysics(b3, worldId, bodyIds, {
         engineVersion: `${version.major}.${version.minor}.${version.revision}`,
         bodyMassErrorsKg: massErrors,
+        bodyLocalCenterErrorsM: centerErrors,
       });
     } catch (error: unknown) {
       if (b3.b3World_IsValid(worldId)) b3.b3DestroyWorld(worldId);
