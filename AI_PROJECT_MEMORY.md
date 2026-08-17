@@ -6,7 +6,7 @@ Last grounding: 2026-08-17.
 
 - Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 - `main` was intentionally initialized from an empty public repository.
-- Active first experiment: `experiment/anvil-00-collapse`.
+- First accepted experiment: `ANVIL-00 / COLLAPSE` on `experiment/anvil-00-collapse`, pending merge when this memory update is written.
 - `main` is intended to mean the latest verified checkpoint, not an agent worktree.
 
 Always resolve live Git before changes; do not treat commit hashes in this file as moving truth.
@@ -35,7 +35,7 @@ Implemented pipeline:
 8. Removing one bridge cell is an authoring-time topology probe: intact fixture compiles to one body; edited fixture to two.
 9. A real Chromium gate runs the production bundle and exercises both states.
 
-Fixture evidence currently encoded in tests:
+Fixture evidence encoded in tests:
 
 - intact: `51 authored cells → 1 rigid body → 8 collision boxes`;
 - one-cell edit: `50 surviving authored cells → 2 rigid bodies → 9 collision boxes`;
@@ -47,6 +47,17 @@ Fixture evidence currently encoded in tests:
 - production Chromium must reach `LIVE EVIDENCE` for intact and edited states without page errors.
 
 This is **not runtime fracture**. The cut is an authoring-time recompile from a neutral fixture and does not test physical state migration across a topology transaction.
+
+## Owner acceptance
+
+On 2026-08-17 the owner manually ran the packaged CI artifact and supplied visual evidence showing:
+
+- `LIVE EVIDENCE` in the browser;
+- the edited topology state at `50 authored cells / 2 rigid bodies / 9 collision boxes`;
+- PASS for identity, rigidification, reduction and mass cross-check;
+- the runtime continuing to step under simulation.
+
+Owner feedback explicitly characterized the first build as successful and suitable to continue from. This is accepted as **owner validation of ANVIL-00 within its stated scope**, not as validation of dynamic fracture, the long-horizon ontology, or final UX/visual quality.
 
 ## Toolchain truth
 
@@ -67,13 +78,20 @@ This is **not runtime fracture**. The cut is an authoring-time recompile from a 
 
 ## Current epistemic status
 
-ANVIL-00 is **AUTOMATED-VALIDATED WITHIN ITS STATED SCOPE** on the experiment branch.
+ANVIL-00 is **AUTOMATED-VALIDATED AND OWNER-ACCEPTED WITHIN ITS STATED SCOPE**.
 
-Evidence includes strict TypeScript, deterministic semantic tests, headless real Box3D mass/COM/step tests, production Vite build, locked dependency install and a real Chromium runtime gate. This does **not** constitute owner visual acceptance, general Machine Matter validation, dynamic fracture proof, vehicle-grade physics proof or evidence that sparse cubic cells are the correct long-term representation.
+Evidence includes strict TypeScript, deterministic semantic tests, headless real Box3D mass/COM/step tests, production Vite build, locked dependency install, a real Chromium runtime gate and owner manual execution of the packaged artifact. This does **not** constitute general Machine Matter validation, dynamic fracture proof, vehicle-grade physics proof or evidence that sparse cubic cells are the correct long-term representation.
 
-## Next gates
+## Foundation direction after ANVIL-00
 
-1. Open/retain a reviewable PR from `experiment/anvil-00-collapse` to `main` with the precise evidence boundary.
-2. Provide a convenient owner-visible browser demo path; do not treat headless Chromium as owner acceptance.
-3. Owner validates whether COLLAPSE communicates the intended concept clearly enough to become the first `main` checkpoint.
-4. If accepted, the next research package should attack topology/state continuity rather than add more ontology: runtime rebuild / **ANVIL-01 CUT**.
+The next work should prepare a small reusable laboratory kernel before implementing ANVIL-01. Promote only abstractions already justified by COLLAPSE or directly required to measure topology/state continuity:
+
+1. solver-neutral authored / compiled / runtime identity and state contracts;
+2. common vector/quaternion and rigid-state types with no Box3D types leaking upward;
+3. explicit provenance helpers between authored entities and compiled bodies/colliders;
+4. runtime adapter boundary capable of snapshot/restore-oriented experiments;
+5. topology transaction and state-transfer **contracts plus measurement tools**, without pretending the transfer algorithm is solved;
+6. reusable experiment/evidence fixtures and invariant helpers;
+7. donor map and experiment protocol so later work can harvest VAW/JURE/JV without product-merging them.
+
+After this foundation is validated, the next falsifier remains **ANVIL-01 / CUT**: a moving runtime transaction from one rigid island into two with measured spatial, velocity, momentum and energy continuity.
