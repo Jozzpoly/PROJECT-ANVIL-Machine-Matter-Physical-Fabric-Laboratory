@@ -1,8 +1,6 @@
-export interface Vec3 {
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
-}
+import type { Vec3 } from "./foundation/spatial.js";
+
+export type { Vec3 } from "./foundation/spatial.js";
 
 export interface GridPosition {
   readonly x: number;
@@ -53,6 +51,8 @@ export interface RigidBodyPlan {
   readonly sourceCellIds: readonly string[];
   readonly massKg: number;
   readonly centerOfMassWorld: Vec3;
+  /** Axis-aligned diagonal for the current box-element compiler, not a universal tensor contract. */
+  readonly inertiaDiagonalKgM2: Vec3;
   readonly colliders: readonly ColliderBoxPlan[];
 }
 
