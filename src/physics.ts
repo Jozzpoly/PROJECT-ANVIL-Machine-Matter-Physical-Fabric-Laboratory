@@ -1,17 +1,30 @@
 import Box3DFactory from "box3d.js/inline";
 import type { Box3DModule, b3BodyId, b3WorldId } from "box3d.js";
 import type { MaterialDefinition, PhysicalPlan, RigidBodyPlan, Vec3 } from "./model.js";
-import type { Quat } from "./foundation/spatial.js";
-import type { PhysicsRuntime, RuntimeBodyObservation } from "./foundation/runtime.js";
+import type { Quat, RigidMotion } from "./foundation/spatial.js";
+import type { PhysicsRuntime, RuntimeBodyMotionState } from "./foundation/runtime.js";
 
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
-const SPAWN_OFFSET: Vec3 = { x: 0, y: 3.5, z: 0 };
+const DEFAULT_SPAWN_OFFSET: Vec3 = { x: 0, y: 3.5, z: 0 };
+const DEFAULT_GRAVITY: Vec3 = { x: 0, y: -10, z: 0 };
 
 export interface RuntimeReceipt {
   readonly engineVersion: string;
   readonly bodyMassErrorsKg: Readonly<Record<string, number>>;
   readonly bodyLocalCenterErrorsM: Readonly<Record<string, number>>;
+}
+
+/**
+ * Experiment/runtime construction options. Defaults preserve the accepted
+ * ANVIL-00 viewer behavior. CUT may instead construct a free runtime from an
+ * explicit solver-neutral motion state for every replacement body.
+ */
+export interface CollapsePhysicsOptions {
+  readonly gravity?: Vec3;
+  readonly includeGround?: boolean;
+  readonly spawnOffset?: Vec3;
+  readonly initialMotionByPlanBodyId?: Readonly<Record<string, RigidMotion>>;
 }
 
 /**
@@ -23,7 +36,7 @@ interface ViewerQuat extends Quat {
   readonly s: number;
 }
 
-export interface RuntimeBodySnapshot extends Omit<RuntimeBodyObservation, "rotation"> {
+export interface RuntimeBodySnapshot extends Omit<RuntimeBodyMotionState, "rotation"> {
   readonly rotation: ViewerQuat;
 }
 
@@ -45,6 +58,33 @@ function boxHullPoints(body: RigidBodyPlan, colliderIndex: number): number[] {
     }
   }
   return points;
+}
+
+function finiteVec3(value: Vec3, label: string): void {
+  if (!Number.isFinite(value.x) || !Number.isFinite(value.y) || !Number.isFinite(value.z)) {
+    throw new Error(`${label} must contain finite components`);
+  }
+}
+
+function validateMotion(motion: RigidMotion, label: string): void {
+  finiteVec3(motion.position, `${label}.position`);
+  finiteVec3(motion.linearVelocity, `${label}.linearVelocity`);
+  finiteVec3(motion.angularVelocity, `${label}.angularVelocity`);
+  const q = motion.rotation;
+  if (![q.x, q.y, q.z, q.w].every(Number.isFinite)) {
+    throw new Error(`${label}.rotation must contain finite components`);
+  }
+  const length = Math.hypot(q.x, q.y, q.z, q.w);
+  if (Math.abs(length - 1) > 1e-5) {
+    throw new Error(`${label}.rotation must be normalized`);
+  }
+}
+
+function toBox3DQuat(rotation: Quat): { v: Vec3; s: number } {
+  return {
+    v: { x: rotation.x, y: rotation.y, z: rotation.z },
+    s: rotation.w,
+  };
 }
 
 export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
@@ -69,18 +109,33 @@ export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
   static async create(
     plan: PhysicalPlan,
     materials: readonly MaterialDefinition[],
+    options: CollapsePhysicsOptions = {},
   ): Promise<CollapsePhysics> {
     const b3 = await Box3DFactory();
     const version = b3.b3GetVersion();
     if (version.major !== 0 || version.minor !== 1 || version.revision !== 0) {
       throw new Error(
-        `ANVIL-00 expects Box3D 0.1.0, got ${version.major}.${version.minor}.${version.revision}`,
+        `ANVIL expects Box3D 0.1.0, got ${version.major}.${version.minor}.${version.revision}`,
       );
     }
 
     const materialById = new Map(materials.map((material) => [material.id, material] as const));
+    const planBodyIds = new Set(plan.bodies.map((body) => body.id));
+    const initialMotion = options.initialMotionByPlanBodyId ?? {};
+    for (const [planBodyId, motion] of Object.entries(initialMotion)) {
+      if (!planBodyIds.has(planBodyId)) {
+        throw new Error(`initial motion references unknown plan body ${planBodyId}`);
+      }
+      validateMotion(motion, `initial motion ${planBodyId}`);
+    }
+
+    const gravity = options.gravity ?? DEFAULT_GRAVITY;
+    finiteVec3(gravity, "gravity");
+    const spawnOffset = options.spawnOffset ?? DEFAULT_SPAWN_OFFSET;
+    finiteVec3(spawnOffset, "spawnOffset");
+
     const worldDef = b3.b3DefaultWorldDef();
-    worldDef.gravity = { x: 0, y: -10, z: 0 };
+    worldDef.gravity = { ...gravity };
     worldDef.workerCount = 0;
     const worldId = b3.b3CreateWorld(worldDef);
     const bodyIds = new Map<string, b3BodyId>();
@@ -88,21 +143,33 @@ export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
     const centerErrors: Record<string, number> = {};
 
     try {
-      const groundDef = b3.b3DefaultBodyDef();
-      groundDef.position = { x: 0, y: -0.5, z: 0 };
-      const groundId = b3.b3CreateBody(worldId, groundDef);
-      const groundShape = b3.b3DefaultShapeDef();
-      groundShape.baseMaterial.friction = 0.8;
-      b3.b3CreateBoxShape(groundId, groundShape, 8, 0.5, 6);
+      if (options.includeGround ?? true) {
+        const groundDef = b3.b3DefaultBodyDef();
+        groundDef.position = { x: 0, y: -0.5, z: 0 };
+        const groundId = b3.b3CreateBody(worldId, groundDef);
+        const groundShape = b3.b3DefaultShapeDef();
+        groundShape.baseMaterial.friction = 0.8;
+        b3.b3CreateBoxShape(groundId, groundShape, 8, 0.5, 6);
+      }
 
       for (const body of plan.bodies) {
         const bodyDef = b3.b3DefaultBodyDef();
         bodyDef.type = b3.b3BodyType.b3_dynamicBody;
-        bodyDef.position = {
-          x: body.centerOfMassWorld.x + SPAWN_OFFSET.x,
-          y: body.centerOfMassWorld.y + SPAWN_OFFSET.y,
-          z: body.centerOfMassWorld.z + SPAWN_OFFSET.z,
-        };
+        const explicit = initialMotion[body.id];
+        if (explicit !== undefined) {
+          bodyDef.position = { ...explicit.position };
+          bodyDef.rotation = toBox3DQuat(explicit.rotation);
+          bodyDef.linearVelocity = { ...explicit.linearVelocity };
+          bodyDef.angularVelocity = { ...explicit.angularVelocity };
+          bodyDef.enableSleep = false;
+          bodyDef.isAwake = true;
+        } else {
+          bodyDef.position = {
+            x: body.centerOfMassWorld.x + spawnOffset.x,
+            y: body.centerOfMassWorld.y + spawnOffset.y,
+            z: body.centerOfMassWorld.z + spawnOffset.z,
+          };
+        }
         const bodyId = b3.b3CreateBody(worldId, bodyDef);
         bodyIds.set(body.id, bodyId);
 
@@ -162,6 +229,8 @@ export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
     return [...this.#bodyIds.entries()].map(([planBodyId, bodyId]) => {
       const position = this.#b3.b3Body_GetPosition(bodyId);
       const rotation = this.#b3.b3Body_GetRotation(bodyId);
+      const linearVelocity = this.#b3.b3Body_GetLinearVelocity(bodyId);
+      const angularVelocity = this.#b3.b3Body_GetAngularVelocity(bodyId);
       const mass = this.#b3.b3Body_GetMassData(bodyId);
       const vector = { x: rotation.v.x, y: rotation.v.y, z: rotation.v.z };
       return {
@@ -174,6 +243,16 @@ export class CollapsePhysics implements PhysicsRuntime<RuntimeBodySnapshot> {
           w: rotation.s,
           v: vector,
           s: rotation.s,
+        },
+        linearVelocity: {
+          x: linearVelocity.x,
+          y: linearVelocity.y,
+          z: linearVelocity.z,
+        },
+        angularVelocity: {
+          x: angularVelocity.x,
+          y: angularVelocity.y,
+          z: angularVelocity.z,
         },
         massKg: mass.mass,
         localCenter: { x: mass.center.x, y: mass.center.y, z: mass.center.z },
