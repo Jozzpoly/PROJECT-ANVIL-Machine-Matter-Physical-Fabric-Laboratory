@@ -1,3 +1,7 @@
+param(
+    [switch] $SelfTest
+)
+
 $ErrorActionPreference = "Stop"
 
 $Root = (Resolve-Path -LiteralPath $PSScriptRoot).Path
@@ -37,6 +41,13 @@ function Write-Response(
     $Stream.Flush()
 }
 
+if (-not (Test-Path -LiteralPath (Join-Path $Root "index.html") -PathType Leaf)) {
+    throw "ANVIL artifact is incomplete: index.html is missing."
+}
+if (-not (Test-Path -LiteralPath (Join-Path $Root "START_ANVIL_CUT.cmd") -PathType Leaf)) {
+    throw "ANVIL artifact is incomplete: START_ANVIL_CUT.cmd is missing."
+}
+
 foreach ($Port in 4173..4199) {
     $Candidate = $null
     try {
@@ -57,6 +68,12 @@ if ($null -eq $Listener -or $null -eq $SelectedPort) {
     throw "Could not open a local ANVIL validation port (4173-4199)."
 }
 
+if ($SelfTest) {
+    Write-Host "ANVIL owner artifact self-test PASS: static files present; local listener opened on port $SelectedPort."
+    $Listener.Stop()
+    exit 0
+}
+
 $Url = "http://127.0.0.1:$SelectedPort/?experiment=cut"
 Write-Host "ANVIL-01 / CUT owner validation server" -ForegroundColor Cyan
 Write-Host "Root: $Root"
@@ -68,7 +85,11 @@ Write-Host "Close this console window when validation is finished."
 Write-Host ""
 Start-Process $Url
 
-$RootPrefix = $Root.TrimEnd([char[]]@('\', '/')) + [System.IO.Path]::DirectorySeparatorChar
+$TrimChars = [char[]]@(
+    [System.IO.Path]::DirectorySeparatorChar,
+    [System.IO.Path]::AltDirectorySeparatorChar
+)
+$RootPrefix = $Root.TrimEnd($TrimChars) + [System.IO.Path]::DirectorySeparatorChar
 
 try {
     while ($true) {
