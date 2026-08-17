@@ -25,6 +25,14 @@ function Get-ContentType([string] $Path) {
     }
 }
 
+function Test-SafeEntryPath([string] $Path) {
+    if ([string]::IsNullOrWhiteSpace($Path)) { return $false }
+    if (-not $Path.StartsWith("/") -or $Path.StartsWith("//")) { return $false }
+    if ($Path.Contains("://") -or $Path.Contains("\")) { return $false }
+    if ($Path -match "[\r\n\x00]") { return $false }
+    return $true
+}
+
 function Write-Response(
     [System.Net.Sockets.NetworkStream] $Stream,
     [int] $StatusCode,
@@ -66,7 +74,7 @@ if ($ForgeManifest.schema -ne "anvil-forge-owner-gate/v2" -or $ForgeManifest.pro
 }
 
 $EntryPath = [string]$ForgeManifest.entryPath
-if (-not $EntryPath.StartsWith("/") -or $EntryPath.StartsWith("//") -or $EntryPath.Contains("://") -or $EntryPath.Contains("\") -or $EntryPath -match "[\r\n\x00]") {
+if (-not (Test-SafeEntryPath $EntryPath)) {
     throw "ANVIL artifact forge-gate.json contains an unsafe entryPath."
 }
 
@@ -91,7 +99,12 @@ if ($null -eq $Listener -or $null -eq $SelectedPort) {
 }
 
 if ($SelfTest) {
-    Write-Host "ANVIL Forge V0.2 artifact self-test PASS: $($ForgeManifest.gate) -> $EntryPath; manifest valid; static files present; local listener opened on port $SelectedPort."
+    foreach ($UnsafeEntryPath in @("//evil.example/", "https://evil.example/", "/foo\bar", "/ok`r`nInjected")) {
+        if (Test-SafeEntryPath $UnsafeEntryPath) {
+            throw "Forge entryPath self-test failed to reject: $UnsafeEntryPath"
+        }
+    }
+    Write-Host "ANVIL Forge V0.2 artifact self-test PASS: $($ForgeManifest.gate) -> $EntryPath; manifest valid; unsafe entry paths rejected; static files present; local listener opened on port $SelectedPort."
     $Listener.Stop()
     exit 0
 }
