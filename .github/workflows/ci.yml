@@ -26,6 +26,15 @@ jobs:
       - name: Install exact direct dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Export canonical dependency lock while bootstrapping
+        if: ${{ hashFiles('package-lock.json') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-package-lock
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Typecheck and run semantic + Box3D smoke tests
         run: npm run check
 
