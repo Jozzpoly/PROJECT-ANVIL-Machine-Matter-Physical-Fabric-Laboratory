@@ -14,10 +14,28 @@ Can a high-resolution authored construction retain stable identity while compili
 
 The first experiment is **ANVIL-00 / COLLAPSE**.
 
+On the active experiment branch, see [`docs/experiments/ANVIL-00-COLLAPSE.md`](docs/experiments/ANVIL-00-COLLAPSE.md) for the exact hypothesis, fixture, automated evidence and explicit non-claims.
+
+Current automated scope on the experiment branch:
+
+```text
+persistent MatterDocument
+        ↓
+deterministic rigidification
+        ↓
+mass / COM + compact collision view
+        ↓
+disposable PhysicalPlan
+        ↓
+stock Box3D 0.1.0 runtime
+```
+
+The one-cell topology edit is currently an **authoring-time recompile**, not runtime fracture.
+
 ## Evidence rule
 
 Documentation and green CI are not product or physics acceptance. Each experiment must state its hypothesis, fixture, observable evidence, limits, and verdict. Negative results are retained.
 
 ## Repository state
 
-This repository was intentionally initialized empty on 2026-08-17. `main` is reserved for verified checkpoints; active experiments should use explicit branches/PRs.
+This repository was intentionally initialized empty on 2026-08-17. `main` is reserved for verified checkpoints; active experiments use explicit branches/PRs.
