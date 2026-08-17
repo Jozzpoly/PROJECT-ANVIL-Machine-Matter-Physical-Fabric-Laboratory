@@ -1,6 +1,6 @@
 # ANVIL-00 / COLLAPSE
 
-Status: **IMPLEMENTED — automated validation in progress**
+Status: **AUTOMATED-VALIDATED WITHIN STATED SCOPE — owner acceptance pending**
 
 ## Research question
 
@@ -52,9 +52,9 @@ This asymmetric density is deliberate. A uniform fixture would make a broken cen
 
 The compaction is intentionally conservative: it may reduce the number of collision shapes, but it may not add or remove occupied authored volume and it may not merge different materials.
 
-## Expected evidence
+## Automated evidence
 
-### Semantic gates
+### Semantic gates — PASS
 
 - **Identity:** every surviving authored cell remains addressable and mapped after compilation.
 - **Topology:** intact fixture → one rigid body; one-cell bridge edit → two rigid bodies.
@@ -68,7 +68,7 @@ For the current deterministic fixture, the compiler produces:
 
 These numbers are fixture evidence, not a performance claim for general geometry.
 
-### Independent Box3D gates
+### Independent Box3D gates — PASS
 
 Box3D reconstructs mass properties from the generated convex hulls and material densities. The compiler does not write its own mass result back into Box3D.
 
@@ -78,11 +78,11 @@ For every generated body:
 - because the body origin is placed at the compiler COM, Box3D's independently computed local COM must be within `1e-5 m` of the origin;
 - after stepping the real solver under gravity, dynamic bodies must move.
 
-This cross-check is important: passing it means the high-resolution source matter and the reduced collision view agree on the physical mass distribution for this fixture.
+The canonical locked CI run passed these gates for intact and edited fixtures. This means the high-resolution source matter and reduced collision view agree on mass distribution for these fixtures within the stated tolerances.
 
-### Real browser gate
+### Real browser gate — PASS
 
-A production Vite build is opened in headless Chromium. The test requires:
+A production Vite build is opened in headless Chromium. The automated browser test passed all of the following:
 
 - no page-level runtime errors;
 - `LIVE EVIDENCE` in the intact state;
@@ -90,7 +90,7 @@ A production Vite build is opened in headless Chromium. The test requires:
 - interactive switch to the edited state;
 - 50 authored cells / 2 bodies / all UI gates passing.
 
-A successful bundle build alone is not browser evidence.
+A successful bundle build alone was not accepted as browser evidence.
 
 ## What COLLAPSE does **not** prove
 
