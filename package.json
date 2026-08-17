@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "tsc -p tsconfig.test.json && node --test .test-build/tests/compiler.test.js",
+    "test": "tsc -p tsconfig.test.json && node --test tests/compiler.test.mjs tests/physics-smoke.mjs",
     "check": "npm run typecheck && npm run test",
     "build": "vite build"
   },
