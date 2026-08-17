@@ -22,6 +22,7 @@ test("ANVIL-02 production browser derives a bearing and discriminates it from no
       viewport: { width: window.innerWidth, height: window.innerHeight },
       layout: rectOf(".layout"),
       viewportCard: rectOf(".bearing-viewport-card"),
+      panel: rectOf(".panel"),
       compare: rectOf(".bearing-compare"),
     };
   });
@@ -31,10 +32,15 @@ test("ANVIL-02 production browser derives a bearing and discriminates it from no
   }));
   console.log(JSON.stringify({ probe: "ANVIL-02/BEARING-D0-LAYOUT", layout, stageSizes }));
 
+  expect(layout.viewportCard).not.toBeNull();
+  expect(layout.panel).not.toBeNull();
+  expect(layout.viewportCard?.height ?? Infinity).toBeLessThanOrEqual(860);
+  expect(layout.panel?.height ?? Infinity).toBeLessThanOrEqual(860);
   expect(stageSizes).toHaveLength(2);
   for (const size of stageSizes) {
     expect(size.width).toBeGreaterThan(300);
     expect(size.height).toBeGreaterThan(400);
+    expect(size.height).toBeLessThan(760);
   }
 
   await page.locator("#bearing-run").click();
