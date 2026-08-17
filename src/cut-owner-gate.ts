@@ -11,7 +11,9 @@ interface ForgeManifest {
   readonly provenance: ForgeProvenance;
   readonly sourceRepository: string;
   readonly sourceSha: string;
+  readonly checkoutSha: string;
   readonly sourceRef: string;
+  readonly ciEvent: string;
   readonly ciRunId: string;
   readonly ciRunAttempt: string;
   readonly artifactName: string;
@@ -54,7 +56,9 @@ function parseManifest(value: unknown): ForgeManifest {
   const provenance = readString(value, "provenance");
   const sourceRepository = readString(value, "sourceRepository");
   const sourceSha = readString(value, "sourceSha");
+  const checkoutSha = readString(value, "checkoutSha");
   const sourceRef = readString(value, "sourceRef");
+  const ciEvent = readString(value, "ciEvent");
   const ciRunId = readString(value, "ciRunId");
   const ciRunAttempt = readString(value, "ciRunAttempt");
   const artifactName = readString(value, "artifactName");
@@ -65,11 +69,12 @@ function parseManifest(value: unknown): ForgeManifest {
   if (gate !== "ANVIL-01 / CUT") throw new Error("unexpected Forge gate identity");
   if (provenance !== "github-actions" && provenance !== "local-unverified") throw new Error("invalid Forge provenance");
   if (
-    forgeRevision === null || sourceRepository === null || sourceSha === null || sourceRef === null ||
-    ciRunId === null || ciRunAttempt === null || artifactName === null || builtAt === null
+    forgeRevision === null || sourceRepository === null || sourceSha === null || checkoutSha === null || sourceRef === null ||
+    ciEvent === null || ciRunId === null || ciRunAttempt === null || artifactName === null || builtAt === null
   ) throw new Error("Forge manifest is missing required identity fields");
   if (provenance === "github-actions") {
     if (!/^[0-9a-f]{40}$/i.test(sourceSha)) throw new Error("Forge source SHA is not an exact 40-hex commit");
+    if (!/^[0-9a-f]{40}$/i.test(checkoutSha)) throw new Error("Forge checkout SHA is not an exact 40-hex commit");
     if (!/^\d+$/.test(ciRunId) || !/^\d+$/.test(ciRunAttempt)) throw new Error("Forge CI run identity is invalid");
     if (sourceRepository !== "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory") {
       throw new Error("Forge source repository does not match PROJECT ANVIL");
@@ -84,7 +89,9 @@ function parseManifest(value: unknown): ForgeManifest {
     provenance,
     sourceRepository,
     sourceSha,
+    checkoutSha,
     sourceRef,
+    ciEvent,
     ciRunId,
     ciRunAttempt,
     artifactName,
@@ -160,8 +167,7 @@ const report = required<HTMLTextAreaElement>("#owner-report");
 const copyButton = required<HTMLButtonElement>("#owner-copy-report");
 const copyStatus = required<HTMLElement>("#owner-copy-status");
 const verdictButtons = Array.from(verdictSection.querySelectorAll<HTMLButtonElement>("[data-owner-verdict]"));
-const acceptButton = verdictSection.querySelector<HTMLButtonElement>('[data-owner-verdict="ACCEPT"]');
-if (acceptButton === null) throw new Error("CUT owner gate missing ACCEPT button");
+const acceptButton = required<HTMLButtonElement>('[data-owner-verdict="ACCEPT"]');
 
 let selectedVerdict: OwnerVerdict | null = null;
 let completedRuns = 0;
@@ -230,7 +236,9 @@ function buildReport(): string {
     `gate: ${manifest?.gate ?? "ANVIL-01 / CUT"}`,
     `source repository: ${manifest?.sourceRepository ?? "UNAVAILABLE"}`,
     `source sha: ${manifest?.sourceSha ?? "UNAVAILABLE"}`,
+    `checkout sha: ${manifest?.checkoutSha ?? "UNAVAILABLE"}`,
     `source ref: ${manifest?.sourceRef ?? "UNAVAILABLE"}`,
+    `ci event: ${manifest?.ciEvent ?? "UNAVAILABLE"}`,
     `ci run: ${manifest === null ? "UNAVAILABLE" : `${manifest.ciRunId} attempt ${manifest.ciRunAttempt}`}`,
     `artifact: ${manifest?.artifactName ?? "UNAVAILABLE"}`,
     `build provenance: ${manifest?.provenance ?? "UNAVAILABLE"}`,
@@ -347,7 +355,7 @@ evidenceObserver.observe(gatesElement, { childList: true, characterData: true, s
 
 void (async () => {
   try {
-    const response = await fetch("/forge-gate.json", { cache: "no-store" });
+    const response = await fetch("./forge-gate.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     manifest = parseManifest(await response.json());
     manifestError = null;

@@ -54,7 +54,7 @@ try {
 catch {
     throw "ANVIL artifact has an unreadable forge-gate.json: $($_.Exception.Message)"
 }
-foreach ($Field in @("schema", "project", "gate", "forgeRevision", "provenance", "sourceRepository", "sourceSha", "sourceRef", "ciRunId", "ciRunAttempt", "artifactName", "builtAt")) {
+foreach ($Field in @("schema", "project", "gate", "forgeRevision", "provenance", "sourceRepository", "sourceSha", "checkoutSha", "sourceRef", "ciEvent", "ciRunId", "ciRunAttempt", "artifactName", "builtAt")) {
     $Value = $ForgeManifest.$Field
     if ($null -eq $Value -or [string]::IsNullOrWhiteSpace([string]$Value)) {
         throw "ANVIL artifact forge-gate.json is missing required field: $Field"
@@ -92,10 +92,11 @@ if ($SelfTest) {
 
 $Url = "http://127.0.0.1:$SelectedPort/?experiment=cut"
 Write-Host "PROJECT ANVIL - Forge Owner Gate" -ForegroundColor Cyan
-Write-Host "Gate : $($ForgeManifest.gate)"
-Write-Host "Build: $($ForgeManifest.sourceSha)" -ForegroundColor Green
-Write-Host "Run  : $($ForgeManifest.ciRunId) attempt $($ForgeManifest.ciRunAttempt)"
-Write-Host "URL  : $Url"
+Write-Host "Gate    : $($ForgeManifest.gate)"
+Write-Host "Source  : $($ForgeManifest.sourceSha)" -ForegroundColor Green
+Write-Host "Checkout: $($ForgeManifest.checkoutSha)"
+Write-Host "Run     : $($ForgeManifest.ciRunId) attempt $($ForgeManifest.ciRunAttempt)"
+Write-Host "URL     : $Url"
 Write-Host ""
 Write-Host "The browser should open automatically."
 Write-Host "Close this console window when validation is finished."

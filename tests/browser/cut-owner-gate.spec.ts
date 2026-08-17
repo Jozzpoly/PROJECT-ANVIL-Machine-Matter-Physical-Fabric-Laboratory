@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const canonicalManifest = {
   schema: "anvil-forge-owner-gate/v1",
@@ -8,14 +8,16 @@ const canonicalManifest = {
   provenance: "github-actions",
   sourceRepository: "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
   sourceSha: "0123456789abcdef0123456789abcdef01234567",
+  checkoutSha: "89abcdef0123456789abcdef0123456789abcdef",
   sourceRef: "foundation/forge-cut-field-trial",
+  ciEvent: "pull_request",
   ciRunId: "123456789",
   ciRunAttempt: "1",
   artifactName: "anvil-browser-laboratory",
   builtAt: "2026-08-18T00:00:00.000Z",
 };
 
-async function routeCanonicalManifest(page: Parameters<typeof test>[0]["page"]): Promise<void> {
+async function routeCanonicalManifest(page: Page): Promise<void> {
   await page.route("**/forge-gate.json", async (route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(canonicalManifest) });
   });
@@ -53,6 +55,8 @@ test("Forge CUT gate produces a provenance-complete fail-closed owner report", a
   await expect(report).toHaveValue(/forge report validity: VALID/);
   await expect(report).toHaveValue(/forge issues: none/);
   await expect(report).toHaveValue(/source sha: 0123456789abcdef0123456789abcdef01234567/);
+  await expect(report).toHaveValue(/checkout sha: 89abcdef0123456789abcdef0123456789abcdef/);
+  await expect(report).toHaveValue(/ci event: pull_request/);
   await expect(report).toHaveValue(/ci run: 123456789 attempt 1/);
   await expect(report).toHaveValue(/artifact: anvil-browser-laboratory/);
   await expect(report).toHaveValue(/owner verdict: ACCEPT/);
@@ -95,7 +99,9 @@ test("Forge blocks ACCEPT for an unverified local build even when CUT passes", a
         provenance: "local-unverified",
         sourceRepository: "LOCAL_UNVERIFIED",
         sourceSha: "LOCAL_UNVERIFIED",
+        checkoutSha: "LOCAL_UNVERIFIED",
         sourceRef: "LOCAL_UNVERIFIED",
+        ciEvent: "LOCAL_UNVERIFIED",
         ciRunId: "LOCAL_UNVERIFIED",
         ciRunAttempt: "LOCAL_UNVERIFIED",
       }),
