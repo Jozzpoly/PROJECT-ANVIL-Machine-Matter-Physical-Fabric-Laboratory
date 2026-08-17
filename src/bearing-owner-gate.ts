@@ -1,3 +1,5 @@
+export {};
+
 type OwnerVerdict = "ACCEPT" | "REJECT" | "INCONCLUSIVE";
 type ForgeProvenance = "github-actions" | "local-unverified";
 
