@@ -9,8 +9,10 @@
   },
   "scripts": {
     "dev": "vite",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "tsc -p tsconfig.test.json && node --test tests/compiler.test.mjs tests/physics-smoke.mjs",
+    "test:browser": "playwright test",
     "check": "npm run typecheck && npm run test",
     "build": "vite build"
   },
@@ -18,6 +20,7 @@
     "box3d.js": "0.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "typescript": "7.0.2",
     "vite": "8.1.5"
   },
