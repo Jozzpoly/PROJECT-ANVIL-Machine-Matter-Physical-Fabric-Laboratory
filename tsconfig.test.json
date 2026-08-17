@@ -8,5 +8,11 @@
     "rootDir": ".",
     "types": []
   },
-  "include": ["src/model.ts", "src/compiler.ts", "src/fixture.ts", "src/physics.ts"]
+  "include": [
+    "src/model.ts",
+    "src/compiler.ts",
+    "src/fixture.ts",
+    "src/physics.ts",
+    "src/foundation/**/*.ts"
+  ]
 }
