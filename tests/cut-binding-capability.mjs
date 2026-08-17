@@ -2,7 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import Box3DFactory from "box3d.js/inline";
 
-const EPS = 1e-9;
+// Box3D stores body state in single-precision floats. The first deliberately
+// over-tight probe observed ~5.38e-9 quaternion alignment deficit. These gates
+// remain far below the physical tolerances CUT will later use while respecting
+// the actual numerical representation of the binding/solver.
+const STATE_EPS = 2e-6;
+const QUAT_ALIGNMENT_EPS = 1e-7;
 
 function assertFiniteVec3(value, label) {
   assert.ok(Number.isFinite(value.x), `${label}.x must be finite`);
@@ -37,7 +42,7 @@ function assertQuatEquivalent(actual, expected, tolerance, label) {
   assertFiniteVec3(actual.v, `${label}.v`);
   assert.ok(Number.isFinite(actual.s), `${label}.s must be finite`);
   const length = Math.hypot(actual.v.x, actual.v.y, actual.v.z, actual.s);
-  assert.ok(Math.abs(length - 1) <= 1e-7, `${label} quaternion length ${length}`);
+  assert.ok(Math.abs(length - 1) <= 2e-6, `${label} quaternion length ${length}`);
   const alignment = Math.abs(quatDot(actual, expected));
   assert.ok(1 - alignment <= tolerance, `${label} orientation mismatch ${1 - alignment}`);
 }
@@ -75,18 +80,28 @@ test("CUT binding gate round-trips pose and motion state on exact box3d.js bindi
     shapeDef.density = 640;
     b3.b3CreateBoxShape(bodyId, shapeDef, 0.45, 0.7, 0.9);
 
-    assertVec3Near(b3.b3Body_GetPosition(bodyId), initialPosition, EPS, "initial position");
-    assertQuatEquivalent(b3.b3Body_GetRotation(bodyId), initialRotation, 1e-10, "initial rotation");
+    assertVec3Near(
+      b3.b3Body_GetPosition(bodyId),
+      initialPosition,
+      STATE_EPS,
+      "initial position",
+    );
+    assertQuatEquivalent(
+      b3.b3Body_GetRotation(bodyId),
+      initialRotation,
+      QUAT_ALIGNMENT_EPS,
+      "initial rotation",
+    );
     assertVec3Near(
       b3.b3Body_GetLinearVelocity(bodyId),
       initialLinearVelocity,
-      EPS,
+      STATE_EPS,
       "initial linear velocity",
     );
     assertVec3Near(
       b3.b3Body_GetAngularVelocity(bodyId),
       initialAngularVelocity,
-      EPS,
+      STATE_EPS,
       "initial angular velocity",
     );
 
@@ -103,23 +118,28 @@ test("CUT binding gate round-trips pose and motion state on exact box3d.js bindi
     b3.b3Body_SetLinearVelocity(bodyId, replacementLinearVelocity);
     b3.b3Body_SetAngularVelocity(bodyId, replacementAngularVelocity);
 
-    assertVec3Near(b3.b3Body_GetPosition(bodyId), replacementPosition, EPS, "replacement position");
+    assertVec3Near(
+      b3.b3Body_GetPosition(bodyId),
+      replacementPosition,
+      STATE_EPS,
+      "replacement position",
+    );
     assertQuatEquivalent(
       b3.b3Body_GetRotation(bodyId),
       replacementRotation,
-      1e-10,
+      QUAT_ALIGNMENT_EPS,
       "replacement rotation",
     );
     assertVec3Near(
       b3.b3Body_GetLinearVelocity(bodyId),
       replacementLinearVelocity,
-      EPS,
+      STATE_EPS,
       "replacement linear velocity",
     );
     assertVec3Near(
       b3.b3Body_GetAngularVelocity(bodyId),
       replacementAngularVelocity,
-      EPS,
+      STATE_EPS,
       "replacement angular velocity",
     );
 
