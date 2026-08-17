@@ -19,8 +19,25 @@ const NEIGHBORS: readonly GridPosition[] = [
   { x: 0, y: 0, z: -1 },
 ];
 
+/**
+ * Experimental compile-time seam used by ANVIL-01 / CUT.
+ *
+ * A blocked pair only suppresses one otherwise implicit face-adjacency rigid
+ * connection. It is deliberately not persisted as a generic Bond/Joint model
+ * and should not be promoted beyond the current cell dialect without evidence.
+ */
+export type BlockedFaceConnection = readonly [string, string];
+
+export interface CompileMatterOptions {
+  readonly blockedFaceConnections?: readonly BlockedFaceConnection[];
+}
+
 function coordKey(position: GridPosition): string {
   return `${position.x},${position.y},${position.z}`;
+}
+
+function connectionKey(aId: string, bId: string): string {
+  return aId.localeCompare(bId) <= 0 ? `${aId}\u0000${bId}` : `${bId}\u0000${aId}`;
 }
 
 function compareCells(a: MatterCell, b: MatterCell): number {
@@ -79,7 +96,40 @@ function validateDocument(document: MatterDocument): Map<string, MaterialDefinit
   return materials;
 }
 
-function findRigidComponents(cells: readonly MatterCell[]): MatterCell[][] {
+function blockedConnectionsFor(
+  cells: readonly MatterCell[],
+  connections: readonly BlockedFaceConnection[],
+): ReadonlySet<string> {
+  if (connections.length === 0) return new Set<string>();
+
+  const byId = new Map(cells.map((cell) => [cell.id, cell] as const));
+  const blocked = new Set<string>();
+  for (const connection of connections) {
+    const [aId, bId] = connection;
+    if (aId === bId) throw new Error(`blocked face connection cannot reference one cell twice: ${aId}`);
+    const a = byId.get(aId);
+    const b = byId.get(bId);
+    if (a === undefined || b === undefined) {
+      throw new Error(`blocked face connection references unknown cell: ${aId} <-> ${bId}`);
+    }
+    const manhattanDistance =
+      Math.abs(a.grid.x - b.grid.x) +
+      Math.abs(a.grid.y - b.grid.y) +
+      Math.abs(a.grid.z - b.grid.z);
+    if (manhattanDistance !== 1) {
+      throw new Error(`blocked connection is not face-adjacent: ${aId} <-> ${bId}`);
+    }
+    const key = connectionKey(aId, bId);
+    if (blocked.has(key)) throw new Error(`duplicate blocked face connection: ${aId} <-> ${bId}`);
+    blocked.add(key);
+  }
+  return blocked;
+}
+
+function findRigidComponents(
+  cells: readonly MatterCell[],
+  blockedConnections: ReadonlySet<string>,
+): MatterCell[][] {
   const byCoord = new Map(cells.map((cell) => [coordKey(cell.grid), cell] as const));
   const unvisited = new Set(cells.map((cell) => cell.id));
   const ordered = [...cells].sort(compareCells);
@@ -97,9 +147,9 @@ function findRigidComponents(cells: readonly MatterCell[]): MatterCell[][] {
       component.push(current);
       for (const offset of NEIGHBORS) {
         const neighbor = byCoord.get(coordKey(add(current.grid, offset)));
-        if (neighbor !== undefined && unvisited.delete(neighbor.id)) {
-          queue.push(neighbor);
-        }
+        if (neighbor === undefined) continue;
+        if (blockedConnections.has(connectionKey(current.id, neighbor.id))) continue;
+        if (unvisited.delete(neighbor.id)) queue.push(neighbor);
       }
     }
     component.sort(compareCells);
@@ -256,9 +306,16 @@ function compileBody(
   };
 }
 
-export function compileMatter(document: MatterDocument): PhysicalPlan {
+export function compileMatter(
+  document: MatterDocument,
+  options: CompileMatterOptions = {},
+): PhysicalPlan {
   const materials = validateDocument(document);
-  const components = findRigidComponents(document.cells);
+  const blockedConnections = blockedConnectionsFor(
+    document.cells,
+    options.blockedFaceConnections ?? [],
+  );
+  const components = findRigidComponents(document.cells, blockedConnections);
   const bodies = components.map((component) =>
     compileBody(component, materials, document.cellSizeM),
   );
