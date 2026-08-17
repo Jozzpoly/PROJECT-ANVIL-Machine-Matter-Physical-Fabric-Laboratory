@@ -7,10 +7,11 @@ Last grounding: 2026-08-17.
 - Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 - `main` is the latest accepted checkpoint, not an agent worktree.
 - `ANVIL-00 / COLLAPSE` was owner-accepted within its stated scope and squash-merged to `main` on 2026-08-17.
-- Accepted ANVIL-00 `main` checkpoint merge: `d67d8270839d713c6f2f5b78890b0172d6afb5c0` (historical checkpoint only; always resolve live Git before changes).
-- Active preparation branch while this memory is written: `foundation/lab-kernel`.
+- Historical ANVIL-00 checkpoint merge: `d67d8270839d713c6f2f5b78890b0172d6afb5c0`.
+- The reusable laboratory foundation was validated on branch + exact PR head + post-merge `main` and squash-merged as PR #2 on 2026-08-17.
+- Historical foundation checkpoint merge: `0f35241001799c00a66629946b3252886b1a4d30`.
 
-Always resolve live Git before changes; do not treat commit hashes in this file as moving truth.
+Commit hashes here are historical checkpoint identifiers only. Always resolve live Git before changes.
 
 ## Research intent
 
@@ -84,7 +85,7 @@ Persistent-source provenance analysis independent of disposable body IDs. Compil
 - `appeared`;
 - `disappeared`.
 
-The current ANVIL-00 intact→edited comparison is correctly described as a body `split` plus one removed source ID. CUT must use a mass-preserving topology change so its primary lineage gate becomes one `split` with zero source additions/removals.
+The ANVIL-00 intact→edited comparison is correctly described as a body `split` plus one removed source ID. CUT must use a mass-preserving topology change so its primary lineage gate becomes one `split` with zero source additions/removals.
 
 ### `src/foundation/runtime.ts`
 
@@ -111,9 +112,9 @@ Stable evidence-check IDs, pass/fail state, summaries, finite numeric metrics an
 
 Stable import surface for promoted foundation modules.
 
-## Foundation validation
+## Foundation validation — ACCEPTED
 
-`tests/foundation.test.mjs` currently checks:
+`tests/foundation.test.mjs` checks:
 
 - mass-property determinism under input reordering;
 - current COLLAPSE lineage: intact→cut = `split`, reverse = `merge`, unchanged = `continued`;
@@ -121,7 +122,13 @@ Stable import surface for promoted foundation modules.
 - momentum/translational-energy primitives;
 - fail-closed evidence reports and duplicate check-ID rejection.
 
-The existing ANVIL-00 semantic tests, real Box3D smoke and Chromium gate remain regression gates while foundation is promoted. Do not describe the foundation branch as accepted until the exact PR head passes the full CI and is merged.
+Promotion validation passed at three useful levels:
+
+1. foundation branch head: strict TS, foundation + semantic tests, real Box3D smoke, production build and Chromium regression — PASS;
+2. exact PR #2 head: the same full pipeline — PASS;
+3. squash-merged `main` checkpoint `0f35241001799c00a66629946b3252886b1a4d30`: full post-merge pipeline including real Chromium — PASS.
+
+Therefore the laboratory foundation is **accepted infrastructure**, but it adds no new general physics verdict beyond ANVIL-00.
 
 ## Process foundation
 
@@ -192,9 +199,8 @@ Initial CUT gates should cover source identity, 1→2 lineage with zero source a
 
 Fixture escalation should be: translating free body → translating+rotating → gravity → contact → only then external constraints/mechanisms.
 
-## Immediate next gate
+## Next operational starting point
 
-1. Finish full CI on `foundation/lab-kernel`, including real Chromium regression of ANVIL-00.
-2. Open a focused foundation PR to `main` with no new Machine Matter physics claim.
-3. Merge only after the exact PR head is green.
-4. Start ANVIL-01 on a fresh `experiment/anvil-01-cut` branch from the accepted foundation checkpoint.
+Start ANVIL-01 on a fresh `experiment/anvil-01-cut` branch from the latest accepted `main` foundation checkpoint.
+
+First executable task is **not state transfer**. It is the Box3D binding capability probe required by CUT: prove observation and explicit initialization of neutral pose, linear velocity and angular velocity on the exact current browser binding. Only after that gate passes should the mass-preserving connectivity cut and topology transaction be implemented.
