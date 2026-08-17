@@ -5,6 +5,8 @@ if (experiment === "cut") {
     await import("./cut-demo.js");
     await import("./cut-owner-gate.js");
   })();
+} else if (experiment === "bearing") {
+  void import("./bearing-demo.js");
 } else {
   void import("./main.js");
 }
