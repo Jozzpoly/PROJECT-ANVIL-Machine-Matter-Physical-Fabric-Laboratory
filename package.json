@@ -11,7 +11,7 @@
     "dev": "vite",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "tsc -p tsconfig.test.json && node --test tests/foundation.test.mjs tests/compiler.test.mjs tests/physics-smoke.mjs tests/cut-binding-capability.mjs tests/cut-topology.test.mjs tests/cut-translation-transfer.mjs tests/cut-rotation-transfer.mjs",
+    "test": "tsc -p tsconfig.test.json && node --test tests/foundation.test.mjs tests/compiler.test.mjs tests/physics-smoke.mjs tests/cut-binding-capability.mjs tests/cut-topology.test.mjs tests/cut-translation-transfer.mjs tests/cut-rotation-transfer.mjs tests/cut-gravity-transfer.mjs",
     "test:browser": "playwright test",
     "check": "npm run typecheck && npm run test",
     "build": "vite build"
