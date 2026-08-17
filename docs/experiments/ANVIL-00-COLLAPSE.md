@@ -1,6 +1,6 @@
 # ANVIL-00 / COLLAPSE
 
-Status: **AUTOMATED-VALIDATED WITHIN STATED SCOPE — owner acceptance pending**
+Status: **ACCEPTED — automated validation + owner manual validation within stated scope**
 
 ## Research question
 
@@ -52,9 +52,9 @@ This asymmetric density is deliberate. A uniform fixture would make a broken cen
 
 The compaction is intentionally conservative: it may reduce the number of collision shapes, but it may not add or remove occupied authored volume and it may not merge different materials.
 
-## Automated evidence
+## Automated evidence — PASS
 
-### Semantic gates — PASS
+### Semantic gates
 
 - **Identity:** every surviving authored cell remains addressable and mapped after compilation.
 - **Topology:** intact fixture → one rigid body; one-cell bridge edit → two rigid bodies.
@@ -68,19 +68,19 @@ For the current deterministic fixture, the compiler produces:
 
 These numbers are fixture evidence, not a performance claim for general geometry.
 
-### Independent Box3D gates — PASS
+### Independent Box3D gates
 
 Box3D reconstructs mass properties from the generated convex hulls and material densities. The compiler does not write its own mass result back into Box3D.
 
 For every generated body:
 
-- Box3D mass must agree with compiler mass within 0.05 kg;
-- because the body origin is placed at the compiler COM, Box3D's independently computed local COM must be within `1e-5 m` of the origin;
-- after stepping the real solver under gravity, dynamic bodies must move.
+- Box3D mass agrees with compiler mass within 0.05 kg;
+- because the body origin is placed at the compiler COM, Box3D's independently computed local COM is within `1e-5 m` of the origin;
+- after stepping the real solver under gravity, dynamic bodies move.
 
-The canonical locked CI run passed these gates for intact and edited fixtures. This means the high-resolution source matter and reduced collision view agree on mass distribution for these fixtures within the stated tolerances.
+The canonical locked CI run passed these gates for intact and edited fixtures. Within this fixture, the high-resolution source matter and reduced collision view therefore agree on mass distribution within the stated tolerances.
 
-### Real browser gate — PASS
+### Real browser gate
 
 A production Vite build is opened in headless Chromium. The automated browser test passed all of the following:
 
@@ -91,6 +91,17 @@ A production Vite build is opened in headless Chromium. The automated browser te
 - 50 authored cells / 2 bodies / all UI gates passing.
 
 A successful bundle build alone was not accepted as browser evidence.
+
+## Owner manual gate — PASS (2026-08-17)
+
+The owner ran the packaged browser artifact produced from the validated PR build and supplied screenshots showing:
+
+- `LIVE EVIDENCE`;
+- edited state at `50 authored cells / 2 rigid bodies / 9 collision boxes`;
+- PASS for identity, rigidification, reduction and mass cross-check;
+- the Box3D runtime continuing to move under simulation after the topology probe.
+
+Owner feedback accepted this as a successful first build and requested transition into fundamental reusable preparation. This closes the COLLAPSE owner gate **only within the scope defined by this document**.
 
 ## What COLLAPSE does **not** prove
 
@@ -104,8 +115,7 @@ It does not prove:
 - vehicle-grade behavior;
 - usefulness of a generic SurfaceLaw;
 - superiority of sparse cells over graph, lattice, SDF, adaptive cells or hybrid representations;
-- that one ontology can span every future ANVIL domain;
-- owner visual/product acceptance.
+- that one ontology can span every future ANVIL domain.
 
 The current one-cell cut is an authoring-time recompile from a neutral fixture. Calling it dynamic destruction would be false.
 
@@ -117,7 +127,13 @@ The current one-cell cut is an authoring-time recompile from a neutral fixture. 
 - **Native JV** proves our wider project ecosystem is already capable of evidence-driven Box3D core modification (`b3Wheel` and dedicated collision paths). That capability is deliberately not used in COLLAPSE because stock Box3D is sufficient for this hypothesis.
 - **JES / HomeScan / Splat / Planet Matter** reinforce creator-loop, truth-boundary and representation-separation requirements, but they do not need to be merged into this experiment.
 
-## Next falsifier if accepted
+## Verdict
+
+**SUPPORTED FOR THIS FIXTURE.** Persistent authored cell identity, rigidification, independently reduced collision representation and disposable stock-Box3D lowering coexist without persisting runtime physics identity into authored truth.
+
+The result is strong enough to promote the demonstrated boundaries into a small reusable laboratory foundation. It is not strong enough to promote sparse cells, rigid face bonding, or any fracture/state-transfer behavior into universal ANVIL doctrine.
+
+## Next falsifier
 
 **ANVIL-01 / CUT** should attack the strongest unproven assumption: can a moving runtime be transactionally recompiled from one rigid island into two while preserving authored identity, spatial continuity and physically sensible state?
 
