@@ -20,7 +20,11 @@ interface ForgeManifest {
   readonly builtAt: string;
 }
 
-const REQUIRED_METRICS = ["source-count", "body-count", "source-delta"] as const;
+const EXPECTED_METRICS = {
+  "source-count": "51 → 51",
+  "body-count": "1 → 2",
+  "source-delta": "0 / 0",
+} as const;
 const REQUIRED_GATES = [
   "identity",
   "topology",
@@ -127,10 +131,10 @@ intro.innerHTML = `
   <ol class="owner-steps">
     <li><strong>RUN CUT</strong> — obserwuj przede wszystkim chwilę 1 → 2.</li>
     <li><strong>RESET</strong> — powtórz, jeśli chcesz sprawdzić ciągłość jeszcze raz.</li>
-    <li>Wybierz werdykt i skopiuj raport. Forge samo dołączy tożsamość builda i evidence.</li>
+    <li>Wybierz werdykt i skopiuj raport. Forge dołączy tożsamość builda i evidence; agent sprawdzi ją potem live na GitHub.</li>
   </ol>
   <p class="owner-hint">Automatyczne PASS nie jest Twoim ACCEPT. Forge zablokuje ACCEPT, jeżeli build albo wymagane evidence są niepełne.</p>
-  <p id="forge-build-state" class="forge-build-state">BUILD IDENTITY · VERIFYING…</p>
+  <p id="forge-build-state" class="forge-build-state">BUILD IDENTITY · READING…</p>
 `;
 panel.insertBefore(intro, transactionSection);
 
@@ -178,15 +182,16 @@ let manifestError: string | null = "manifest not loaded";
 const sessionId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `session-${Date.now()}`;
 
 function metricText(id: string): string | null {
-  const element = document.querySelector<HTMLElement>(`#metric-${id}`);
-  const text = element?.textContent?.trim();
+  const elements = metricsElement.querySelectorAll<HTMLElement>(`[id="metric-${id}"]`);
+  if (elements.length !== 1) return null;
+  const text = elements[0]?.textContent?.trim();
   return text && text.length > 0 ? text : null;
 }
 
 function gatePass(id: string): boolean | null {
-  const element = document.querySelector<HTMLElement>(`[data-gate="${id}"]`);
-  if (element === null) return null;
-  const value = element.dataset.pass;
+  const elements = gatesElement.querySelectorAll<HTMLElement>(`[data-gate="${id}"]`);
+  if (elements.length !== 1) return null;
+  const value = elements[0]?.dataset.pass;
   if (value === "true") return true;
   if (value === "false") return false;
   return null;
@@ -201,15 +206,25 @@ function automatedEvidenceLabel(): string {
 
 function forgeIssues(): string[] {
   const issues: string[] = [];
-  if (manifest === null) issues.push(`provenance unavailable: ${manifestError ?? "unknown error"}`);
-  else if (manifest.provenance !== "github-actions") issues.push("build provenance is local/unverified, not a canonical GitHub Actions artifact");
+  if (manifest === null) issues.push(`embedded provenance unavailable: ${manifestError ?? "unknown error"}`);
+  else if (manifest.provenance !== "github-actions") issues.push("embedded provenance is local/unverified, not a canonical GitHub Actions claim");
 
   const terminal = automatedEvidenceLabel();
   if (terminal === "PASS" || terminal === "FAIL") {
-    for (const id of REQUIRED_METRICS) if (metricText(id) === null) issues.push(`missing required metric: ${id}`);
-    for (const id of REQUIRED_GATES) if (gatePass(id) === null) issues.push(`missing required gate: ${id}`);
-    if (terminal === "PASS") {
-      for (const id of REQUIRED_GATES) if (gatePass(id) === false) issues.push(`status says PASS but gate failed: ${id}`);
+    for (const [id, expected] of Object.entries(EXPECTED_METRICS)) {
+      const actual = metricText(id);
+      if (actual === null) issues.push(`missing or duplicate required metric: ${id}`);
+      else if (actual !== expected) issues.push(`required metric mismatch: ${id} = ${actual}; expected ${expected}`);
+    }
+
+    const gateRows = gatesElement.querySelectorAll<HTMLElement>("[data-gate]");
+    if (gateRows.length !== REQUIRED_GATES.length) {
+      issues.push(`required gate set size mismatch: ${gateRows.length}; expected ${REQUIRED_GATES.length}`);
+    }
+    for (const id of REQUIRED_GATES) {
+      const pass = gatePass(id);
+      if (pass === null) issues.push(`missing, duplicate or invalid required gate: ${id}`);
+      else if (terminal === "PASS" && !pass) issues.push(`status says PASS but gate failed: ${id}`);
     }
   }
   return issues;
@@ -227,7 +242,7 @@ function buildReport(): string {
   const passedGates = REQUIRED_GATES.filter((id) => gatePass(id) === true).length;
   return [
     "FORGE OWNER REPORT",
-    `forge report validity: ${issues.length === 0 ? "VALID" : "INVALID"}`,
+    `forge report integrity: ${issues.length === 0 ? "PASS" : "FAIL"}`,
     `forge issues: ${issues.length === 0 ? "none" : issues.join(" | ")}`,
     `forge schema: ${manifest?.schema ?? "UNAVAILABLE"}`,
     `forge revision: ${manifest?.forgeRevision ?? "UNAVAILABLE"}`,
@@ -241,7 +256,8 @@ function buildReport(): string {
     `ci event: ${manifest?.ciEvent ?? "UNAVAILABLE"}`,
     `ci run: ${manifest === null ? "UNAVAILABLE" : `${manifest.ciRunId} attempt ${manifest.ciRunAttempt}`}`,
     `artifact: ${manifest?.artifactName ?? "UNAVAILABLE"}`,
-    `build provenance: ${manifest?.provenance ?? "UNAVAILABLE"}`,
+    `embedded provenance: ${manifest?.provenance ?? "UNAVAILABLE"}`,
+    "external provenance check: REQUIRED AFTER HANDOFF",
     `built at: ${manifest?.builtAt ?? "UNAVAILABLE"}`,
     `owner verdict: ${verdict}`,
     `observed CUT runs: ${completedRuns}`,
@@ -278,8 +294,14 @@ function clearDecision(): void {
 function refreshDecisionAvailability(): void {
   const terminal = automatedEvidenceLabel();
   const finished = terminal === "PASS" || terminal === "FAIL";
+  const acceptAllowed = canonicalAcceptAllowed();
   for (const button of verdictButtons) button.disabled = !finished;
-  if (!canonicalAcceptAllowed()) acceptButton.disabled = true;
+  if (!acceptAllowed) acceptButton.disabled = true;
+
+  if (selectedVerdict === "ACCEPT" && !acceptAllowed) {
+    clearDecision();
+    copyStatus.textContent = "Poprzedni ACCEPT anulowany, bo wymagane evidence przestało być kompletne/spójne.";
+  }
 
   if (!finished) return;
   const issues = forgeIssues();
@@ -339,7 +361,7 @@ copyButton.addEventListener("click", async () => {
   if (report.value.length === 0) return;
   try {
     await navigator.clipboard.writeText(report.value);
-    copyStatus.textContent = "Skopiowane — wklej raport do rozmowy.";
+    copyStatus.textContent = "Skopiowane — wklej raport do rozmowy; agent sprawdzi build/run live na GitHub.";
   } catch {
     report.focus();
     report.select();
@@ -360,8 +382,8 @@ void (async () => {
     manifest = parseManifest(await response.json());
     manifestError = null;
     if (manifest.provenance === "github-actions") {
-      buildState.textContent = `BUILD VERIFIED · ${manifest.sourceSha.slice(0, 12)} · RUN ${manifest.ciRunId}`;
-      buildState.classList.add("verified");
+      buildState.textContent = `BUILD IDENTIFIED · ${manifest.sourceSha.slice(0, 12)} · RUN ${manifest.ciRunId} · external check after report`;
+      buildState.classList.add("identified");
     } else {
       buildState.textContent = "BUILD UNVERIFIED · local build · ACCEPT disabled";
       buildState.classList.add("blocked");
