@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 title PROJECT ANVIL - CUT owner validation
 echo PROJECT ANVIL - ANVIL-01 / CUT
-echo Starting the validated local browser artifact...
+echo Starting the owner validation build...
 echo.
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0serve-anvil.ps1"
 if errorlevel 1 (
