@@ -2,11 +2,9 @@
 
 Status: **OWNER ACCEPTED FOR THE BOUNDED CUT CLAIM**
 
-This file records Evidence Class **E — Owner Manual Validation**. Owner acceptance is tied to the exact artifact that was actually inspected; later Forge/tooling changes do not retroactively redefine that evidence.
+This file records Evidence Class **E — Owner Manual Validation**. Owner acceptance is tied to the exact artifact actually inspected. Later Forge/tooling work cannot retroactively redefine that evidence.
 
 ## Exact owner-tested artifact — canonical acceptance evidence
-
-The owner tested this exact package:
 
 - branch: `experiment/anvil-01-cut`;
 - source/package head: `9c4b3372ad60e20ade2d7d9a31dd373a356263d0`;
@@ -16,7 +14,7 @@ The owner tested this exact package:
 - artifact SHA-256: `34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40`;
 - artifact expiry: `2026-08-31T21:58:49Z`.
 
-CI for that exact head passed locked dependency installation, strict TypeScript and solver/compiler/foundation tests, production build, packaged Windows launcher self-test, real Chromium evidence, and artifact upload.
+That exact head passed locked dependency installation, strict TypeScript and solver/compiler/foundation tests, production build, packaged Windows launcher self-test, real Chromium evidence and artifact upload.
 
 ### Real owner environment and verdict
 
@@ -30,32 +28,24 @@ Owner report received 2026-08-17:
 - source add/remove: `0 / 0`;
 - viewport: `1920×911 @ DPR 1`;
 - browser: Chrome `151` on Windows 10;
-- screenshot and screen recording were supplied as additional visual evidence in the owner conversation.
+- screenshot and screen recording supplied in the owner conversation.
 
-Owner observation, paraphrased: the visualization visibly begins with one runtime COM marker and after the split has two; the event was repeated multiple times. Review of the supplied recording did not reveal an obvious whole-scene reset, large teleport, full stop, explosive velocity jump, disappearing matter, or immediate post-split numerical runaway. A 30 FPS recording is not evidence that sub-frame or microscopic numerical errors are absent; the numeric gates cover that class of evidence.
+Review of the recording did not reveal an obvious whole-scene reset, large teleport, full stop, explosive velocity jump, disappearing source matter or immediate post-split runaway. A 30 FPS recording is not evidence that microscopic/sub-frame numerical error is absent; numeric gates cover that class of evidence.
 
-**Acceptance conclusion:** the manual gate is satisfied for the experiment's declared bounded claim. Repeating the same owner test is not required merely to accumulate more repetitions.
+**Owner gate conclusion:** satisfied for the declared bounded claim. Repeating the same CUT simply to accumulate repetitions is unnecessary.
 
 ## What was accepted
 
-The tested production-browser path demonstrates, for the bounded deterministic fixture:
+For the deterministic browser fixture:
 
 1. one moving + rotating Box3D runtime body is warmed up in the real solver;
-2. the same 51 persistent authored cells survive a topology change;
-3. the disposable runtime changes `1 body → 2 bodies` at a solver-step boundary;
-4. replacement body state is initialized from the tested rigid velocity field;
-5. eight browser falsification gates pass:
-   - persistent source identity;
-   - mass-preserving 1→2 split;
-   - nontrivial rotating fixture;
-   - runtime mass continuity;
-   - child pose continuity;
-   - rigid velocity field;
-   - total linear momentum;
-   - post-transaction solver step;
-6. the two replacement bodies remain live and visibly simulated after the transaction.
+2. the same 51 persistent authored cells survive the topology change;
+3. disposable runtime changes `1 body → 2 bodies` at a solver-step boundary;
+4. replacement state uses the tested rigid velocity-field transfer;
+5. eight browser falsification gates pass: identity, topology, rotation sensitivity, mass, pose, rigid velocity field, total linear momentum and post-transaction solver step;
+6. both replacement bodies remain live after the transaction.
 
-Owner ACCEPT means the manual behavior was acceptable **within this scope**. It is not a blanket approval of future CUT variants or Forge versions.
+Owner ACCEPT is scoped to this fixture/artifact. It is not blanket approval of future CUT variants or Forge versions.
 
 ## Evidence boundary
 
@@ -65,55 +55,82 @@ The accepted result still does **not** demonstrate:
 - migration of Box3D contact-manifold internals;
 - external joint/constraint state transfer;
 - arbitrary cut surfaces/topologies or fracture geometry;
-- damage propagation, toughness, debris, plasticity;
+- damage propagation, toughness, debris or plasticity;
 - deformable/compliant matter;
 - full angular-momentum or rotational-energy conservation for arbitrary rotated matter;
 - a generic Bond/Joint/Constraint ontology.
 
 CUT remains a continuity experiment, not a destruction roadmap.
 
-## Forge V0.1 hardening after owner acceptance
+## Forge V0.1 — hardening learned from the real owner gate
 
-The first real owner test also exposed validation-workflow weaknesses in Forge V0:
+The first Forge V0 field trial succeeded end-to-end on the owner's Windows machine but exposed real evidence-workflow defects:
 
-- reports did not identify the exact source/build/run;
-- missing DOM evidence could fall back to expected successful text;
+- report lacked exact source/build/run identity;
+- missing DOM evidence could fall back to expected successful strings;
 - ACCEPT was not structurally guarded against incomplete provenance/evidence;
-- only the happy report path had a browser test;
-- the launcher did not validate a package manifest;
-- the fixture was unnecessarily small in the fixed viewport.
+- coverage was predominantly happy-path;
+- launcher did not validate a package identity manifest;
+- CUT framing was visually small.
 
-These are tooling/evidence defects, not failures of the already accepted CUT transaction.
+Forge V0.1 fixes these without changing CUT transfer physics, thresholds, compiler semantics or Box3D transaction logic.
 
-They are addressed separately on:
+### Integrated Forge V0.1 checkpoint
 
-- branch: `foundation/forge-cut-field-trial`;
-- draft PR: `#3`;
-- validated proposal head before this documentation grounding: `fbe08910f9ac5423b89210b80541b38a7f4ce432`;
-- PR CI run: `32076544898`;
-- artifact ID: `9303653778`;
-- artifact SHA-256: `2773c2aa324613bb682dd2296bf4e1356c4be06a8567b9e376206ce82a75b8e9`.
+Hardening was developed on `foundation/forge-cut-field-trial` and merged by PR `#3` into `experiment/anvil-01-cut`.
 
-That run passed:
+Latest exact pre-merge validation:
+
+```text
+proposal head     0f8533a7641608960dc504642644664cf5f9f8ec
+PR checkout       04a59b56f9bbc42e8c8b87f819ed342662e1d3bf
+validated tree    2486a339388f69b26bd3c32d7edb9167c29f86ac
+Actions run       32076959012
+artifact ID       9303786754
+artifact SHA256   27150515907128f6f5e60eb21c52fc04fd2d62211797defe4a9c10d965f41b51
+```
+
+The actual integration merge is:
+
+```text
+experiment head   95dabaf2d28439d82550566d83cfb1c221c09130
+integrated tree   2486a339388f69b26bd3c32d7edb9167c29f86ac
+```
+
+The PR checkout and actual merge therefore have the **same Git tree SHA**. The exact content integrated into the CUT branch is the content that passed the final PR CI; only commit identity/parents differ.
+
+Final PR #3 validation passed:
 
 - strict TypeScript;
 - **20/20** solver/compiler/foundation tests;
 - production Vite build;
-- CI-generated `forge-gate.json` provenance (`source SHA`, actual checkout SHA, ref, event, run, artifact name);
+- CI-generated `forge-gate.json` recording proposal source SHA and actual checkout SHA separately;
 - packaged PowerShell/.NET launcher manifest self-test;
-- **5/5** real Chromium tests, including deliberate negative cases where required evidence disappears or provenance is local/unverified;
+- **7/7** real Chromium tests;
 - artifact upload.
 
-Forge V0.1 therefore has **automated support as a field-trial candidate**. It is not yet owner-accepted as a mature validation system and is not a universal cross-project framework.
+Negative browser gates explicitly prove:
 
-### Forge V0.1 policy
+- missing required metric → ACCEPT disabled and evidence becomes unavailable/failing;
+- wrong required metric value → ACCEPT disabled;
+- if evidence becomes inconsistent after ACCEPT, the selected ACCEPT is revoked and copy disabled;
+- duplicate/corrupted required gate set → ACCEPT disabled;
+- local/unverified embedded provenance → ACCEPT disabled.
 
-For owner acceptance from a canonical package:
+The first hardening implementation at `4270162b...` correctly failed strict TypeScript (`acceptButton` possibly null). Strictness was not weakened; implementation was fixed and revalidated. Preserve that negative evidence.
 
-- required evidence must exist; missing evidence is `UNAVAILABLE/INVALID`, never a successful fallback;
-- canonical `ACCEPT` is disabled unless automated CUT status is PASS, all required gates are present, and build provenance is a GitHub Actions artifact;
-- `REJECT` and `INCONCLUSIVE` remain possible when evidence/provenance is broken;
-- the owner report includes exact source SHA, actual CI checkout SHA, source ref, CI event/run, artifact name, Forge revision, session ID, browser, viewport and timestamp;
-- local development builds are useful for engineering but cannot masquerade as canonical owner acceptance packages.
+### Provenance model — deliberately two-sided
 
-The next useful validation of Forge itself should come naturally from the next real ANVIL owner gate rather than by repeatedly re-testing accepted CUT only to validate tooling polish.
+`forge-gate.json` is an **embedded identity claim**, not a cryptographic trust root. Therefore Forge says `BUILD IDENTIFIED`, not `BUILD VERIFIED`.
+
+Owner-side flow:
+
+1. Forge loads the embedded source SHA/ref, CI event/run, checkout SHA, artifact name and Forge revision;
+2. local integrity gates must be complete and consistent before ACCEPT can be selected;
+3. the report explicitly says `external provenance check: REQUIRED AFTER HANDOFF`;
+4. owner pastes the report into the project conversation;
+5. agent cross-checks the reported run/SHA/artifact live on GitHub and obtains GitHub's artifact digest.
+
+This gives exact provenance without asking the owner to read Actions, SHA or artifact metadata manually.
+
+Forge V0.1 status is **AUTOMATED-VALIDATED FIELD-TRIAL BASELINE**. It has not yet earned the claim of a mature universal validation system. Its next useful real test should happen naturally on the next ANVIL owner gate, not by repeatedly rerunning accepted CUT just to test Forge itself.
