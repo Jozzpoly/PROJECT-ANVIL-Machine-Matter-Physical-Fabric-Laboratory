@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last strategic grounding: 2026-08-18. Accepted material truth is through **ANVIL-08 / COMPLIANCE-RESOLUTION**. No next experiment is active yet.
+Last strategic grounding: 2026-08-19. Accepted material truth is through **ANVIL-08 / COMPLIANCE-RESOLUTION**. **ANVIL-09 / ACTIVATE** now has a frozen preflight on Draft PR #14 but no executable result yet.
 
 ## Identity and authority
 
@@ -94,41 +94,36 @@ Do not reinterpret exact candidate equality as continuum convergence. The accept
 
 ## Promotion / abstraction stance
 
-Keep all of the following experiment-local:
-
-- `NormalCompliancePatch`;
-- its current area-normalized coefficient names;
-- ANVIL-08 relation/compilation schemas;
-- ANVIL-07 compatibility adapter used by ANVIL-08 runtime;
-- 4-authored-patches → 1-runtime-relation aggregation.
-
-Do **not** promote a generic compliant surface/property field, Bond or Relation into `src/foundation` from ANVIL-08 alone.
+Keep all ANVIL-07/08 compliant source/relation schemas experiment-local. Do **not** promote a generic compliant surface/property field, Bond or Relation into `src/foundation` from ANVIL-08 alone.
 
 ANVIL-08 does not prove arbitrary resolution invariance, shear/bending/torsion, rotationally free distributed compliance, heterogeneous patches, contact-loaded compliance, damage/plasticity, compliant REBIND, transient control, signals or power.
 
-## Current strategic frontier
+## Active frontier — ANVIL-09 / ACTIVATE
 
-No experiment is active. The planned representation/scaling challenge is complete, so the Research Compass composition rule now applies.
+Draft PR: **#14**  
+Branch: `experiment/anvil-09-activate`  
+Frozen preflight source: `d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70`  
+Status: **FROZEN BEFORE IMPLEMENTATION / NO EXECUTABLE RESULT YET**.
 
-Ranked horizon:
+The primary falsifier is deliberately narrow: one unchanged persistent local TORQUE-PATCH with signed `+100 N*m` effort is compiled once, while runtime-only binary activation switches `OFF -> ON -> OFF`. OFF means no active torque, not braking or target-zero-speed. A fresh runtime from the same persistent compilation must default OFF.
 
-1. **ACTIVATE** — leading strategic candidate. Test transient control over already-earned persistent local function/mechanical semantics, preferably by driving existing TORQUE/TORQUE-PATCH through BEARING without mutating construction truth or leaking Box3D motor/control state into authored ontology.
-2. compliant **REBIND / continuity** — later, unless new evidence raises it above composition.
+Important correction from preflight design: **no transient reverse command**. Signed `effortNm` remains persistent authored meaning; ANVIL-09 does not reinterpret it as a bidirectional capacity/rating.
 
-Do not add another isolated compliance primitive/resolution merely because the previous experiment was green.
+Activation must remain experiment-local runtime state. It must not enter authored Matter/TorquePatch, persistent compiled schemas, foundation or Box3D motor ontology.
 
 ## Exact next action
 
-Prepare, but do not yet implement, the ACTIVATE composition falsifier:
+Execute **Micro A/B only** on Draft PR #14:
 
-- distinguish persistent function/construction semantics from transient command/control state;
-- define the smallest activation lifecycle (off/on, command sign/magnitude, reset/restart meaning) that can produce a discriminating result;
-- reuse accepted TORQUE/TORQUE-PATCH causal mechanics where possible instead of inventing a new actuator;
-- decide how transient state is supplied without becoming persistent matter identity;
-- design negative controls proving zero command leaves persistent function inert and reversed command reverses causal response;
-- explicitly prevent authored Box3D motor IDs/settings from entering truth;
-- freeze quantitative gates and non-claims before implementation;
-- only then create/activate the next experiment.
+- implement the smallest experiment-local OFF/ON activation boundary around the accepted TORQUE-PATCH compilation;
+- preserve source and compilation immutability and reuse one compiled object;
+- default runtime to OFF and fail closed outside OFF/ON;
+- do not use Box3D revolute motor state, velocity setters or runtime IDs as control semantics;
+- do not modify `src/foundation` or reinterpret accepted TORQUE/TORQUE-PATCH;
+- run Draft/core validation;
+- stop for checkpoint before real-solver C0-C3.
+
+Later, only if A/B remains clean: execute frozen C0-C3 OFF/ON/OFF versus continued-ON real-solver control, then C4 reconstructed-default-OFF lifecycle probe, then meso audit and stop if the bounded question is resolved.
 
 ## Process boundaries
 
