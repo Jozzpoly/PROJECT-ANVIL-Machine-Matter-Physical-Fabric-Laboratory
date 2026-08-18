@@ -12,35 +12,42 @@
     "pr": 12,
     "branch": "experiment/anvil-07-elastic-seam",
     "baseAtFreeze": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
-    "checkpointHead": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
-    "phase": "draft-pre-c0",
-    "evidenceBoundary": "capability-only",
+    "preC0CheckpointHead": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
+    "checkpointHead": "1a31a69096f48d2eccb08ba88d683607f15d0ce3",
+    "phase": "draft-c0-supported-for-fixture",
+    "activeVerdict": "SUPPORTED FOR FIXTURE",
+    "evidenceBoundary": "A+B+C real-solver C0 on frozen one-dimensional fixture; active and unaccepted",
     "readyForPromotion": false,
-    "physicsC0Implemented": false,
-    "physicsC0Executed": false
+    "physicsC0Implemented": true,
+    "physicsC0Executed": true
   },
   "frozenResearch": {
     "preflight": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT.md",
     "preflightAmendment": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT-AMENDMENT-01.md",
     "capabilitySource": "58c4580702d4604f2effcdc501cde09d796becea",
     "capabilityRun": 32151014026,
-    "preC0HardeningRun": 32159805481
+    "preC0HardeningSource": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
+    "preC0HardeningRun": 32159805481,
+    "c0Source": "1a31a69096f48d2eccb08ba88d683607f15d0ce3",
+    "c0Run": 32166041812,
+    "c0Suite": "42/42 PASS + production build PASS"
   },
-  "nextAction": "Verify live takeover state, then implement only the frozen RIGID / ELASTIC / FREE ANVIL-07 C0 on the existing Draft branch.",
-  "doNotDoBeforeC0": [
-    "mark PR #12 Ready",
-    "merge PR #12",
-    "change frozen gates merely to obtain PASS",
-    "add Chromium, Forge, or owner validation ceremony",
-    "add breakage, plasticity, TORQUE, ACTIVATE, contacts, or generic Bond architecture",
-    "promote ELASTIC-SEAM into foundation"
+  "nextAction": "Stop ANVIL-07 C0 enrichment. Run the bounded Research Compass reassessment required by the frozen preflight, then decide whether any Ready/candidate evidence is genuinely justified before promotion.",
+  "doNotDoNow": [
+    "treat ANVIL-07 as accepted project truth",
+    "mark PR #12 Ready or merge it merely because C0 is green",
+    "change the frozen C0 gates after seeing the result",
+    "add breakage, plasticity, TORQUE, ACTIVATE, contacts, or generic Bond architecture to ANVIL-07 C0",
+    "promote ELASTIC-SEAM into foundation without an explicit promotion decision",
+    "confuse the earlier weld-spring capability precheck with the later C0 physics evidence"
   ],
   "takeoverVerification": [
     "resolve live main",
     "resolve PR #12 state and live head",
-    "compare live main with accepted.materialCheckpoint and classify the delta",
-    "compare active branch with live main / merge-base",
+    "verify C0 source 1a31a69096f48d2eccb08ba88d683607f15d0ce3 and run 32166041812",
+    "compare live main with accepted.materialCheckpoint and classify later docs/meta grounding separately from material truth",
+    "compare active branch with live main / merge-base without rebasing for aesthetics",
     "read both frozen ANVIL-07 preflight documents from the active branch",
-    "verify capability evidence is not being mistaken for C0 physics evidence"
+    "keep capability evidence distinct from real-solver C0 physics evidence"
   ]
 }
