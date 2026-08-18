@@ -1,80 +1,96 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-08 ACCEPTED / ANVIL-09 ACTIVATE DRAFT SCIENCE SUPPORTED — AWAITING READY CANDIDATE**
+Status: **ANVIL-09 / ACTIVATE PROMOTED — POST-PROMOTION GROUNDED / NO ACTIVE EXPERIMENT**
 
 Live Git and executable evidence override this pointer if they differ.
 
 ## Start here
 
 1. Resolve live `main` before writing.
-2. Accepted material truth is still through **ANVIL-08 / COMPLIANCE-RESOLUTION**.
-3. Active unaccepted experiment is **ANVIL-09 / ACTIVATE**, PR **#14**, branch `experiment/anvil-09-activate`.
-4. Expected active source after the C4 checkpoint: `d0b8b95e345781d21c5296751dcccbba1d30522e`.
-5. Original frozen preflight: `docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT.md`, source `d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70`.
-6. Evidence-driven correction: `docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT-AMENDMENT-01.md`.
-7. Do not call ANVIL-09 accepted yet. Draft science is supported; Ready candidate qualification and promotion remain outstanding.
+2. Accepted material truth is through **ANVIL-09 / ACTIVATE**.
+3. Material checkpoint: `a024c8cb134aabe0033ea2990068e6479c3da2b5`.
+4. Canonical ANVIL-09 evidence: `docs/experiments/ANVIL-09-ACTIVATE-EVIDENCE.md`.
+5. Evidence grounding checkpoint: `3da72fadec5cd145a8be149bacd12084c8d4fcde`.
+6. No experiment, PR or branch is currently active for new research.
+7. The next action is a fresh post-promotion Research Compass audit. **Active command/function continuity through REBIND is only the current leading hypothesis, not a frozen or active ANVIL-10.**
 
-## Draft evidence checkpoint
-
-```text
-A/B source/run             60144f1a86de68128970da1c51a66ca4c296b53e / 32194089479
-first C0-C3 RED            ae460c79949b38b85f1d60874a5abb3898edab55 / 32194408369
-diagnostic RED             86d4def359fe9c7ee2044c39ec9dd81c096ee6e1 / 32194525529
-gate correction source/run 64498d2b1eeb84baaa158f979f27970fef4f5f20 / 32194696873
-C4 source/run               d0b8b95e345781d21c5296751dcccbba1d30522e / 32194805534
-latest Draft integration    867b80a1ea45849e695a5a86590581c80e9395b3
-```
-
-Latest Draft/core result: **50/50 Node PASS + production build PASS**.
-
-Key supported observations:
-
-- default OFF remained inert;
-- the same persistent compiled +100 N*m torque action became active without recompilation;
-- after ON -> OFF the mechanism kept moving in the existing direction rather than braking/locking;
-- the pre-frozen continued-ON control finished `0.5506405234336853 rad/s` faster than the OFF branch, exceeding the frozen `>= 0.25 rad/s` causal discriminator;
-- a fresh runtime created from the exact same compilation after an activated runtime was disposed defaulted OFF and remained inert for 60 steps;
-- source and compilation remained unchanged;
-- runtime uses direct body torque, not Box3D motor or angular-velocity setters;
-- no foundation or accepted TORQUE/TORQUE-PATCH semantics were changed.
-
-## Negative evidence / gate correction
-
-The first C0-C3 run and a diagnostic repeat were RED only because the frozen C2 sub-gate assumed:
+## Accepted ANVIL-09 promotion identity
 
 ```text
-absolute relative-speed change after OFF <= 0.15 rad/s
+frozen preflight        d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70
+A/B source/run          60144f1a86de68128970da1c51a66ca4c296b53e / 32194089479
+first C0-C3 RED         ae460c79949b38b85f1d60874a5abb3898edab55 / 32194408369
+diagnostic RED          86d4def359fe9c7ee2044c39ec9dd81c096ee6e1 / 32194525529
+gate correction/run     64498d2b1eeb84baaa158f979f27970fef4f5f20 / 32194696873
+C4 source/run            d0b8b95e345781d21c5296751dcccbba1d30522e / 32194805534
+Ready source             d61a6649be4a9f882bb717aabe07ac470ff542c1
+Ready run                32195221850
+Ready base               dac6fa160821bb028971cca3bfc9d18c4c0b8469
+Ready synthetic merge    e7c7659ac9afc6ad29f4d2514bbaa1ec95f2a64e
+qualified tree           e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135
+actual material merge    a024c8cb134aabe0033ea2990068e6479c3da2b5
+evidence grounding       3da72fadec5cd145a8be149bacd12084c8d4fcde
 ```
 
-Observed passive change was `-0.35872262716293335 rad/s` while the OFF mechanism remained strongly positive and the identical continued-ON branch separated causally by `0.5506405234336853 rad/s`.
+Ready/core was **50/50 Node PASS + production build PASS**. Candidate downloaded the exact staged build, launcher self-test passed and the existing Chromium regression suite passed **19/19**. The actual material merge tree is identical to the Ready-qualified synthetic tree.
 
-The assumption that passive **relative joint speed** must remain nearly constant is not a valid invariant for the asymmetric revolute multibody fixture. The correction revokes only that sub-gate and introduces no new post-hoc numeric threshold; the already-frozen C3 comparative control remains the discriminator. Preserve both red runs as meaningful negative evidence.
+Exact candidate artifacts:
 
-## Meso verdict
+```text
+staging ID      9345607020
+staging SHA256  5e40bafdeded471a90b1a8996d97d5a02138935408d5b6c0c5a620daed7010f0
+final ID        9345638922
+final SHA256    56891a302464530077bb29fd744001e33d97b27ae543003ee3725e4363669cb4
+```
 
-The bounded scientific question is sufficiently resolved. **Research stop rule is active.**
+Launcher/Chromium are whole-product regression evidence, not direct ACTIVATE physics evidence.
 
-Do not add reverse, analog throttle, routing, UI, power, REBIND, compliance or another solver variant to ANVIL-09.
+## Accepted interpretation
+
+ANVIL-09 supports only the bounded statement:
+
+> In the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once and transiently switched OFF/ON/OFF at runtime; OFF supplies no active torque rather than braking, ON reproduces the accepted causal torque response, and a fresh runtime reconstructed from the same persistent compilation defaults OFF, without moving activation into authored/compiled truth or using Box3D motor semantics.
+
+This earns one bounded separation between persistent active-function/action meaning and shorter-lived transient activation state.
+
+It does **not** earn a generic FUNCTION, Control, Signal, Port, Bus, Controller or power architecture.
+
+## Important negative evidence
+
+Two C0-C3 runs were intentionally preserved as RED:
+
+```text
+32194408369
+32194525529
+```
+
+They exposed a bad preflight assumption that passive relative revolute speed should change by no more than `0.15 rad/s` after OFF. The asymmetric revolute multibody fixture does not make that generalized coordinate speed a conserved quantity. The correction revoked only that sub-gate, changed no runtime physics and introduced no replacement post-hoc threshold. The already-frozen continued-ON comparison remained the causal discriminator and separated by `0.5506405234336853 rad/s` against the frozen `>= 0.25` gate.
+
+A separate first Ready attempt (`32195113438`) was not accepted as promotion evidence because GitHub supplied a stale pre-grounding PR merge ref. Branch synchronization changed no scientific PR diff, and the qualifying Ready run was then executed on the exact current integration tree.
 
 ## Exact next action
 
-1. Re-lock live `main` and PR #14 head.
-2. Verify PR changed paths remain bounded to ANVIL-09 docs/source/tests + test registration.
-3. Mark PR #14 Ready.
-4. Run the existing Ready candidate gate on the exact integration context.
-5. Treat launcher/Chromium as whole-product regression evidence only, not direct ACTIVATE physics evidence.
-6. If candidate succeeds, verify exact source/base/integration provenance and promote the tested material head with expected-head protection.
-7. Ground the executed evidence after promotion; do not append acceptance evidence to the candidate branch before the merge.
+Run a **fresh post-ANVIL-09 Research Compass / macro audit** before creating another experiment.
+
+At minimum compare:
+
+1. active command/function continuity through REBIND;
+2. function × compliance composition;
+3. a narrower control-lifecycle continuation only if it attacks a stronger uncertainty than composition.
+
+Judge them by information gain, confounding, solver-shadow risk, representation lock-in and long-horizon Machine Matter value.
+
+Do not create/freeze ANVIL-10 until that comparison is complete.
 
 ## Do not do now
 
-- no further ANVIL-09 research variants;
-- no change to the corrected gate set merely to improve margins;
-- no generic Control/FUNCTION abstraction or `src/foundation` promotion;
-- no reverse command or reinterpretation of signed `effortNm` as capacity;
-- no CUT/REBIND or compliance composition inside ANVIL-09;
-- no owner/manual gate for this quantitative claim unless a genuinely human-only uncertainty appears;
-- no claim that Chromium directly proves ACTIVATE physics.
+- do not extend ANVIL-09 with reverse, analog throttle, routing, UI, power or extra solver variants;
+- do not reinterpret signed `effortNm` as a bidirectional actuator capacity;
+- do not promote generic Control/FUNCTION/Signal abstractions into `src/foundation` from ANVIL-09;
+- do not erase or soften the meaningful RED history;
+- do not start REBIND composition merely because it is the current leading hypothesis;
+- do not create ANVIL-10 before the macro audit;
+- do not treat existing Chromium regression as direct ACTIVATE physics evidence.
 
 ## Stable project documents
 
@@ -82,5 +98,5 @@ Do not add reverse, analog throttle, routing, UI, power, REBIND, compliance or a
 - `docs/EXPERIMENT_PROTOCOL.md` — per-experiment evidence lifecycle.
 - `docs/RESEARCH_COMPASS.md` — macro anti-drift / frontier validation.
 - `docs/FOUNDATION.md` — accepted reusable boundaries only.
-- `AI_PROJECT_MEMORY.md` — concise accepted capability/architecture index + strategic pointer.
+- `AI_PROJECT_MEMORY.md` — accepted capability/architecture index + strategic pointer.
 - `.anvil/project-state.json` — machine-readable current checkpoint claim.
