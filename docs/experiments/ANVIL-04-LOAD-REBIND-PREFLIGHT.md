@@ -1,6 +1,6 @@
 # ANVIL-04 / LOAD-REBIND — preflight
 
-Status: **DRAFT / NOT YET SUPPORTED**
+Status: **DRAFT / C0 SUPPORTED, C1 NOT YET EXECUTED**
 
 ## Primary question
 
@@ -14,9 +14,9 @@ ANVIL-03 already proved more than a purely unloaded hinge: its free rotating fix
 
 ANVIL-04 changes one primary physical assumption: the relation is deliberately preloaded by an experiment-harness force pair.
 
-Do not add contact manifolds, static/infinite-mass supports, motors, limits, authored power/function or generic relation architecture to C0.
+Do not add contact manifolds, static/infinite-mass supports, motors, limits, authored power/function or generic relation architecture to C0/C1.
 
-## Fixture C0 — direct tensile preload at the bearing
+## Common fixture — direct tensile preload at the bearing
 
 Reuse the accepted seven-cell BEARING/REBIND authored fixture and the same nearby CUT:
 
@@ -34,18 +34,9 @@ A endpoint: -2500 N along world X
 B endpoint: +2500 N along world X
 ```
 
-The pair has zero net external force. Because each force is applied at the material bearing anchor, the bearing constraint must carry the tensile load without introducing an authored motor/function or an environmental support body.
+The pair has zero net external force. Because each force is applied at the material bearing anchor, the bearing constraint must carry the tensile load without introducing an authored motor/function or environmental support body.
 
 This external force pair is **test instrumentation only**. It is not Machine Matter FUNCTION semantics and must not be promoted as authored actuation.
-
-Before CUT:
-
-- source cells: 7;
-- runtime decomposition: 2 dynamic bodies + 1 bearing;
-- initial motion: rest;
-- no gravity;
-- no contacts;
-- the force pair is applied for 120 solver steps so the old joint is repeatedly solving the sustained load.
 
 After CUT:
 
@@ -60,16 +51,18 @@ After CUT:
 
 ## Binding capability precheck
 
-Before implementing the full fixture, exact pinned `box3d.js@0.0.2` must expose the real Box3D calls needed by this falsifier:
+Exact pinned `box3d.js@0.0.2` must expose:
 
 - `b3Body_ApplyForce`;
 - `b3Joint_GetConstraintForce`.
 
-If either is unavailable, record the binding limitation before choosing an indirect measurement. Do not silently substitute a synthetic force model.
+This capability precheck passed before C0 implementation. If either capability disappears in a later binding change, ANVIL-04 evidence must not be silently substituted with a synthetic force model.
 
-## Frozen gates
+# C0 — loaded equilibrium
 
-All numeric thresholds below are declared before the first executable C0 result.
+C0 starts both bodies at rest and applies the force pair for 120 solver steps before CUT. This is the cleanest direct test that a warm old joint carrying a known 2.5 kN tensile load can be replaced by a fresh relation without an immediate solver kick.
+
+## C0 frozen gates
 
 ### Structural / semantic
 
@@ -80,82 +73,125 @@ All numeric thresholds below are declared before the first executable C0 result.
 - no source additions/removals;
 - all runtime bodies remain dynamic;
 - gravity is zero;
-- no contacts are allowed in C0.
+- no contacts.
 
 ### Pre-CUT loaded state
 
 After 120 loaded steps:
 
-- commanded tensile load is exactly `2500 N` per side;
-- measured Box3D bearing constraint-force magnitude >= `2000 N` and <= `3000 N`;
+- commanded tensile load exactly `2500 N` per side;
+- measured Box3D bearing constraint-force magnitude `2000..3000 N`;
 - maximum body COM speed <= `0.001 m/s`;
 - maximum body angular speed <= `0.001 rad/s`;
 - bearing gap <= `0.0025 m`.
-
-`b3Joint_GetConstraintForce` is used as real-solver evidence that the relation is actually carrying the load. It is not evidence that the internal warm-start cache itself is exposed or migrated.
 
 ### Immediate rebuild continuity
 
 Before the new solver takes a step:
 
-- maximum bearing-anchor position jump <= `0.00007 m` (0.07 mm);
-- maximum bearing-anchor material-point velocity jump <= `0.00007 m/s` (0.07 mm/s).
+- maximum bearing-anchor position jump <= `0.00007 m`;
+- maximum bearing-anchor material-point velocity jump <= `0.00007 m/s`.
 
-### First post-rebuild solver step — primary new falsifier
+### First post-rebuild solver step
 
-After applying the same 2500 N pair and stepping the fresh after-CUT runtime once:
-
-- bearing anchor gap <= `0.0005 m` (0.5 mm);
-- relative bearing-anchor velocity <= `0.02 m/s` (20 mm/s);
+- bearing anchor gap <= `0.0005 m`;
+- relative bearing-anchor velocity <= `0.02 m/s`;
 - maximum linear speed of any after-CUT body <= `0.1 m/s`;
-- measured fresh-bearing constraint-force magnitude >= `1500 N` and <= `3500 N`.
+- measured fresh-bearing constraint-force magnitude `1500..3500 N`.
 
-The ideal passive constrained fixture starts at rest and the load is applied at the constrained material anchors. A large velocity/gap spike therefore indicates solver-visible cold-reconstruction shock rather than intended free motion. The force interval is deliberately wider than the settled pre-CUT interval because the after-CUT bearing is cold and its connected mass decomposition changed.
+### Continued behavior / control
+
+After 60 loaded post-CUT steps:
+
+- reconstructed-bearing anchor gap <= `0.0025 m`;
+- all constrained runtime state finite;
+- no-bearing control anchor gap >= `1.0 m`.
+
+## C0 result boundary
+
+C0 has executed and passed all gates. Its strong result does **not** close ANVIL-04 because equilibrium at the exact constrained anchor may be unusually easy for a cold solver. C1 exists only to attack that remaining live assumption.
+
+# C1 — moving + loaded rebind
+
+C1 combines the accepted ANVIL-03 moving rigid-field fixture with the same 2.5 kN external preload.
+
+Before CUT:
+
+- use the same two-body motion family as ANVIL-03 C0:
+  - common drift `(0.8, -0.25, 0.35) m/s`;
+  - A angular velocity `(0, 0, -0.65) rad/s`;
+  - B angular velocity `(0, 0, +0.95) rad/s`;
+  - COM velocities chosen from the rigid velocity field around the shared pivot;
+- apply the 2.5 kN force pair at the moving bearing anchors for 31 steps;
+- CUT and reconstruct exactly as C0;
+- continue the same load on the new endpoints.
+
+The load at the shared anchor has no intended generalized torque about the revolute degree of freedom. Therefore C1 stresses simultaneous **motion continuity + constraint reaction**, rather than introducing a motor.
+
+## C1 frozen gates
+
+These thresholds are declared after C0 but **before the first C1 execution**.
+
+### Pre-CUT sensitivity
+
+- measured constraint-force magnitude `2000..6000 N`;
+- bearing gap <= `0.0025 m`;
+- relative angular speed about Z >= `1.0 rad/s`;
+- all state finite.
+
+### Immediate rebuild continuity
+
+- max anchor position jump <= `0.00007 m`;
+- max anchor material-point velocity jump <= `0.00007 m/s`.
+
+### First fresh solver step under load
+
+- bearing anchor gap <= `0.0005 m`;
+- relative anchor velocity <= `0.02 m/s`;
+- measured constraint-force magnitude `1500..7000 N`;
+- all state finite.
+
+No absolute body-speed ceiling is used in C1 because the fixture is intentionally moving before the transaction.
 
 ### Continued behavior / causal control
 
-After 60 loaded post-CUT steps (~1 s):
+After 60 loaded post-CUT steps:
 
-- reconstructed-bearing anchor gap <= `0.0025 m`;
-- reconstructed-bearing runtime remains finite;
-- no-bearing control anchor gap >= `1.0 m`.
-
-The control is required so a passing constrained fixture cannot be explained by coincident motion or by the load harness accidentally applying no discriminating force.
+- constrained bearing gap <= `0.0025 m`;
+- no-bearing control gap >= `1.0 m`;
+- constrained relative angular speed about Z >= `0.2 rad/s` so the relation has not become a hidden weld/freeze;
+- all constrained/control state finite.
 
 ## Failure interpretation
 
-A failure must not be hidden by interpolation, damping, a looser threshold, delayed measurement or a reset.
+A failure must not be hidden by interpolation, damping, threshold loosening, delayed measurement or reset.
 
-Interpretation guide:
-
-- binding capability failure -> exact JS binding cannot directly execute/observe the intended load test;
-- pre-CUT force/gap/rest failure -> fixture did not establish the intended sustained constraint load and is inconclusive;
-- immediate jump failure -> state-transfer/rebind kinematics are wrong before the solver acts;
-- first-step gap/velocity/speed/force failure with immediate continuity passing -> fresh constraint reconstruction under load introduces a solver-visible transient outside the declared bound;
-- control fails to separate -> fixture is non-discriminating and must be redesigned, not accepted.
+- precondition failure -> fixture did not establish the intended loaded state;
+- immediate jump failure -> transfer/rebind kinematics are wrong before solver response;
+- first-step failure with immediate continuity passing -> cold relation reconstruction under external load produces a solver-visible transient outside the declared bound;
+- control failure -> fixture is non-discriminating;
+- C0 PASS + C1 FAIL -> static load reconstruction works, but loaded moving continuity remains unsupported.
 
 ## Explicit non-claims
 
-A pass will **not** prove:
+A C0+C1 pass will **not** prove:
 
 - migration of Box3D warm-start/joint-cache internals;
 - exact equality with uninterrupted solver history;
 - contact-manifold continuity;
 - active contact during CUT;
-- arbitrary load magnitude, direction or impact load;
+- arbitrary load magnitude/direction or impact load;
 - multiple relations or closed loops;
 - motors, limits, power or FUNCTION semantics;
 - cutting through the bearing itself;
 - generic Relation/Constraint architecture;
 - in-place mutation of one persistent populated Box3D world.
 
-## Continuation if C0 passes
+## Continuation if C1 passes
 
-Do not automatically accumulate load variants.
+Do not add arbitrary force levels or more motion variants.
 
-Choose the next question from the remaining uncertainty:
+Choose the next research question by information gain:
 
-1. **contact-loaded rebind** only if active contact/manifold loss is still the highest-value continuity risk; or
-2. move to **local FUNCTION / actuation** if C0 establishes stable cold reconstruction under a strong sustained external relation load and contact continuity is not required by the next machine hypothesis.
-
-Choose by information gain, not sequence ritual.
+1. contact-loaded continuity, if active contact/manifold loss is needed before the next machine hypothesis; or
+2. local FUNCTION / actuation, if external-load continuity is sufficient foundation for the next step.
