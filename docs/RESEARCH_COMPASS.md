@@ -2,21 +2,21 @@
 
 Status: **strategic orchestration contract**
 
-This document is the macro-level companion to `docs/EXPERIMENT_PROTOCOL.md`.
+This is the macro-level companion to `docs/EXPERIMENT_PROTOCOL.md`.
 
-The experiment protocol asks whether one bounded hypothesis is supported. The Research Compass asks a different question:
+The experiment protocol asks whether one bounded hypothesis is supported. The Research Compass asks:
 
-> Are we still buying the right knowledge for the Machine Matter / Physical Fabric vision, or are we merely making the current laboratory implementation more elaborate?
+> Are we buying the right knowledge for Machine Matter / Physical Fabric, or merely making the current laboratory implementation more elaborate?
 
-The compass is intentionally not a roadmap. It exists to prevent local success from hardening into the wrong architecture.
+It is intentionally not a fixed roadmap.
 
-## 1. Long-horizon vision invariants
+## 1. Long-horizon invariants
 
-### 1.1 Author properties, not conventional parts
+### Author properties, not conventional parts
 
-The desired authoring direction is closer to local physical properties than a catalog of ready-made machine components.
+The target direction is closer to local physical properties than a catalog of ready-made machine components.
 
-Useful research vocabulary includes, for example:
+Research vocabulary may include:
 
 ```text
 MATTER
@@ -29,40 +29,32 @@ INTERFACES
 bearing / slider / friction surface / tire surface / contact pad
 
 FUNCTION
- torque / linear force / sensor / power / signal
+torque / linear force / sensor / power / signal
 ```
 
-These words are **not** a frozen schema. The invariant is the direction: authored intent should describe what matter is allowed or able to do, not directly prescribe a particular Box3D body/joint or a product-specific part.
+These are not a frozen schema. Authored intent should describe what matter is/does, not directly prescribe a Box3D object or product-specific part.
 
-### 1.2 Runtime objects are disposable interpretations
+### Runtime is disposable
 
-Persistent authored identity must remain independent from runtime body/collider/joint identity.
+Persistent authored identity must remain independent from runtime body/collider/joint identity. Runtime representation may be rebuilt, repartitioned, reduced or eventually replaced by another model.
 
-A runtime representation may be rebuilt, repartitioned, reduced or eventually replaced by a different solver/model without invalidating construction identity.
+### Locality should do real work
 
-### 1.3 Locality should do real work
-
-When a physical relation can be resolved from local matter/topology/interface context, prefer testing that composition before introducing an explicit semantic component graph.
+When a physical relationship can be resolved from local matter/topology/interface context, test that composition before introducing an explicit semantic component graph.
 
 Stable authored IDs are valid when identity is genuinely part of the concept, but references must not become the default substitute for spatial/material semantics.
 
-### 1.4 Current voxels are a dialect, not the ontology
+### Voxels are a dialect, not ontology
 
-The sparse cubic-cell representation is useful because it is easy to falsify. It must not silently become the final answer.
+The sparse cubic-cell representation is a useful falsification tool, not the final Machine Matter commitment. Future evidence may require adaptive cells, meshes, fields, SDF-like sources, hierarchy or another representation.
 
-Future evidence may require meshes, adaptive cells, continuous fields, splats/SDF-like representations, hierarchical matter or another source representation. The current foundation should not make those impossible.
+### Representations may use different resolutions
 
-### 1.5 Different representations may have different resolutions
+Authored matter, collision, visuals and solver representation do not need one-to-one topology or resolution.
 
-Authored matter, collision, visual representation and solver representation do not need one-to-one topology or resolution.
-
-ANVIL should preserve this freedom rather than forcing one universal data structure to own every concern.
-
-### 1.6 Composition is the actual prize
+### Composition is the prize
 
 A collection of isolated successful tricks is not yet Machine Matter.
-
-The long-term target requires local semantics to compose:
 
 ```text
 matter + binding + interface + function + environment
@@ -70,317 +62,246 @@ matter + binding + interface + function + environment
                   useful behavior
 ```
 
-Composition should emerge from earned local rules, not a hidden hand-written machine template.
+Composition should emerge from earned local rules rather than a hidden machine template.
 
-### 1.7 Evidence must earn abstraction
+### Evidence earns abstraction
 
-Do not add a generic Bond, Relation, FUNCTION, Device, Port, Signal, Surface or Power architecture because the vocabulary sounds inevitable.
+Do not add generic Bond, Relation, FUNCTION, Device, Port, Signal, Surface or Power architecture because the vocabulary sounds inevitable. Reuse must be earned.
 
-Each reusable boundary must be earned by evidence or be neutral measurement/process infrastructure required to falsify the next question.
-
-## 2. Current capability frontier after ANVIL-05
+## 2. Capability frontier after ANVIL-06
 
 ### MATTER — thin but real
 
 Supported:
 
 - persistent source-cell identity;
-- material density/friction in the current box dialect;
+- density/friction in current material dialect;
 - deterministic mass/COM/inertia-diagonal measurement;
-- independent collision reduction;
+- collision reduction;
 - authored/runtime representation separation.
 
-Unsupported:
+Open: richer constitutive behavior, composites/anisotropy, adaptive/non-grid sources.
 
-- richer material constitutive behavior;
-- continuous/anisotropic/composite fields;
-- adaptive source resolution;
-- non-grid authored matter.
-
-### BINDINGS — major open frontier
+### BINDINGS — largest core gap
 
 Supported:
 
 - implicit rigid adjacency;
-- experiment-local blocked face used by CUT/BEARING.
+- experiment-local blocked connection used by CUT/BEARING.
 
-Unsupported:
+Open:
 
 - compliant/elastic binding;
 - weak/breakable strength;
 - directional/asymmetric binding;
 - plasticity/damage/fatigue;
-- generic Bond ontology.
+- any earned generic Bond boundary.
 
-### INTERFACE — first useful slice supported
-
-Supported:
-
-- one local face-to-face BEARING mark;
-- passive revolute runtime relation;
-- covariance under an arbitrary common rigid transform;
-- nearby CUT + semantic rebind;
-- bounded loaded rebind.
-
-Unsupported:
-
-- slider, friction/tire/contact surface semantics;
-- multiple interacting relations/loops;
-- generic Relation/Constraint ontology.
-
-### FUNCTION — first active slice supported, semantic debt exposed
+### INTERFACE — first slice comparatively mature
 
 Supported:
 
-- signed persistent torque intent;
+- local face-to-face BEARING;
+- passive revolute relation;
+- rigid-transform covariance;
+- nearby moving CUT + REBIND;
+- bounded loaded REBIND.
+
+Open: slider, friction/tire/contact interfaces, multiple relations/loops, generic Relation ontology.
+
+### FUNCTION — first local active slice supported
+
+Supported:
+
+- signed torque intent;
 - causal `+ / 0 / -` behavior;
-- equal/opposite body torque lowering;
-- passive bearing relation retained;
-- no Box3D joint-motor encoding in authored source.
+- equal/opposite torque lowering;
+- passive bearing retained;
+- no authored Box3D motor;
+- ANVIL-06 local source-face placement without authored `bearingId`, with fail-closed off-interface behavior.
 
-Open debt:
-
-- ANVIL-05 authored `TorqueMark` points directly to persistent `bearingId`;
-- function is not yet demonstrated as a local painted property that discovers mechanics through matter/topology;
-- capability and transient command are still conflated in one authored `effortNm`.
+Open: capability/command separation, other function kinds, actuation through rebuild/contact, generic FUNCTION ontology.
 
 ### CONTROL / SIGNAL / POWER — intentionally unearned
 
-No generic runtime command, signal graph, ports, power source, energy storage, controller or sensor architecture is foundation.
+No generic command runtime, ports, signals, power source/storage, controller or sensor system is foundation.
 
-### TOPOLOGY / CONTINUITY — comparatively strong bounded evidence
+### TOPOLOGY / CONTINUITY — comparatively strong bounded spine
 
-CUT, REBIND and LOAD-REBIND provide a useful bounded reconstruction spine.
+CUT, REBIND and LOAD-REBIND provide useful reconstruction evidence. Active contacts, loops and arbitrary topology remain open.
 
-Remaining risks include active contacts, multiple relations, loops, arbitrary topology and deeper solver-state dependencies.
+### SURFACE — mostly open
 
-### SURFACE — almost untouched
+Global/current material friction exists; local surface semantics/contact laws do not.
 
-Material friction exists, but local authored surface laws and interface-specific contact behavior are not established.
-
-### ADAPTATION / REPRESENTATION SWITCHING — open
+### ADAPTATION / REPRESENTATION — open
 
 No adaptive rigid/compliant switching, simulation LOD or representation migration is proven.
 
 ## 3. Macro Critical Validation Loop
 
-Run this loop after every strategically meaningful accepted experiment and whenever the project resumes after a major interruption.
+Run after each strategically meaningful promotion and after major interruption.
 
 ### M0 — live truth lock
 
-Resolve:
-
-- repository and current `main`;
-- open experiment PRs/branches;
-- last promoted evidence identity;
-- regression state;
-- documentation drift.
-
-Do not plan from conversation history when live Git can answer the question.
+Resolve live `main`, open experiment PRs, exact last evidence, regression state and documentation drift.
 
 ### M1 — vision delta
 
-State in one sentence:
-
-> What part of the original Machine Matter dream became more credible because of the last experiment?
-
-If the answer is merely “the same fixture is a little more robust,” treat that as hardening, not frontier progress.
+State in one sentence what part of the Machine Matter dream became more credible because of the last experiment. If answer is merely “same fixture is more robust,” classify it as hardening rather than frontier progress.
 
 ### M2 — anti-component-drift gate
 
-Inspect new authored concepts and ask:
+Ask of every new authored concept:
 
-- Is this describing a local physical property/capability, or a named conventional part in disguise?
-- Does it reference runtime identity?
-- Does it unnecessarily reference another authored component when locality/topology could resolve the relationship?
-- Is a one-to-one solver object being smuggled into authored truth?
-
-A failure here does not automatically invalidate the experiment, but it becomes a priority research debt before higher-level architecture is built on top.
+- local physical property/capability or conventional part in disguise?
+- runtime identity leak?
+- unnecessary authored cross-component reference where locality could resolve it?
+- one-to-one solver object being smuggled into authored truth?
 
 ### M3 — frontier balance
 
-Review the capability frontier:
-
-- Matter
-- Bindings
-- Interfaces
-- Function
-- Control/Signal/Power
-- Surface
-- Topology/Continuity
-- Adaptation/Representation
-
-Do not spend many experiments deepening one frontier while foundational assumptions in another remain completely untouched unless the dependency is explicit.
+Review Matter, Bindings, Interfaces, Function, Control/Signal/Power, Surface, Topology/Continuity, Adaptation/Representation. Avoid deepening one frontier indefinitely while another foundational category remains untouched unless dependency demands it.
 
 ### M4 — strongest live assumption
 
-Name the assumption with the largest product of:
+Choose the assumption with largest combination of consequence if false, uncertainty and architectural lock-in risk.
 
-- consequence if false;
-- uncertainty;
-- architectural lock-in risk.
+### M5 — compare credible next falsifiers
 
-This is more important than “what comes next numerically.”
+Use qualitative assessment of:
 
-### M5 — candidate comparison
+- information gain;
+- vision alignment;
+- lock-in reduction;
+- discriminability;
+- cost;
+- composition value.
 
-Compare at least two credible next falsifiers using qualitative scores:
-
-- **information gain** — how much search space a pass/fail removes;
-- **vision alignment** — how directly it advances Machine Matter rather than current implementation;
-- **lock-in reduction** — whether it attacks a dangerous architectural assumption;
-- **discriminability** — whether failure has a clear interpretation;
-- **cost** — implementation + evidence + owner burden;
-- **composition value** — whether the result can combine with already-earned semantics.
-
-Do not manufacture fake numeric precision. A simple High / Medium / Low table is enough.
+Do not manufacture fake numeric precision.
 
 ### M6 — adversarial preflight
 
-Before executable results:
-
-- state one primary question;
-- freeze meaningful gates;
-- include an invalid/negative control when false-positive success is plausible;
-- identify what must fail closed;
-- list explicit non-claims;
-- identify which evidence classes are actually needed.
+Before results: one primary question, frozen meaningful gates, negative/control case, fail-closed expectations, explicit non-claims, only necessary evidence classes.
 
 ### M7 — Lean Evidence Loop
 
-Run the per-experiment Draft/core → Ready/candidate lifecycle from `docs/EXPERIMENT_PROTOCOL.md`.
+Run Draft/core -> Ready/candidate. Classify a red result before modification as physical falsification, semantic/compiler failure, non-discriminating fixture, test representation defect, or toolchain/infrastructure block.
 
-A red result is classified before it is modified:
+### M8 — exact promotion and grounding
 
-- physical falsification;
-- semantic/compiler failure;
-- non-discriminating fixture;
-- test representation defect;
-- toolchain/infrastructure block.
-
-### M8 — promotion and grounding
-
-Promote only the exact supported candidate. Then update evidence and orchestration docs without changing already-qualified material code.
+Promote exact supported candidate, compare synthetic/actual tree, then ground evidence/docs without changing qualified material code.
 
 ### M9 — composition checkpoint
 
-After two or three new primitive/frontier results, stop and test whether they compose instead of immediately adding another primitive.
+After 2–3 new primitive/frontier results, stop adding vocabulary and test composition.
 
 Examples:
 
-- function through a reconstructed relation;
+- function through reconstructed relation;
 - actuation through compliant matter;
 - surface property interacting with structure;
-- control driving a function without mutating construction semantics.
+- control driving function without mutating construction semantics.
 
-This prevents the project from becoming a collection of isolated demos.
+## 4. Vision delta from ANVIL-06
 
-## 4. Strategic audit after ANVIL-05
+Before ANVIL-06, active source semantics still had a component-graph smell:
 
-### Candidate A — ACTIVATE
+```text
+TorqueMark -> bearingId
+```
 
-Question: separate persistent torque capability from transient `off / forward / reverse` command.
+ANVIL-06 supported a narrower but more vision-aligned route:
 
-- information gain: **High**
-- vision alignment: **High**
-- lock-in reduction: **Medium**
-- discriminability: **High**
-- cost: **Low–Medium**
+```text
+paint torque on persistent source face
+        ↓ local/topological resolution
+existing BEARING
+        ↓
+accepted runtime action
+```
 
-Risk: it would build control semantics on top of the still-direct `TorqueMark -> bearingId` authored coupling.
+A valid local patch resolves deterministically; non-bearing placement fails closed. This does not prove a generic field/local-property system, but it demonstrates that locality can replace an authored semantic cross-reference in a real end-to-end active path.
 
-Verdict: **valuable, but one step too early**.
+Therefore the immediate ANVIL-05 component-drift debt is boundedly reduced.
 
-### Candidate B — TORQUE + REBIND
+## 5. Post-ANVIL-06 candidate comparison
 
-Question: active intent follows persistent bearing semantics through CUT/runtime body replacement.
+### Candidate A — ELASTIC-SEAM
 
-- information gain: **Medium**
-- vision alignment: **Medium–High**
-- lock-in reduction: **Medium**
-- discriminability: **High**
-- cost: **Medium**
-
-Risk: continues deepening the already comparatively strong reconstruction frontier before fixing active-function locality.
-
-Verdict: **defer**.
-
-### Candidate C — ELASTIC-SEAM
-
-Question: a local non-rigid binding property creates bounded compliant behavior instead of rigid union or free separation.
+Question: can one local authored binding property produce bounded compliant relative motion and restoring behavior instead of either rigid union or free separation?
 
 - information gain: **Very High**
 - vision alignment: **Very High**
 - lock-in reduction: **High**
 - discriminability: **High**
 - cost: **Medium–High**
+- composition value: **Very High**
 
-This opens the currently weakest major frontier: BINDINGS.
+Why now: BINDINGS is the largest untouched core category. A pass would establish that local matter connectivity need not be binary rigid/disconnected; a fail would reveal whether stock solver lowering or the authored concept is insufficient.
 
-Verdict: **strong candidate immediately after locality debt is attacked**.
+Risk: easy to accidentally rename a solver spring/joint as “elastic matter.” Preflight must force source semantics to remain local binding intent and include rigid/free controls.
 
-### Candidate D — TORQUE-PATCH
+Verdict: **selected next**.
 
-Question: can active torque be authored as a local source-face property with no authored `bearingId`, then resolve deterministically to the unique BEARING through local topology and fail closed when painted elsewhere?
+### Candidate B — ACTIVATE
+
+Question: same persistent torque capability, transient command changes `off / forward / reverse` without mutating construction semantics.
 
 - information gain: **High**
-- vision alignment: **Very High**
-- lock-in reduction: **Very High**
-- discriminability: **Very High**
-- cost: **Low**
+- vision alignment: **High**
+- lock-in reduction: **Medium**
+- discriminability: **High**
+- cost: **Low–Medium**
+- composition value: **High**
 
-This directly tests whether ANVIL can move from “semantic components connected by IDs” toward “painted local properties compose into mechanics.”
+Why not first: ANVIL-05 and ANVIL-06 already spent two frontier steps on FUNCTION. Control is important, but deepening it immediately would leave BINDINGS effectively binary and make later machines structurally impoverished.
 
-Verdict: **selected as ANVIL-06**.
+Verdict: **defer, high priority**.
 
-## 5. Chosen immediate tactic
+### Candidate C — TORQUE + REBIND
 
-### ANVIL-06 / TORQUE-PATCH
+Information gain is now lower than A/B because topology continuity is comparatively strong. Defer until a concrete composition experiment needs active-function persistence through rebuild.
 
-The first experiment should remain deliberately narrow.
+### Candidate D — SURFACE / FRICTION PATCH
 
-Candidate authored concept:
+High long-term value, but local surface semantics are less foundational to the next composition milestone than proving that authored connections themselves can be compliant.
+
+## 6. Selected immediate tactic — ANVIL-07 / ELASTIC-SEAM
+
+Primary strategic question:
+
+> Can persistent local binding intent express bounded compliance between neighboring matter, with measurable deformation and restoring behavior, without promoting a generic Bond ontology or encoding one final solver representation in authored truth?
+
+The first falsifier must remain smaller than “deformable matter.” It should test one local seam between two otherwise rigid islands.
+
+Candidate source shape should be experiment-local and physical rather than solver-named, approximately:
 
 ```text
-TorquePatch {
+ElasticSeam {
   id
-  target: { cellId, face }
-  effortNm
+  endpointA: { cellId, face }
+  endpointB: { cellId, face }
+  // minimal physical compliance parameters to be earned by preflight
 }
 ```
 
-Deliberately absent:
+Do not freeze exact parameter vocabulary until binding-capability research identifies the smallest physically meaningful contract. Avoid fields named after Box3D APIs (`hertz`, solver spring flags, joint kind) in authored source unless evidence shows they are the only honest description.
 
-- `bearingId`;
-- runtime body/joint IDs;
-- generic device/function type system;
-- signal/control/power concepts.
+Mandatory controls should distinguish at least:
 
-The compiler must:
+```text
+RIGID      seam does not appreciably deform
+ELASTIC    deforms under load and restores when load is removed
+FREE       separates / does not restore
+```
 
-1. compile the already-earned BEARING semantics;
-2. match the painted source face to exactly one bearing endpoint;
-3. derive the bearing identity and disposable runtime bodies only in compiled output;
-4. lower to the already-supported equal/opposite torque action;
-5. reject a patch on a non-bearing face instead of guessing a target.
+The experiment must demonstrate more than visual wobble: measure deformation, restoring direction/response, finite state and causal separation from both controls.
 
-Primary evidence should prove:
+Do not combine damage/breakage, plasticity, TORQUE, ACTIVATE, contact complexity or generic bond architecture into the first elastic falsifier.
 
-- the authored patch contains no relation reference;
-- valid local placement resolves deterministically;
-- invalid placement fails closed;
-- cell ordering / bearing endpoint ordering does not change the resolved physical meaning;
-- end-to-end real Box3D behavior still obeys signed causal torque gates.
+## 7. Next composition checkpoint
 
-Do not add ACTIVATE, CUT/REBIND, multiple bearings or a generic FUNCTION framework to the same first falsifier.
+If ELASTIC-SEAM earns one compliant binding slice, the next macro decision should strongly consider **ACTIVATE** or a composition experiment combining already-earned active function with compliant matter.
 
-## 6. Likely next macro decision
-
-After TORQUE-PATCH, rerun this compass rather than following a fixed sequence.
-
-Current expectation — not a promise — is to compare:
-
-- **ELASTIC-SEAM**, opening the missing BINDINGS frontier;
-- **ACTIVATE**, separating persistent capability from transient command.
-
-Whichever attacks the larger remaining architectural uncertainty at that point should win.
+After that, the project should resist adding another isolated primitive until at least two of the new semantics are forced to compose.

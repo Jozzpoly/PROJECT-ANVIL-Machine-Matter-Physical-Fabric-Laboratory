@@ -12,42 +12,38 @@ The current cubic-cell dialect is only a laboratory representation. It is not a 
 
 ## Current accepted stack
 
-`main` contains the latest promoted bounded evidence:
+`main` contains promoted bounded evidence for:
 
 - **ANVIL-00 / COLLAPSE** — persistent matter compiles deterministically into reduced rigid runtime representation;
 - **ANVIL-01 / CUT** — bounded runtime topology replacement with source identity and rigid-field motion transfer;
 - **ANVIL-02 / BEARING** — a local authored rotational interface derives two rigid islands plus a passive revolute relation;
-- **ANVIL-03 / REBIND** — the same persistent bearing can be reconstructed on changed disposable runtime bodies after a nearby CUT while moving;
-- **ANVIL-04 / LOAD-REBIND** — bounded cold bearing reconstruction survives the declared multi-kN external load without migrating hidden joint-cache state;
-- **ANVIL-05 / TORQUE** — persistent signed active intent can act through BEARING as an equal/opposite torque pair without encoding Box3D joint motor mode in authored source.
+- **ANVIL-03 / REBIND** — persistent bearing semantics reconstruct on changed disposable bodies after a nearby CUT while moving;
+- **ANVIL-04 / LOAD-REBIND** — bounded cold relation reconstruction survives the declared multi-kN load without migrating hidden joint-cache state;
+- **ANVIL-05 / TORQUE** — persistent signed active intent acts through BEARING as an equal/opposite torque pair without authored Box3D motor semantics;
+- **ANVIL-06 / TORQUE-PATCH** — the same active intent can be authored on a local persistent source face with no authored `bearingId`; locality resolves the bearing and invalid placement fails closed.
 
 These results are deliberately narrow. Passing one fixture does not promote a universal Bond, Relation, FUNCTION, power or control architecture.
 
-## What is actually being tested
-
-The project separates four domains:
+## What is being separated
 
 ```text
 AUTHORED TRUTH
-persistent semantic matter / local intent
-        │
+persistent matter / local physical intent
         │ compile
         ▼
 COMPILED REPRESENTATION
 rigid islands / relations / actions / provenance
-        │
         │ lower
         ▼
 RUNTIME PHYSICS
 solver-owned and disposable
-        │
         │ observe
         ▼
 EVIDENCE
-measurements / lineage / owner judgement when needed
+measurements / lineage / human judgement only when useful
 ```
 
-The important claim is the separation itself: authored identity must not become synonymous with one body, collider, joint, grid resolution or solver.
+Authored identity must not become synonymous with one body, collider, joint, grid resolution or solver.
 
 ## Research discipline
 
@@ -56,21 +52,21 @@ ANVIL is not a product roadmap, VAW rewrite, JV port or promise to model every p
 Read:
 
 - [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — current orchestration state and exact strongest evidence;
-- [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — long-horizon vision invariants, frontier map and macro critical-validation loop;
+- [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — long-horizon invariants, frontier map and macro validation loop;
 - [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle;
 - [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — what has actually earned reuse;
 - [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and boundaries.
 
 ## Current frontier
 
-ANVIL-05 is the first bounded active result, but it exposed an important semantic debt: its authored `TorqueMark` still references persistent `bearingId` directly.
+ANVIL-06 boundedly addressed the first FUNCTION locality debt: active intent no longer needs to name a persistent bearing component in authored source for the single-bearing fixture.
 
-That is not a runtime-ID leak, but it can become a path back toward a conventional component graph. Before adding control systems, the next research step attacks this risk directly:
+The largest strategic imbalance is now **BINDINGS**. ANVIL effectively knows rigid adjacency or separation, but has no earned local compliant/elastic binding behavior.
 
-**ANVIL-06 / TORQUE-PATCH** — test whether active torque can be authored as a local property on source matter/interface and deterministically discover the bearing through locality/topology, with no authored bearing reference and fail-closed invalid placement.
+The selected next research direction is therefore **ANVIL-07 / ELASTIC-SEAM**: test the smallest local authored compliant binding that produces bounded relative deformation and restoring behavior without prematurely introducing a generic Bond ontology.
 
-This is intentionally a semantic-composition experiment, not a new solver-actuator experiment.
+`ACTIVATE` — separating persistent capability from transient command — remains important, but adding control depth immediately after two FUNCTION experiments would leave the physical binding frontier almost untouched.
 
 ## Evidence rule
 
-Documentation and green CI are never physics acceptance by themselves. Every experiment states a falsifiable hypothesis, bounded fixture, observable gates, meaningful controls, limitations and evidence class. Negative results that reduce the search space are retained.
+Documentation and green CI are never physics acceptance by themselves. Every experiment states a falsifiable hypothesis, bounded fixture, observable gates, meaningful controls, limitations and required evidence class. Negative results that reduce the search space are retained.

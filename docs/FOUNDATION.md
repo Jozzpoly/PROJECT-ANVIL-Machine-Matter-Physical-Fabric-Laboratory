@@ -9,7 +9,7 @@ It does **not** mean the concept is final Machine Matter ontology.
 A reusable abstraction belongs here only when at least one of these is true:
 
 1. completed experiment evidence already supports keeping it;
-2. the abstraction is necessary to measure the next falsifier without prescribing its answer;
+2. it is necessary to measure the next falsifier without prescribing its answer;
 3. multiple donor projects independently demonstrate the same separation and ANVIL has a concrete use for it now.
 
 Otherwise keep the idea inside the experiment that needs it.
@@ -19,17 +19,14 @@ Otherwise keep the idea inside the experiment that needs it.
 ```text
 AUTHORED TRUTH
 persistent semantic identity / intent
-        │
         │ compile
         ▼
 COMPILED REPRESENTATION
 rigid islands / mass / collision / provenance
-        │
         │ lower
         ▼
 RUNTIME PHYSICS
 solver-owned, disposable, reconstructible
-        │
         │ observe
         ▼
 EVIDENCE
@@ -45,15 +42,13 @@ The arrows are boundaries. Objects on one side must not silently become persiste
 Promoted:
 
 - `Vec3`;
-- `Quat` using neutral `x/y/z/w` representation;
+- neutral `Quat` (`x/y/z/w`);
 - `RigidPose`;
 - `RigidMotion`;
 - minimal vector operations;
-- `rigidVelocityAtWorldPoint` as a kinematic measurement primitive.
+- `rigidVelocityAtWorldPoint`.
 
-Reason: topology replacement, relation reconstruction and future representation changes need physical state that survives changing solver adapters and runtime IDs.
-
-Not promoted: a complete transform library, matrix hierarchy, coordinate-frame ontology or solver-specific math types.
+Not promoted: a complete transform library, frame ontology or solver-specific math types.
 
 ## 2. Deterministic mass properties
 
@@ -61,35 +56,20 @@ Not promoted: a complete transform library, matrix hierarchy, coordinate-frame o
 
 Promoted for the current axis-aligned box-element dialect:
 
-- deterministic canonical ordering by stable element ID;
-- compensated summation for aggregate mass and weighted position;
+- canonical ordering by stable source element ID;
+- compensated aggregate mass/weighted position;
 - center of mass;
 - axis-aligned inertia diagonal with parallel-axis contribution.
 
-The implementation is adapted from proven mass-property discipline in VAW, but rewritten as typed ANVIL code.
-
-Important limitation: `inertiaDiagonalKgM2` is **not** a general inertia tensor contract for arbitrary rotated or continuous matter. Promotion beyond the current box-element model requires new evidence.
+`inertiaDiagonalKgM2` is not a universal inertia-tensor contract.
 
 ## 3. Persistent provenance across disposable representations
 
 `src/foundation/provenance.ts`
 
-The foundation compares compiled entities through **persistent source IDs**, not runtime body IDs.
+Compiled entities are compared through persistent source IDs rather than runtime IDs. Supported descriptive lineage includes `continued`, `split`, `merge`, `repartitioned`, `appeared`, `disappeared`, plus added/removed source IDs.
 
-It can classify a transition as:
-
-- `continued`;
-- `split`;
-- `merge`;
-- `repartitioned`;
-- `appeared`;
-- `disappeared`.
-
-It also records added and removed source IDs.
-
-This is deliberately descriptive. A detected `split` does not prescribe how velocity, angular velocity, energy, contacts or relations transfer.
-
-The current `PhysicalPlan` adapter uses cell IDs because COLLAPSE is a cell dialect. The lineage algorithm itself accepts generic source IDs so later representations do not need to become voxel-shaped.
+The current `PhysicalPlan` adapter uses cell IDs because the present authoring dialect is cell-based; the lineage concept itself is not voxel-specific.
 
 ## 4. Runtime boundary
 
@@ -98,58 +78,56 @@ The current `PhysicalPlan` adapter uses cell IDs because COLLAPSE is a cell dial
 Promoted:
 
 - runtime observations contain no solver handles;
-- a physics runtime is step-able, observable and disposable;
-- neutral motion state exposes linear/angular velocity without making solver objects authoritative.
+- runtime can be stepped, observed and disposed;
+- neutral motion state exposes linear/angular velocity independently of solver identity.
 
-Experiment runtimes may still contain solver-specific implementation internally. That implementation is not foundation.
+Experiment runtimes may contain solver-specific implementation internally. That implementation is not foundation.
 
-## 5. Continuity measurement primitives
+## 5. Continuity measurements
 
 `src/foundation/continuity.ts`
 
-Promoted as measurement tools:
+Promoted measurement primitives:
 
-- pose / linear velocity / angular velocity error magnitudes;
+- pose / linear velocity / angular velocity error;
 - linear momentum;
 - total linear momentum;
 - translational kinetic energy.
 
-These functions do not implement topology transfer or relation reconstruction. They exist so continuity claims can fail numerically instead of relying only on animation.
+Rotational energy and full angular-momentum accounting remain deferred until the inertia representation can support them without false precision.
 
-Rotational energy and full angular-momentum accounting remain deferred until the inertia representation is strong enough to support them without false precision.
-
-## 6. Evidence report primitive
+## 6. Evidence primitive
 
 `src/foundation/evidence.ts`
 
 Reusable gates have stable IDs, explicit pass/fail state, summaries and optional finite numeric metrics. Reports fail closed when any check fails.
 
-This is a small common vocabulary for tests and experiment UIs, not a test-framework replacement.
+## 7. Process boundaries
 
-## 7. Process boundary — Lean Evidence Loop
+`docs/EXPERIMENT_PROTOCOL.md` defines the promoted per-experiment Draft/core → Ready/candidate Lean Evidence Loop.
 
-The Draft/core → Ready/candidate lifecycle in `docs/EXPERIMENT_PROTOCOL.md` is promoted process infrastructure because ANVIL-04 and ANVIL-05 demonstrated that it reduces validation cost without weakening exact-head evidence identity.
+`docs/RESEARCH_COMPASS.md` defines the macro loop that checks vision alignment, component drift, frontier balance and next-falsifier information gain.
 
-The macro strategic loop lives in `docs/RESEARCH_COMPASS.md` and exists to prevent repeated successful experiments from drifting away from the project vision.
+## Earned experiment semantics that remain experiment-local
 
-## Earned experiment semantics that are NOT foundation
+Evidence supports these bounded capabilities, but they are **not** generic foundation contracts:
 
-The following capabilities are supported in bounded experiments but remain deliberately experiment-local:
-
-- BEARING authored interface mark and revolute relation lowering;
-- REBIND transaction policy;
-- LOAD-REBIND laboratory force-pair fixture;
-- TORQUE authored mark / compiled torque action;
+- BEARING authored interface and passive revolute lowering;
+- REBIND runtime reconstruction policy;
+- LOAD-REBIND force-pair fixture;
+- TORQUE direct-reference authored mark / compiled torque action;
+- TORQUE-PATCH local source-face targeting and bearing resolution;
 - Forge owner-gate presentation details.
 
-Their evidence is real, but one successful semantic slice is not enough to freeze a universal architecture.
+ANVIL-06 is important because it shows that local authored function placement can resolve an existing mechanical interface without an authored cross-component `bearingId`. That is evidence for the design direction, not yet a reason to invent a generic local-property framework.
 
-## What is deliberately NOT foundation yet
+## Deliberately not foundation
 
-Do not add these globally until an experiment forces the issue:
+Do not add these globally until experiments force them:
 
 - generic `Bond` / `Joint` / `Constraint` / `Relation` ontology;
 - generic FUNCTION / Device ontology;
+- generic local-property field system;
 - `SurfaceLaw` or custom contact law;
 - damage/fracture/plasticity/fatigue model;
 - compliant/deformable matter;
@@ -161,14 +139,14 @@ Do not add these globally until an experiment forces the issue:
 - vehicle-specific compiler concepts;
 - generic scene/entity framework.
 
-VAW, JURE, JV and other donor projects contain useful versions of several of these ideas. They remain donors, not proof that ANVIL needs the same abstraction now.
+VAW, JURE, JV and other donor projects are evidence and donors, not proof that ANVIL needs their abstractions now.
 
-## Current use after ANVIL-05
+## Current use after ANVIL-06
 
-The immediate frontier is no longer CUT.
+The immediate FUNCTION locality debt is boundedly addressed. Do not keep refining TORQUE by default.
 
-ANVIL-05 proved one bounded active torque path, but its authored `TorqueMark` directly names persistent `bearingId`. This is valid bounded evidence and not a runtime-ID leak; however, it creates an architectural question that should be attacked before a control system is built on top.
+The most underdeveloped core physical frontier is **BINDINGS**. Current authored connectivity is effectively rigid union or explicit disconnection/interface splitting; no compliant local binding has earned semantics.
 
-**ANVIL-06 / TORQUE-PATCH** should test whether active intent can be authored as a local source-face property, resolve the already-earned BEARING through locality/topology, and fail closed when placed on a non-bearing face.
+The selected next falsifier is **ANVIL-07 / ELASTIC-SEAM**: test whether one local authored seam property can produce bounded compliant relative motion plus restoring behavior, while keeping the concept experiment-local and avoiding a generic Bond architecture.
 
-No new foundation abstraction is required in advance. If the local-binding experiment passes, promotion should still wait until a second use demonstrates what reusable semantic boundary actually exists.
+No new foundation abstraction should be added in advance. Let the experiment reveal which reusable boundary, if any, is actually needed.
