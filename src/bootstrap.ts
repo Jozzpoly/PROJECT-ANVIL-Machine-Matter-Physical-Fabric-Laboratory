@@ -23,6 +23,8 @@ if (experiment === "cut") {
   })();
 } else if (experiment === "load-rebind") {
   void import("./load-rebind-demo.js");
+} else if (experiment === "torque") {
+  void import("./torque-demo.js");
 } else {
   void import("./main.js");
 }
