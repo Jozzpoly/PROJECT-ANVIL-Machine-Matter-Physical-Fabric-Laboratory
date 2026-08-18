@@ -199,6 +199,53 @@ test("ANVIL-09 C0-C3 transient OFF/ON/OFF separates from continued ON in real Bo
   }
 });
 
+test("ANVIL-09 C4 fresh runtime from the same compilation forgets transient activation", async () => {
+  const authored = createTorquePatchFixture(ACTIVE_EFFORT_NM);
+  const compilation = compileTorquePatch(authored);
+  const authoredBefore = structuredClone(authored);
+  const compilationBefore = structuredClone(compilation);
+  deepFreeze(authored);
+  deepFreeze(compilation);
+
+  const activated = await ActivatePhysics.create(compilation, authored.bearing.matter.materials);
+  try {
+    assert.equal(activated.sourceCompilation, compilation);
+    assert.equal(activated.activation, "OFF");
+    activated.setActivation("ON");
+    activated.step(ON_STEPS);
+    assert.equal(activated.activation, "ON");
+    assert.ok(activated.bearingAngleRad() >= MIN_ON_ANGLE_INCREASE_RAD, "pre-disposal runtime never became physically active");
+  } finally {
+    activated.dispose();
+  }
+
+  const reconstructed = await ActivatePhysics.create(compilation, authored.bearing.matter.materials);
+  try {
+    assert.equal(reconstructed.sourceCompilation, compilation, "C4 did not reuse the exact persistent compilation object");
+    assert.equal(reconstructed.activation, "OFF", "fresh runtime inherited transient ON state");
+    assertReceipt(reconstructed.receipt);
+
+    const initialBarycenter = barycenter(reconstructed.snapshots());
+    reconstructed.step(OFF_STEPS);
+    const result = observe(reconstructed, initialBarycenter);
+
+    console.log(JSON.stringify({
+      probe: "ANVIL-09/ACTIVATE-C4",
+      sourceEffortNm: authored.patch.effortNm,
+      reconstructed: result,
+    }));
+
+    assert.equal(result.activation, "OFF");
+    assert.ok(Math.abs(result.angleRad) <= MAX_OFF_ANGLE_RAD, `reconstructed OFF angle ${result.angleRad}`);
+    assert.ok(Math.abs(result.relativeAngularSpeedRadps) <= MAX_OFF_SPEED_RADPS, `reconstructed OFF speed ${result.relativeAngularSpeedRadps}`);
+    assertIsolation("reconstructed default OFF", result);
+    assert.deepEqual(authored, authoredBefore, "C4 mutated persistent authored source");
+    assert.deepEqual(compilation, compilationBefore, "C4 mutated persistent compilation");
+  } finally {
+    reconstructed.dispose();
+  }
+});
+
 test("ANVIL-09 real-solver runtime applies body torque without motor or velocity-setter control paths", async () => {
   const source = await readFile(new URL("../src/experiments/anvil-09-activate-runtime.ts", import.meta.url), "utf8");
   assert.equal(source.includes("b3Body_ApplyTorque"), true);
