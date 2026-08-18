@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last strategic grounding: 2026-08-18. Accepted material truth is through **ANVIL-07 / ELASTIC-SEAM**. **ANVIL-08 / COMPLIANCE-RESOLUTION** is now the active Draft falsifier; its preflight is frozen and no executable ANVIL-08 result exists yet.
+Last strategic grounding: 2026-08-18. Accepted material truth is through **ANVIL-08 / COMPLIANCE-RESOLUTION**. No next experiment is active yet.
 
 ## Identity and authority
 
@@ -25,86 +25,110 @@ ANVIL tests **Machine Matter / Physical Fabric**: persistent authored matter and
 - **ANVIL-04 / LOAD-REBIND** — bounded loaded reconstruction without migrating Box3D joint cache and without gross first-step shock.
 - **ANVIL-05 / TORQUE** — signed persistent active intent can create causal mechanical work through BEARING without authored Box3D motor semantics.
 - **ANVIL-06 / TORQUE-PATCH** — local source-face placement can resolve the existing BEARING without an authored bearing reference.
-- **ANVIL-07 / ELASTIC-SEAM** — for one frozen seven-cell one-dimensional fixture, a persistent local compliant seam can replace rigid adjacency, compile into disposable runtime representation, deform under load and restore after unload while remaining distinct from RIGID and FREE controls.
+- **ANVIL-07 / ELASTIC-SEAM** — one frozen local compliant seam can deform and restore while remaining distinct from rigid/free controls.
+- **ANVIL-08 / COMPLIANCE-RESOLUTION** — in the frozen one-dimensional fixture, area-normalized local normal compliance preserves the same macroscopic response under an exact 2x authored source refinement without per-patch retuning, while four authored patches may compile to one disposable runtime relation.
 
-Exact metrics/artifacts remain in experiment evidence files.
+Exact experiment metrics and artifact identities live in corresponding evidence files under `docs/experiments/`.
 
 ## Latest accepted promotion identity
 
-ANVIL-07:
+ANVIL-08:
 
 ```text
-promoted source head  a34a769e4892bb5a3c117389af7c2bba47866623
-Draft/core hardening   32188332165
-Ready run              32188493917
-Ready synthetic merge  c206a008458e2a244bf65663f0c11705a1d1c948
-Ready/merge tree       d9833ba637f11c11ca7f01f67924b128191e1ada
-actual material merge  62dcc651f73dc3f228109d3d8922afd534b75950
-evidence log commit    97ab4d72475ae3d15ae79a496cb7bdb6689c952f
+preflight head          a1e1000cfd6b40c9e84e2d86a4f735f37205af9f
+A/B source/run          60efa6a7b526223eb5de58d294dee03563dc64ff / 32190374538
+C0 source/run           e0cdb9e4e1397042f012ae532dddc7e0e5816d05 / 32190721229
+hardening source/run    5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201 / 32190959941
+Ready run               32191041240
+Ready synthetic merge   92d4eb6677a9029bafea0a19b2185c4de479a95d
+qualified tree          00230b73e283bdb39eedc3df00299b6d14c5aba9
+material merge          78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a
+evidence grounding      04b6429a7d714b0595d5b7b550bc9ca587dbd904
 ```
 
-ANVIL-07 remains bounded. Its discrete `normalStiffnessNPerM` / `normalDampingNsPerM` coefficients are not accepted as resolution-independent constitutive properties.
+Ready core: 44/44 PASS + production build PASS. Candidate: exact staging artifact consumed, launcher self-test PASS, 19/19 Chromium PASS. The actual merge tree is identical to the Ready synthetic tree.
 
 ## Strongest architectural lessons
 
 - Authored identity must remain separate from runtime body/joint identity.
-- Runtime representation may have different topology/resolution from authored matter.
+- Runtime representation may have different topology and resolution from authored matter.
 - Locality should resolve physical relationships when geometry genuinely supplies the missing meaning.
 - Box3D is a lowering target, not ontology.
 - Passing experiment-local semantics does not automatically earn generic Bond, Relation, Surface, FUNCTION, Control or property-field architecture.
 - Composition, not a catalog of isolated primitives, is the long-term test.
-- After ANVIL-07, the highest-consequence uncertainty is whether compliance has honest representation/scaling meaning rather than being a spring-per-voxel convention.
+- ANVIL-07's discrete whole-seam `N/m` / `N*s/m` values were not honest resolution-independent authored material meaning by themselves.
+- ANVIL-08 supports one bounded area-normalized alternative: derive patch contribution from physical face area so exact 2x source refinement preserves aggregate normal compliance.
+- The fine ANVIL-08 source having four authored patches while the solver uses one relation is direct bounded evidence that authored resolution need not shadow solver resolution one-to-one.
+- This 4→1 reduction is only justified by the frozen 1D kinematics. It must not be generalized to rotationally free/shear/distributed cases without new evidence.
 
-## Active experiment — ANVIL-08 / COMPLIANCE-RESOLUTION
+## ANVIL-08 bounded result
 
-```text
-PR                 #13
-branch             experiment/anvil-08-compliance-resolution
-base at freeze     79acf565d3505a0d71be055132779c2ed2d92d8c
-preflight head     a1e1000cfd6b40c9e84e2d86a4f735f37205af9f
-phase              Draft / preflight frozen / implementation pending
-verdict            NO EXECUTABLE RESULT
-```
-
-Canonical contract: `docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-PREFLIGHT.md`.
-
-Primary question: can the same physical normal-compliance interface preserve macroscopic behavior across an exact 2x authored refinement without per-patch retuning, while four authored patches may compile to one disposable runtime relation?
-
-Candidate authored hypothesis remains experiment-local:
+Frozen candidate:
 
 ```text
-NormalCompliancePatch {
-  id
-  target: { cellId, face }
-  normalStiffnessPerAreaNPerM3
-  normalDampingPerAreaNsPerM3
-}
+COARSE: 7 cells @ 0.5 m, 1 authored patch
+FINE:   56 cells @ 0.25 m, 4 authored patches
+K_n:    40000 N/m^3
+C_n:    7200 N*s/m^3
+aggregate candidate k/c at both resolutions: 10000 N/m / 1800 N*s/m
 ```
 
-The opposing face is inferred from local matter adjacency and patch area from source geometry. COARSE uses one `0.25 m²` patch; FINE uses four `0.0625 m²` patches over the same physical interface. Frozen candidate values `K_n=40000 N/m³`, `C_n=7200 N·s/m³` aggregate to the same `10000 N/m`, `1800 N·s/m` at both resolutions. A deliberately wrong fixed-per-patch control aggregates to `40000/7200` and must be physically distinguishable.
+Loaded extension under frozen 1000 N / 180-step schedule:
 
-This is not accepted ontology and not yet evidence.
+```text
+COARSE_AREA                  0.09999978542327881 m
+FINE_AREA                    0.09999978542327881 m
+FINE_FIXED_PATCH_CONTROL     0.024999499320983887 m
+```
 
-## Current exact next action
+Recovered candidate extension after 120 unloaded steps:
 
-Implement only the frozen PR #13 C0 slice:
+```text
+COARSE_AREA  -0.0000023245811462402344 m
+FINE_AREA    -0.0000023245811462402344 m
+```
 
-- local face/neighbor resolution and fail-closed validation;
-- deterministic coarse and exact 2x refined fixtures;
-- blocked rigid adjacency -> same two physical regions at both resolutions;
-- area-derived patch contributions and one 1D aggregate runtime relation;
-- naive fixed-per-patch control;
-- structural/compiler + real pinned Box3D tests under frozen gates;
-- canonical Node test registration;
-- Draft/core execution and red-result classification before any repair.
+The intentionally wrong fixed-per-patch control demonstrates that simply copying the old whole-seam spring to every fine face changes macroscopic behavior strongly enough for the fixture to detect the error.
 
-Do not edit the frozen preflight after seeing results merely to obtain PASS.
+Do not reinterpret exact candidate equality as continuum convergence. The accepted scope is this one exact 2x refinement and isolated 1D mode.
 
-## Strategic horizon
+## Promotion / abstraction stance
 
-If ANVIL-08 resolves cleanly, stop the scaling challenge. **ACTIVATE** is the leading next composition checkpoint; compliant REBIND remains later unless new evidence changes the frontier.
+Keep all of the following experiment-local:
 
-Do not promote `NormalCompliancePatch`, `ElasticSeam`, generic compliant surface/property fields or runtime aggregation into foundation from ANVIL-08 alone.
+- `NormalCompliancePatch`;
+- its current area-normalized coefficient names;
+- ANVIL-08 relation/compilation schemas;
+- ANVIL-07 compatibility adapter used by ANVIL-08 runtime;
+- 4-authored-patches → 1-runtime-relation aggregation.
+
+Do **not** promote a generic compliant surface/property field, Bond or Relation into `src/foundation` from ANVIL-08 alone.
+
+ANVIL-08 does not prove arbitrary resolution invariance, shear/bending/torsion, rotationally free distributed compliance, heterogeneous patches, contact-loaded compliance, damage/plasticity, compliant REBIND, transient control, signals or power.
+
+## Current strategic frontier
+
+No experiment is active. The planned representation/scaling challenge is complete, so the Research Compass composition rule now applies.
+
+Ranked horizon:
+
+1. **ACTIVATE** — leading strategic candidate. Test transient control over already-earned persistent local function/mechanical semantics, preferably by driving existing TORQUE/TORQUE-PATCH through BEARING without mutating construction truth or leaking Box3D motor/control state into authored ontology.
+2. compliant **REBIND / continuity** — later, unless new evidence raises it above composition.
+
+Do not add another isolated compliance primitive/resolution merely because the previous experiment was green.
+
+## Exact next action
+
+Prepare, but do not yet implement, the ACTIVATE composition falsifier:
+
+- distinguish persistent function/construction semantics from transient command/control state;
+- define the smallest activation lifecycle (off/on, command sign/magnitude, reset/restart meaning) that can produce a discriminating result;
+- reuse accepted TORQUE/TORQUE-PATCH causal mechanics where possible instead of inventing a new actuator;
+- decide how transient state is supplied without becoming persistent matter identity;
+- design negative controls proving zero command leaves persistent function inert and reversed command reverses causal response;
+- explicitly prevent authored Box3D motor IDs/settings from entering truth;
+- freeze quantitative gates and non-claims before implementation;
+- only then create/activate the next experiment.
 
 ## Process boundaries
 

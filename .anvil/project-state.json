@@ -3,60 +3,70 @@
   "repository": "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
   "authority": "checkpoint-claim-verify-against-live-git",
   "accepted": {
-    "through": "ANVIL-07 / ELASTIC-SEAM",
-    "materialCheckpoint": "62dcc651f73dc3f228109d3d8922afd534b75950",
-    "lastMaterialMerge": "62dcc651f73dc3f228109d3d8922afd534b75950",
-    "evidenceGrounding": "97ab4d72475ae3d15ae79a496cb7bdb6689c952f"
+    "through": "ANVIL-08 / COMPLIANCE-RESOLUTION",
+    "materialCheckpoint": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
+    "lastMaterialMerge": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
+    "evidenceGrounding": "04b6429a7d714b0595d5b7b550bc9ca587dbd904"
   },
   "active": {
+    "experiment": null,
+    "pr": null,
+    "branch": null,
+    "phase": "post-anvil-08-promotion-grounded-awaiting-composition-preflight",
+    "activeVerdict": null,
+    "readyForPromotion": false
+  },
+  "anvil08": {
     "experiment": "ANVIL-08 / COMPLIANCE-RESOLUTION",
     "pr": 13,
-    "branch": "experiment/anvil-08-compliance-resolution",
-    "baseAtFreeze": "79acf565d3505a0d71be055132779c2ed2d92d8c",
-    "checkpointHead": "a1e1000cfd6b40c9e84e2d86a4f735f37205af9f",
+    "status": "promoted",
+    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
+    "evidenceBoundary": "accepted bounded one-dimensional exact-2x source-refinement result; not continuum convergence or generic deformable matter",
     "preflight": "docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-PREFLIGHT.md",
-    "phase": "draft-preflight-frozen-implementation-pending",
-    "activeVerdict": "NO EXECUTABLE RESULT",
-    "evidenceBoundary": "preflight only; no ANVIL-08 semantic or physics evidence yet",
-    "readyForPromotion": false
+    "evidenceLog": "docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-EVIDENCE.md",
+    "preflightSource": "a1e1000cfd6b40c9e84e2d86a4f735f37205af9f",
+    "abSource": "60efa6a7b526223eb5de58d294dee03563dc64ff",
+    "abRun": 32190374538,
+    "c0Source": "e0cdb9e4e1397042f012ae532dddc7e0e5816d05",
+    "c0Run": 32190721229,
+    "evidenceHardeningSource": "5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201",
+    "evidenceHardeningRun": 32190959941,
+    "readyRun": 32191041240,
+    "readySyntheticMerge": "92d4eb6677a9029bafea0a19b2185c4de479a95d",
+    "qualifiedTree": "00230b73e283bdb39eedc3df00299b6d14c5aba9",
+    "materialMerge": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
+    "readyEvidence": "44/44 Node PASS + production build PASS + launcher self-test PASS + 19/19 Chromium PASS",
+    "acceptedResult": "At the frozen 1D interface, area-normalized local normal-compliance meaning preserves the same macroscopic response under exact 2x source refinement, and 4 authored patches may compile to 1 disposable runtime relation."
   },
   "anvil07": {
     "experiment": "ANVIL-07 / ELASTIC-SEAM",
-    "pr": 12,
     "status": "promoted",
-    "verdict": "SUPPORTED FOR FIXTURE",
-    "evidenceBoundary": "accepted bounded seven-cell one-dimensional compliant-seam result; not generic deformable matter",
-    "preflight": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT.md",
-    "preflightAmendment": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT-AMENDMENT-01.md",
-    "evidenceLog": "docs/experiments/ANVIL-07-ELASTIC-SEAM-EVIDENCE.md",
-    "evidenceHardeningSource": "a34a769e4892bb5a3c117389af7c2bba47866623",
-    "evidenceHardeningRun": 32188332165,
-    "readyRun": 32188493917,
-    "readySyntheticMerge": "c206a008458e2a244bf65663f0c11705a1d1c948",
-    "qualifiedTree": "d9833ba637f11c11ca7f01f67924b128191e1ada",
-    "materialMerge": "62dcc651f73dc3f228109d3d8922afd534b75950"
+    "materialMerge": "62dcc651f73dc3f228109d3d8922afd534b75950",
+    "evidenceLog": "docs/experiments/ANVIL-07-ELASTIC-SEAM-EVIDENCE.md"
   },
-  "strategicHorizon": {
-    "currentFalsifier": "COMPLIANCE-RESOLUTION",
-    "runnerUp": "ACTIVATE",
-    "later": "compliant REBIND",
-    "compositionRule": "After at most one deliberate compliance-resolution challenge, force composition unless new evidence changes the frontier."
+  "nextCandidate": {
+    "name": "ACTIVATE",
+    "status": "strategic-candidate-not-frozen-not-active",
+    "primaryFalsifier": "whether transient control can act on already-earned persistent local function/mechanical semantics without mutating construction truth or collapsing into solver-control ontology",
+    "compositionReason": "ANVIL-08 completed the planned representation/scaling challenge; the Research Compass composition rule now favors forcing composition instead of adding another isolated primitive",
+    "later": "compliant REBIND / continuity after composition unless new evidence changes the frontier",
+    "nextAction": "Run a bounded Research Compass/preflight preparation pass for ACTIVATE. Identify the smallest transient control state that can drive already-earned persistent TORQUE/TORQUE-PATCH semantics through existing BEARING without becoming authored construction or Box3D motor state. Freeze negative controls, lifecycle semantics and quantitative gates before implementation. Do not create an active ANVIL-09 until that preflight is critically frozen."
   },
-  "nextAction": "Keep PR #13 Draft. Implement only the frozen ANVIL-08 COARSE_AREA / FINE_AREA / FINE_FIXED_PATCH_CONTROL slice: experiment-local local-face area-normalized compliance, deterministic 2x refinement, compiled patch aggregation to one 1D runtime relation, direct structural/solver evidence, and canonical test registration. Do not alter frozen gates. Run Draft/core and classify any red before changing code or thresholds.",
   "doNotDoNow": [
-    "treat ANVIL-08 as supported before executable evidence",
-    "modify the frozen ANVIL-08 gates because implementation is inconvenient",
+    "reopen or enrich ANVIL-08",
+    "add a third compliance resolution or parameter sweep merely to collect more PASS results",
     "promote NormalCompliancePatch, ElasticSeam, SurfaceLaw, Bond, Relation or a generic local-property field into foundation",
-    "add a third resolution, parameter sweep, heterogeneity, rotation, shear, contact, damage, REBIND or ACTIVATE",
-    "force one runtime relation per authored patch",
-    "confuse build/capability success with resolution-invariance physics evidence"
+    "generalize 4 authored patches to 1 runtime relation beyond the frozen 1D validity boundary",
+    "treat ANVIL-08 as continuum convergence or generic deformable matter",
+    "start compliant REBIND before the next composition checkpoint unless new evidence changes the ranking",
+    "treat ACTIVATE as active or accepted before a new frozen preflight exists"
   ],
   "takeoverVerification": [
     "resolve live main",
-    "verify accepted.materialCheckpoint 62dcc651f73dc3f228109d3d8922afd534b75950 is an ancestor of live main",
-    "resolve PR #13 and verify its live head against active.checkpointHead unless a newer audited implementation head exists",
-    "read the frozen ANVIL-08 preflight from the active branch",
-    "compare active branch to live main and classify docs/meta-only main drift separately from material experiment changes",
-    "verify no executable ANVIL-08 result is claimed before a corresponding exact-head Draft/core run exists"
+    "verify accepted.materialCheckpoint 78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a is an ancestor of live main",
+    "verify ANVIL-08 evidence log exists at or after evidenceGrounding 04b6429a7d714b0595d5b7b550bc9ca587dbd904",
+    "if promotion provenance matters, verify Ready run 32191041240 source 5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201 and synthetic merge 92d4eb6677a9029bafea0a19b2185c4de479a95d",
+    "verify Ready synthetic and actual material merge trees are both 00230b73e283bdb39eedc3df00299b6d14c5aba9",
+    "confirm no newer active experiment/preflight has superseded nextCandidate before writing"
   ]
 }
