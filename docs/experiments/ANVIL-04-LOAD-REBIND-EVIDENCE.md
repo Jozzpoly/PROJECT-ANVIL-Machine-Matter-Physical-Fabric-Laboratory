@@ -1,6 +1,6 @@
 # ANVIL-04 / LOAD-REBIND — Evidence Log
 
-Status: **C0 + C1 CORE SUPPORTED / D0 PRODUCTION CHROMIUM PENDING**
+Status: **C0 + C1 + D0 SUPPORTED / PROMOTED**
 
 Canonical preflight: `docs/experiments/ANVIL-04-LOAD-REBIND-PREFLIGHT.md`.
 
@@ -8,7 +8,7 @@ Canonical preflight: `docs/experiments/ANVIL-04-LOAD-REBIND-PREFLIGHT.md`.
 
 Can the accepted ANVIL-03 semantic bearing rebind survive a runtime rebuild while the old bearing is carrying a strong sustained external constraint load, without a gross first-step shock when the old Box3D joint and its internal solver history are discarded?
 
-The experiment deliberately uses a laboratory-only pair of equal and opposite `2500 N` forces applied at the current bearing anchors. This is test instrumentation, not authored FUNCTION/actuation semantics.
+The experiment uses a laboratory-only pair of equal and opposite `2500 N` forces applied at the current bearing anchors. This is test instrumentation, not authored FUNCTION/actuation semantics.
 
 Common bounded fixture:
 
@@ -25,14 +25,14 @@ contacts                disabled
 external preload        2500 N equal/opposite at bearing anchors
 ```
 
-## Binding capability precheck
+## Binding capability
 
-Exact pinned `box3d.js@0.0.2` exposes the two real-solver capabilities required by this experiment:
+Exact pinned `box3d.js@0.0.2` exposes the two real-solver capabilities required by the experiment:
 
 - `b3Body_ApplyForce`;
 - `b3Joint_GetConstraintForce`.
 
-The capability precheck passed before C0 implementation. No synthetic substitute is used.
+The capability precheck passed before C0 implementation. No synthetic force substitute is used.
 
 ## C0 — loaded equilibrium
 
@@ -45,7 +45,7 @@ Actions run      32134396736
 Node suite       33/33 PASS
 ```
 
-Observed C0 probe:
+Observed C0:
 
 ```text
 commanded preload                  2500 N
@@ -81,7 +81,7 @@ Actions run      32134746006
 Node suite       34/34 PASS
 ```
 
-Observed C1 probe:
+Observed C1:
 
 ```text
 commanded preload                  2500 N
@@ -99,33 +99,80 @@ final relative angular speed       0.2702902555465698 rad/s
 no-relation control gap            16.331536932971133 m
 ```
 
-C1 passed the same bounded continuity intent while the mechanism was genuinely moving and the old relation was carrying approximately 2.55 kN. The reconstructed joint produced approximately 2.53 kN on its first solver step and did not freeze into a hidden weld.
+C1 passed while the mechanism was genuinely moving and the old relation was carrying approximately 2.55 kN. The reconstructed joint produced approximately 2.53 kN on its first solver step and did not freeze into a hidden weld.
 
-## Supported interpretation so far
+## D0 — production Chromium
 
-C0 + C1 support the bounded claim that, for these force-pair fixtures, persistent source semantics plus rigid-motion transfer are sufficient to cold-reconstruct the revolute relation under a sustained multi-kN external constraint load without requiring migration of Box3D's internal joint warm-start/cache state.
+ANVIL-04 deliberately used automated Class D evidence rather than an owner gate. The unresolved claim was quantitative and directly observable in the real runtime; another manual left-connected/right-separated test would have duplicated owner-accepted REBIND visual evidence.
 
-This is evidence that **joint-cache migration is not required for these bounded cases**. It is not evidence that such migration is universally unnecessary.
+Frozen promoted candidate:
 
-The no-bearing controls separate by more than `16 m`, giving strong causal discrimination: the loaded constrained result is not explained by coincident free motion.
+```text
+source head       88844f874ba64932418331c3c0a996a33490d85a
+base main         eb5928994a2d04d039f8613b63275f349ba3a2a3
+synthetic merge   ad8ea844eeb165af9fa95ac3a27d8da5b6168b7d
+synthetic tree    e5a311462772c29c26074d9d92ec9041ef5db94e
+Actions run       32135764502
+Node suite        34/34 PASS
+Chromium suite    18/18 PASS
+```
 
-## D0 — production browser boundary
+Lean candidate handoff:
 
-A technical production-browser probe now exists at:
+```text
+staging artifact ID      9323900170
+staging SHA256            e219ddf67620ff3acb191bfc159fbe633c50d3e44d1c3f999bf33a7c34ad06a2
+final artifact ID        9323943419
+final artifact SHA256    dd4e3c36554a41606825b66f9e7977945e90e65f8fce1fb5d8d23753226711ba
+```
+
+The candidate job downloaded the exact staging artifact produced by core before running launcher and Chromium evidence. It did not rebuild a parallel candidate.
+
+Production route:
 
 `/?experiment=load-rebind`
 
-It executes the moving C1 fixture using the production bundle and publishes raw metrics plus fail-closed gates. A dedicated Playwright test independently re-checks those raw values instead of trusting the page's own PASS label.
+The in-page probe ran C1 through the production bundle and published fail-closed raw metrics. A separate Playwright observer independently parsed those values and re-applied the important thresholds instead of trusting the page's PASS state.
 
-At the time of this evidence record, the browser observer has been added but **real Chromium D0 has not yet been executed**, because PR #9 remains Draft under the lean evidence workflow.
+Observed D0 Chromium metrics exactly matched C1:
 
-D0 becomes supported only after the same Ready head passes the candidate job in real Chromium.
+```text
+preload force                       2551.616827479971 N
+preload gap                         0.0001763423239173839 m
+preload relative angular speed      1.2114612460136414 rad/s
+max immediate position jump         7.243845060872667e-9 m
+max immediate velocity jump         1.6137700352453327e-8 m/s
+first-step gap                      0.00024550836023042494 m
+first-step anchor velocity gap      6.128157470238641e-8 m/s
+first-step constraint force         2527.2392934796676 N
+final constrained gap               0.0003379116587781509 m
+no-relation control gap             16.331536932971133 m
+final relative angular speed        0.2702902555465698 rad/s
+```
 
-## Owner validation decision
+D0 result: **SUPPORTED**.
 
-No owner gate is planned for ANVIL-04 unless D0 reveals a genuinely visual ambiguity.
+## Promotion identity
 
-The unresolved ANVIL-04 claim is quantitative: actual constraint force, first-step anchor gap/relative velocity, finite state and causal control separation. Manual repetition would not add a new evidence class beyond the already owner-accepted REBIND visual semantics.
+PR #9 was merged with expected-head protection after confirming the Ready head and base remained unchanged.
+
+```text
+promoted source head   88844f874ba64932418331c3c0a996a33490d85a
+actual merge           2dfac4c79e7c12be2795e87bb5d51c12fc29e231
+actual merge tree      e5a311462772c29c26074d9d92ec9041ef5db94e
+```
+
+The actual merge tree is identical to the synthetic merge tree that passed the Ready candidate gate.
+
+## Supported interpretation
+
+C0 + C1 + D0 support the bounded claim that, for these force-pair fixtures, persistent source semantics plus rigid-motion transfer are sufficient to cold-reconstruct the revolute relation under a sustained multi-kN external constraint load without migrating Box3D's internal joint warm-start/cache state.
+
+This is evidence that **joint-cache migration is not required for these bounded cases**. It is not evidence that such migration is universally unnecessary.
+
+The strong no-bearing controls provide causal discrimination: without relation reconstruction the same loaded post-CUT state separates by more than `16 m`.
+
+The result strengthens ANVIL's disposable-runtime premise: a runtime joint can be discarded and rebuilt from persistent semantics and still immediately resume the declared mechanical responsibility under load.
 
 ## Explicit non-claims
 
@@ -140,3 +187,9 @@ ANVIL-04 does not prove:
 - cutting through the bearing itself;
 - generic Relation/Constraint architecture;
 - in-place mutation of one persistent populated Box3D world.
+
+## Next decision boundary
+
+Do not extend ANVIL-04 with arbitrary force levels or extra motion variants.
+
+The remaining contact-loaded combination is a known future risk, but it should only become the next experiment if active contact/manifold continuity is required before the next machine hypothesis. Otherwise the higher-information move is to return to the broader Machine Matter program and test the smallest local authored **FUNCTION / actuation** signal through the already-earned bearing semantics.
