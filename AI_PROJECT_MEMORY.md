@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last grounding: 2026-08-18 after ANVIL-03 owner acceptance.
+Last grounding: 2026-08-18 after ANVIL-03 promotion.
 
 ## Identity and authority
 
@@ -16,31 +16,34 @@ Authority order:
 
 Always resolve live Git before meaningful work. Never let later docs or tooling redefine which exact artifact the owner actually tested.
 
-## Current live state at this grounding
+## Current accepted state
 
-Accepted `main` before ANVIL-03 promotion:
+`main` promotion commit for ANVIL-03:
 
-`36d363d5c828fa8f1bf96f183bd7393573dec216`
+`f2bb10b52577829c4c283933b3c6148dd55d1064`
 
-It contains:
+The final promotion CI tested synthetic merge:
+
+`bb82644bc5e988b61e10d410e47d674fcfc09a41`
+
+Both commits have the identical Git tree:
+
+`3bc506275e6c197421c1c2e06385783eea9c67fd`
+
+Therefore the contents promoted to `main` are exactly the contents that passed the final promotion gate.
+
+Accepted stack on `main`:
 
 - ANVIL-00 / COLLAPSE — owner accepted and promoted;
 - laboratory foundation — promoted;
 - ANVIL-01 / CUT — owner accepted and promoted;
 - ANVIL-02 / BEARING — owner accepted and promoted;
-- Forge V0.2.1 human-owner communication layer — merged and automated-validated.
+- ANVIL-03 / REBIND — owner accepted and promoted;
+- Forge V0.2.1 human-owner communication layer — automated-validated and field-tested successfully by REBIND.
 
-Active research branch:
+There is no active ANVIL-04 branch at this grounding.
 
-`experiment/anvil-03-rebind`
-
-PR:
-
-`#7 — ANVIL-03: rebind a persistent bearing across moving CUT`
-
-**ANVIL-03 / REBIND is OWNER ACCEPTED for its declared bounded claim and awaits docs-grounded promotion.**
-
-Immutable owner-tested identity:
+## Immutable ANVIL-03 owner-tested identity
 
 ```text
 source head      e03e227df073ec45946f9e83a9716ca6d7fe8af3
@@ -49,13 +52,13 @@ Actions run      32085543984 attempt 1
 artifact ID      9306595449
 artifact SHA256  98ae32912516cb8287c02bf12aa669b57628f7ef7e47be9f647d05791918ad44
 Forge revision   v0.2.1-human-owner-copy
-owner            ACCEPT after 14 observed REBIND runs
+owner verdict    ACCEPT after 14 observed REBIND runs
 owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
 ```
 
-External GitHub provenance handshake after handoff passed. A user-supplied screenshot also visibly supported the intended left-connected/right-separated terminal state.
+External GitHub provenance handshake passed after handoff. A user-supplied screenshot visibly supported the intended left-connected/right-separated terminal state.
 
-If this memory is read after promotion, resolve live `main`; the exact owner-tested source/artifact above remains the acceptance identity even though a later documentation commit and merge may become the repository head.
+Do not replace this identity with later documentation or promotion commits.
 
 ## Research intent
 
@@ -118,11 +121,11 @@ Bounded proof that persistent authored cells/material can deterministically comp
 
 ### ANVIL-01 / CUT
 
-Owner accepted mass-preserving topology continuity:
+Owner-accepted mass-preserving topology continuity:
 
 `51 source cells / 1 body -> same 51 source cells / 2 bodies`.
 
-The accepted rigid-field transfer is:
+Accepted rigid-field transfer:
 
 ```text
 child COM = parent COM + R_parent * authored COM offset
@@ -135,16 +138,9 @@ CUT does not prove contact-manifold migration, arbitrary fracture, in-place worl
 
 ### ANVIL-02 / BEARING
 
-Owner accepted one experiment-local authored bearing interface:
+Owner accepted one experiment-local authored rotational interface expressed through persistent source endpoints, not Box3D IDs. The same seven source cells compile from one rigid island to two bodies plus one Box3D revolute relation. The relation keeps the shared pivot while allowing free relative rotation; an explicit no-relation control separates strongly. A predeclared arbitrary common 3D transform also passed.
 
-```text
-stable source bearing ID
-endpoint A = persistent cell ID + face
-endpoint B = persistent cell ID + opposite face
-free axis  = x | y | z
-```
-
-The same seven source cells compile from one rigid island to two bodies plus one Box3D revolute relation. The relation keeps a shared pivot while allowing free relative rotation, with a strong no-relation A/B control. An arbitrary common 3D rigid transform also passed without earning a generic authored-frame ontology.
+Do not infer a generic relation ontology or universal frame system from BEARING.
 
 ### ANVIL-03 / REBIND
 
@@ -153,8 +149,6 @@ Canonical docs:
 - `docs/experiments/ANVIL-03-REBIND-PREFLIGHT.md`;
 - `docs/experiments/ANVIL-03-REBIND-EVIDENCE.md`;
 - `docs/experiments/ANVIL-03-REBIND-OWNER-GATE.md`.
-
-REBIND composes the two previous capabilities instead of adding a new Box3D feature.
 
 Declared transaction:
 
@@ -168,20 +162,20 @@ bearing endpoint runtime body: body:a:0 -> body:a:2
 
 The new endpoint body is resolved from persistent source-cell provenance, not from the old disposable body ID.
 
-C0 moving fixture and C1 arbitrary common-3D-transform fixture both passed the same frozen tolerances. Final owner candidate passed **31/31** real-Box3D/Node tests and **17/17** Chromium tests. Owner then repeated the real package 14 times and accepted the intended visual result.
+C0 moving fixture and C1 arbitrary common-3D-transform fixture both passed the same frozen tolerances. Exact owner candidate passed **31/31** Node / real-Box3D tests and **17/17** Chromium tests. Owner then repeated the real Windows package 14 times and accepted the visual result.
 
 Strongest correct claim:
 
-> persistent source provenance + persistent authored bearing endpoints are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for the declared moving fixtures, while maintaining observable pose/velocity/pivot continuity and free relative rotation.
+> persistent source provenance plus persistent authored bearing endpoints are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for the declared moving fixtures while maintaining observable pose/velocity/pivot continuity and free relative rotation.
 
 Architectural implication earned by evidence:
 
 - source matter and authored physical intent may outlive disposable body and joint identities;
 - runtime body IDs are not suitable construction identity;
-- a relation can be **re-derived** after topology compilation from persistent source semantics rather than migrated as an authoritative solver object;
-- CUT and BEARING therefore compose at the semantic/compiler boundary for this bounded case.
+- a relation can be **re-derived** from persistent source semantics after topology recompilation rather than migrated as an authoritative solver object;
+- CUT and BEARING compose at the semantic/compiler boundary for this bounded case.
 
-Important boundary: REBIND creates a **fresh Box3D world and fresh revolute joint**. It does not migrate internal joint impulse/warm-start caches. Call this semantic relation continuity, not joint-state migration.
+Important boundary: REBIND creates a **fresh Box3D world and fresh revolute joint**. It does not migrate internal joint impulse/warm-start caches. Call this **semantic relation continuity**, not joint-state migration.
 
 ## Forge — current truth after third field trial
 
@@ -191,20 +185,18 @@ Forge exists only to reduce owner-validation friction:
 
 Do **not** build a universal hub yet. Forge must keep earning its shape from actual ANVIL owner gates.
 
-BEARING field trial exposed a communication failure: technical terms such as schema/provenance/canonical/fail-closed were unreadable in the primary owner flow.
+BEARING exposed a communication failure: primary owner instructions were too technical. Forge V0.2.1 changed only the human-facing layer while retaining strict internal provenance/verdict semantics.
 
-Forge V0.2.1 changed only the human-facing layer while preserving strict internal verdict/provenance semantics.
-
-REBIND is its first real field trial and **passed for this gate**:
+REBIND is the first real V0.2.1 field trial and **passed for this gate**:
 
 - correct Windows launcher/path;
 - plain Polish visual instruction;
 - ordinary decisions `DZIAŁA / NIE DZIAŁA / NIE WIEM`;
 - technical details not required for the owner decision;
-- exact technical report still sufficient for external provenance verification;
+- generated technical report still sufficient for external provenance verification;
 - owner correctly restated the intended A/B behavior and selected `DZIAŁA` after 14 runs.
 
-Do not infer universal usability from one successful V0.2.1 consumer. Keep future improvements evidence-driven and ANVIL-specific.
+Do not infer universal usability from one successful V0.2.1 consumer.
 
 ## Preserved boundaries after REBIND
 
@@ -222,21 +214,15 @@ Do not claim that ANVIL currently has:
 - deformable/compliant matter;
 - damage/plasticity/debris systems.
 
-## Immediate next actions
+## Next research decision
 
-1. Treat `e03e227d...` + artifact `9306595449` as the immutable owner-tested ANVIL-03 identity.
-2. Run one final docs-grounded CI on the owner-acceptance head; do not change REBIND physics or thresholds.
-3. Promote PR #7 only if that final CI is green and the PR head/base have not moved unexpectedly.
-4. After merge, compare the tested synthetic-merge tree with the actual `main` merge tree.
-5. Only then select ANVIL-04.
-
-## Next research decision after promotion
-
-Do not automatically build more fracture or a generic mechanism framework.
+ANVIL-03 is complete. Do not continue REBIND merely by adding more repetitions.
 
 The two highest-value next falsifiers are:
 
-1. **loaded relation continuity** — repeat relation reconstruction while the bearing carries a meaningful external/constraint load, attacking the current absence of solver-cache/contact/load continuity evidence;
+1. **loaded relation continuity** — reconstruct a bearing while it carries meaningful external/constraint load, directly attacking the current absence of joint-cache/contact/load continuity evidence;
 2. **local actuation/function** — add the smallest experiment-local authored torque/actuation intent to an already-earned bearing, beginning the `FUNCTION` part of Machine Matter without creating a generic power/control network.
 
-Prefer the first if we need to harden the continuity foundation before introducing active machine semantics. Prefer the second if the current semantic-rebuild model remains stable enough and the goal is to advance from passive structure toward an actual machine. Do not combine both in one first falsifier.
+Current preference: **loaded relation continuity first**, because it stresses the weakest remaining assumption in the continuity foundation before active machine semantics are layered on top. If that remains stable, local actuation becomes the next cleaner step.
+
+Do not combine both into one first falsifier, and do not build generic relation graphs, fracture systems, frame ontologies or power networks in advance.
