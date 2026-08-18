@@ -14,9 +14,10 @@
     "baseAtFreeze": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
     "preC0CheckpointHead": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
     "checkpointHead": "1a31a69096f48d2eccb08ba88d683607f15d0ce3",
-    "phase": "draft-c0-supported-for-fixture",
+    "phase": "draft-c0-supported-evidence-hardening-required",
     "activeVerdict": "SUPPORTED FOR FIXTURE",
     "evidenceBoundary": "A+B+C real-solver C0 on frozen one-dimensional fixture; active and unaccepted",
+    "promotionReadiness": "not-ready-evidence-hardening-required",
     "readyForPromotion": false,
     "physicsC0Implemented": true,
     "physicsC0Executed": true
@@ -32,22 +33,34 @@
     "c0Run": 32166041812,
     "c0Suite": "42/42 PASS + production build PASS"
   },
-  "nextAction": "Stop ANVIL-07 C0 enrichment. Run the bounded Research Compass reassessment required by the frozen preflight, then decide whether any Ready/candidate evidence is genuinely justified before promotion.",
+  "postC0Audit": {
+    "classification": "test/evidence hardening; no physical falsification identified",
+    "researchCompass": "completed",
+    "gaps": [
+      "source-cell reorder and endpoint-swap invariance are currently perturbed together instead of independently",
+      "blank seam id and invalid stiffness/damping domains are validated in code but lack adversarial test assertions",
+      "runtime isolation relies partly on harness receipts instead of direct solver-state observation where getters are available",
+      "required raw report omits compiled body counts and reports fixture masses as literals rather than compiled values"
+    ]
+  },
+  "nextAction": "Keep PR #12 Draft. Apply only preflight-defined evidence hardening: separate source-order and endpoint-swap invariance checks; add adversarial id/stiffness/damping domain checks; observe actual solver motion-lock/damping/joint tuning when the pinned binding exposes getters (otherwise use a bounded adversarial runtime probe); derive and report body counts/masses from compilation. Do not alter physics or frozen thresholds. Then rerun Draft/core and classify the result before any Ready decision.",
   "doNotDoNow": [
     "treat ANVIL-07 as accepted project truth",
-    "mark PR #12 Ready or merge it merely because C0 is green",
+    "mark PR #12 Ready before the post-C0 evidence gaps are closed",
+    "merge PR #12 merely because the original C0 is green",
     "change the frozen C0 gates after seeing the result",
     "add breakage, plasticity, TORQUE, ACTIVATE, contacts, or generic Bond architecture to ANVIL-07 C0",
-    "promote ELASTIC-SEAM into foundation without an explicit promotion decision",
-    "confuse the earlier weld-spring capability precheck with the later C0 physics evidence"
+    "promote ELASTIC-SEAM into foundation",
+    "start ANVIL-08 before the ANVIL-07 promotion decision is resolved",
+    "confuse Ready Chromium regression with direct ELASTIC-SEAM physics evidence"
   ],
   "takeoverVerification": [
     "resolve live main",
     "resolve PR #12 state and live head",
-    "verify C0 source 1a31a69096f48d2eccb08ba88d683607f15d0ce3 and run 32166041812",
+    "verify C0 source 1a31a69096f48d2eccb08ba88d683607f15d0ce3 and run 32166041812 unless a newer audited hardening head exists",
     "compare live main with accepted.materialCheckpoint and classify later docs/meta grounding separately from material truth",
     "compare active branch with live main / merge-base without rebasing for aesthetics",
     "read both frozen ANVIL-07 preflight documents from the active branch",
-    "keep capability evidence distinct from real-solver C0 physics evidence"
+    "keep capability evidence distinct from real-solver C0 physics evidence and post-C0 evidence hardening"
   ]
 }
