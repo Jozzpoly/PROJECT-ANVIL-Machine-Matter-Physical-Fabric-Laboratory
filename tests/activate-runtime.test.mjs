@@ -167,6 +167,18 @@ test("ANVIL-09 C0-C3 transient OFF/ON/OFF separates from continued ON in real Bo
     const finalDeactivated = observe(deactivated, initialBarycenterDeactivated);
     const finalContinued = observe(continuedOn, initialBarycenterContinued);
 
+    // Emit all frozen checkpoints before C2/C3 assertions so a red discriminator
+    // remains diagnostically useful without relaxing or reordering its gates.
+    console.log(JSON.stringify({
+      probe: "ANVIL-09/ACTIVATE-C0-C3",
+      sourceEffortNm: authored.patch.effortNm,
+      off: { deactivated: offDeactivated, continuedOn: offContinued },
+      active: { deactivated: activeDeactivated, continuedOn: activeContinued },
+      final: { deactivated: finalDeactivated, continuedOn: finalContinued },
+      postOffSpeedChangeRadps: finalDeactivated.relativeAngularSpeedRadps - activeDeactivated.relativeAngularSpeedRadps,
+      continuedOnSpeedAdvantageRadps: finalContinued.relativeAngularSpeedRadps - finalDeactivated.relativeAngularSpeedRadps,
+    }));
+
     assert.equal(finalDeactivated.activation, "OFF");
     assert.ok(finalDeactivated.relativeAngularSpeedRadps >= MIN_POST_OFF_SPEED_RADPS, `post-OFF speed ${finalDeactivated.relativeAngularSpeedRadps}`);
     assert.ok(
@@ -185,15 +197,6 @@ test("ANVIL-09 C0-C3 transient OFF/ON/OFF separates from continued ON in real Bo
       `continued-ON speed advantage ${finalContinued.relativeAngularSpeedRadps - finalDeactivated.relativeAngularSpeedRadps}`,
     );
     assertIsolation("final continued ON", finalContinued);
-
-    console.log(JSON.stringify({
-      probe: "ANVIL-09/ACTIVATE-C0-C3",
-      sourceEffortNm: authored.patch.effortNm,
-      off: { deactivated: offDeactivated, continuedOn: offContinued },
-      active: { deactivated: activeDeactivated, continuedOn: activeContinued },
-      final: { deactivated: finalDeactivated, continuedOn: finalContinued },
-      continuedOnSpeedAdvantageRadps: finalContinued.relativeAngularSpeedRadps - finalDeactivated.relativeAngularSpeedRadps,
-    }));
 
     assert.deepEqual(authored, authoredBefore, "ANVIL-09 runtime mutated authored source");
     assert.deepEqual(compilation, compilationBefore, "ANVIL-09 runtime mutated persistent compilation");
