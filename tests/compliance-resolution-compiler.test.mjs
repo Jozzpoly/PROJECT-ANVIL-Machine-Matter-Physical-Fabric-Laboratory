@@ -46,6 +46,19 @@ function assertPhysicalRegionMeaningEqual(left, right, label) {
   assertVecNear(left.relation.restPointWorld, right.relation.restPointWorld, 1e-12, `${label} centroid`);
 }
 
+function assertSamePhysicalBodies(left, right, label) {
+  expectNear(totalMass(left.physicalPlan), totalMass(right.physicalPlan), 1e-9, `${label} total mass`);
+  for (const massKg of [292.5, 390.0]) {
+    const leftBody = bodyByMass(left.physicalPlan, massKg);
+    const rightBody = bodyByMass(right.physicalPlan, massKg);
+    assert.equal(leftBody.sourceCellIds.length, rightBody.sourceCellIds.length, `${label} ${massKg}kg source-cell count`);
+    assertVecNear(leftBody.centerOfMassWorld, rightBody.centerOfMassWorld, 1e-12, `${label} ${massKg}kg COM`);
+  }
+  expectNear(left.relation.totalAreaM2, right.relation.totalAreaM2, 1e-12, `${label} total area`);
+  assert.deepEqual(left.relation.normalWorld, right.relation.normalWorld, `${label} normal`);
+  assertVecNear(left.relation.restPointWorld, right.relation.restPointWorld, 1e-12, `${label} centroid`);
+}
+
 test("ANVIL-08 A/B preserves one physical compliant interface across exact 2x authored refinement", () => {
   const coarseSource = createComplianceResolutionFixture("COARSE");
   const fineSource = createComplianceResolutionFixture("FINE");
@@ -56,6 +69,10 @@ test("ANVIL-08 A/B preserves one physical compliant interface across exact 2x au
   assert.equal(fineSource.matter.cells.length, 56);
   assert.equal(coarseSource.matter.cellSizeM, 0.5);
   assert.equal(fineSource.matter.cellSizeM, 0.25);
+  assert.equal(coarseSource.matter.materials.length, 1);
+  assert.equal(fineSource.matter.materials.length, 1);
+  assert.equal(coarseSource.matter.materials[0]?.densityKgM3, 780);
+  assert.equal(fineSource.matter.materials[0]?.densityKgM3, 780);
   assert.equal(coarseSource.patches.length, 1);
   assert.equal(fineSource.patches.length, 4);
 
@@ -115,6 +132,17 @@ test("ANVIL-08 A/B preserves one physical compliant interface across exact 2x au
   assert.deepEqual(coarse.relation.normalWorld, { x: 1, y: 0, z: 0 });
   assert.deepEqual(fine.relation.normalWorld, coarse.relation.normalWorld);
 
+  assert.deepEqual(coarse.patches[0]?.resolvedNeighbor, { cellId: "b:0", face: "x-" });
+  const expectedFineNeighbors = new Map([
+    ["compliance:fine:00", { cellId: "b:0/000", face: "x-" }],
+    ["compliance:fine:01", { cellId: "b:0/001", face: "x-" }],
+    ["compliance:fine:10", { cellId: "b:0/010", face: "x-" }],
+    ["compliance:fine:11", { cellId: "b:0/011", face: "x-" }],
+  ]);
+  for (const patch of fine.patches) {
+    assert.deepEqual(patch.resolvedNeighbor, expectedFineNeighbors.get(patch.sourcePatchId), `${patch.sourcePatchId} resolved neighbor`);
+  }
+
   expectNear(coarse.relation.stiffnessNPerM, 10_000, 1e-9, "COARSE aggregate stiffness");
   expectNear(coarse.relation.dampingNsPerM, 1_800, 1e-9, "COARSE aggregate damping");
   expectNear(fine.relation.stiffnessNPerM, 10_000, 1e-9, "FINE aggregate stiffness");
@@ -136,16 +164,21 @@ test("ANVIL-08 A/B preserves one physical compliant interface across exact 2x au
   expectNear(naive.relation.dampingNsPerM, 7_200, 1e-9, "naive aggregate damping");
   expectNear(naive.relation.linearHertz, 2.4621029950204325, 1e-12, "naive hertz");
   expectNear(naive.relation.linearDampingRatio, 1.3922864426767712, 1e-12, "naive damping ratio");
-  expectNear(totalMass(naive.physicalPlan), totalMass(fine.physicalPlan), 1e-9, "naive physical mass unchanged");
+  assertSamePhysicalBodies(fine, naive, "FINE candidate/control physical identity");
 
   assertPhysicalRegionMeaningEqual(coarse, fine, "COARSE/FINE candidate");
 
-  const reorderedFine = clone(fineSource);
-  reorderedFine.matter.cells = [...reorderedFine.matter.cells].reverse();
-  reorderedFine.patches = [...reorderedFine.patches].reverse();
-  const reorderedCompilation = compileComplianceResolution(reorderedFine, "AREA");
-  assertPhysicalRegionMeaningEqual(fine, reorderedCompilation, "FINE reorder invariance");
-  assert.deepEqual(reorderedCompilation.relation.sourcePatchIds, fine.relation.sourcePatchIds);
+  const cellsOnlyReordered = clone(fineSource);
+  cellsOnlyReordered.matter.cells = [...cellsOnlyReordered.matter.cells].reverse();
+  const cellsOnlyCompilation = compileComplianceResolution(cellsOnlyReordered, "AREA");
+  assertPhysicalRegionMeaningEqual(fine, cellsOnlyCompilation, "FINE cell-order invariance");
+  assert.deepEqual(cellsOnlyCompilation.relation.sourcePatchIds, fine.relation.sourcePatchIds);
+
+  const patchesOnlyReordered = clone(fineSource);
+  patchesOnlyReordered.patches = [...patchesOnlyReordered.patches].reverse();
+  const patchesOnlyCompilation = compileComplianceResolution(patchesOnlyReordered, "AREA");
+  assertPhysicalRegionMeaningEqual(fine, patchesOnlyCompilation, "FINE patch-order invariance");
+  assert.deepEqual(patchesOnlyCompilation.relation.sourcePatchIds, fine.relation.sourcePatchIds);
 
   const zeroDamping = clone(coarseSource);
   zeroDamping.patches[0].normalDampingPerAreaNsPerM3 = 0;

@@ -52,6 +52,18 @@ function assertRuntimeReceipt(receipt, compilation, expectedSourcePatches, label
   assert.deepEqual(receipt.gravity, { x: 0, y: 0, z: 0 });
   assert.equal(receipt.contactsDisabled, true);
 
+  const receiptBodyIds = Object.keys(receipt.bodyMassErrorsKg).sort();
+  assert.equal(receiptBodyIds.length, 2, `${label} receipt must report both runtime bodies`);
+  for (const [field, values] of Object.entries({
+    bodyLocalCenterErrorsM: receipt.bodyLocalCenterErrorsM,
+    bodyLinearDamping: receipt.bodyLinearDamping,
+    bodyAngularDamping: receipt.bodyAngularDamping,
+    bodySleepEnabled: receipt.bodySleepEnabled,
+    bodyMotionLocks: receipt.bodyMotionLocks,
+  })) {
+    assert.deepEqual(Object.keys(values).sort(), receiptBodyIds, `${label} ${field} body coverage`);
+  }
+
   for (const [bodyId, value] of Object.entries(receipt.bodyLinearDamping)) {
     assert.equal(value, 0, `${label} linear damping for ${bodyId}`);
   }
