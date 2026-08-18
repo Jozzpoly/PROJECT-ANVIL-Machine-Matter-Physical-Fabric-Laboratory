@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last strategic grounding: 2026-08-18. Accepted material truth is through **ANVIL-07 / ELASTIC-SEAM**. No next experiment is active yet.
+Last strategic grounding: 2026-08-18. Accepted material truth is through **ANVIL-07 / ELASTIC-SEAM**. **ANVIL-08 / COMPLIANCE-RESOLUTION** is now the active Draft falsifier; its preflight is frozen and no executable ANVIL-08 result exists yet.
 
 ## Identity and authority
 
@@ -22,14 +22,16 @@ ANVIL tests **Machine Matter / Physical Fabric**: persistent authored matter and
 - **ANVIL-01 / CUT** — bounded mass-preserving runtime topology replacement with source identity and rigid-field motion transfer.
 - **ANVIL-02 / BEARING** — one local authored rotational interface can derive two rigid islands plus a passive revolute relation.
 - **ANVIL-03 / REBIND** — persistent bearing semantics can be reconstructed onto changed disposable runtime bodies after a nearby moving CUT.
-- **ANVIL-04 / LOAD-REBIND** — the declared bounded multi-kN fixture can cold-reconstruct that relation without migrating Box3D joint cache and without a gross first-step shock.
-- **ANVIL-05 / TORQUE** — signed persistent active intent can create causal mechanical work through BEARING via an equal/opposite body-torque pair without authored Box3D motor semantics.
-- **ANVIL-06 / TORQUE-PATCH** — the same active intent can be authored on a local source face without an authored `bearingId`; valid locality resolves the existing BEARING and invalid placement fails closed.
+- **ANVIL-04 / LOAD-REBIND** — bounded loaded reconstruction without migrating Box3D joint cache and without gross first-step shock.
+- **ANVIL-05 / TORQUE** — signed persistent active intent can create causal mechanical work through BEARING without authored Box3D motor semantics.
+- **ANVIL-06 / TORQUE-PATCH** — local source-face placement can resolve the existing BEARING without an authored bearing reference.
 - **ANVIL-07 / ELASTIC-SEAM** — for one frozen seven-cell one-dimensional fixture, a persistent local compliant seam can replace rigid adjacency, compile into disposable runtime representation, deform under load and restore after unload while remaining distinct from RIGID and FREE controls.
 
-Exact experiment identities, metrics, artifacts and negative results belong to corresponding evidence files under `docs/experiments/`.
+Exact metrics/artifacts remain in experiment evidence files.
 
-## ANVIL-07 promotion identity
+## Latest accepted promotion identity
+
+ANVIL-07:
 
 ```text
 promoted source head  a34a769e4892bb5a3c117389af7c2bba47866623
@@ -41,65 +43,75 @@ actual material merge  62dcc651f73dc3f228109d3d8922afd534b75950
 evidence log commit    97ab4d72475ae3d15ae79a496cb7bdb6689c952f
 ```
 
-Ready core: 42/42 PASS + production build PASS. Candidate: packaged launcher self-test PASS + existing Chromium 19/19 PASS. The actual merge tree is identical to the Ready synthetic tree.
-
-The accepted result stays bounded. Do not reinterpret it as generic deformable matter or resolution-independent compliance.
+ANVIL-07 remains bounded. Its discrete `normalStiffnessNPerM` / `normalDampingNsPerM` coefficients are not accepted as resolution-independent constitutive properties.
 
 ## Strongest architectural lessons
 
-- Authored identity must not be synonymous with runtime body/joint identity.
-- Runtime representation may be rebuilt from persistent semantics and provenance; accepted evidence is bounded and does not imply universal solver-state migration is unnecessary.
-- Locality can replace at least one authored semantic cross-reference in the bounded TORQUE-PATCH fixture, but this is not mechanism discovery or a generic property-field system.
-- Box3D is a current lowering target, not project ontology. Move deeper only after a reproduced limitation justifies it.
-- Passing one experiment-local semantic slice never automatically promotes a generic Bond, Relation, FUNCTION, Surface, Power or Control architecture.
-- Composition, not a catalog of isolated primitives, is the long-term test of the Machine Matter idea.
-- ANVIL-07 establishes only a discrete compliant seam in a fixed isolated mode. Its `normalStiffnessNPerM` / `normalDampingNsPerM` coefficients are **not** yet resolution-independent constitutive material semantics.
-- The strongest live architectural risk is now representation/scaling honesty: whether the same physical compliant interface preserves macroscopic meaning when source resolution/interface patch count changes while runtime representation remains disposable.
+- Authored identity must remain separate from runtime body/joint identity.
+- Runtime representation may have different topology/resolution from authored matter.
+- Locality should resolve physical relationships when geometry genuinely supplies the missing meaning.
+- Box3D is a lowering target, not ontology.
+- Passing experiment-local semantics does not automatically earn generic Bond, Relation, Surface, FUNCTION, Control or property-field architecture.
+- Composition, not a catalog of isolated primitives, is the long-term test.
+- After ANVIL-07, the highest-consequence uncertainty is whether compliance has honest representation/scaling meaning rather than being a spring-per-voxel convention.
 
-## Current strategic frontier
+## Active experiment — ANVIL-08 / COMPLIANCE-RESOLUTION
 
-There is **no active ANVIL-08**. The ranked horizon after ANVIL-07 promotion is:
+```text
+PR                 #13
+branch             experiment/anvil-08-compliance-resolution
+base at freeze     79acf565d3505a0d71be055132779c2ed2d92d8c
+preflight head     a1e1000cfd6b40c9e84e2d86a4f735f37205af9f
+phase              Draft / preflight frozen / implementation pending
+verdict            NO EXECUTABLE RESULT
+```
 
-1. **COMPLIANCE-RESOLUTION** — same intended physical compliant interface under coarse/fine source resolutions or patch counts; falsify spring-per-voxel semantics and test whether authored resolution may differ from solver resolution without hand retuning.
-2. **ACTIVATE** — transient control over already-earned persistent function semantics; leading runner-up and likely subsequent composition checkpoint.
-3. compliant **REBIND** — continuity of compliant meaning through runtime repartition; defer until the simpler scaling/representation assumption is understood.
+Canonical contract: `docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-PREFLIGHT.md`.
 
-The next experiment must be frozen in a new preflight before implementation. A promising direction is an experiment-local area-normalized interface stiffness/damping meaning from which patch contribution derives by physical interface area, with a deliberately naive fixed-per-patch control to expose resolution dependence. This is a hypothesis to derive and falsify, not accepted ontology.
+Primary question: can the same physical normal-compliance interface preserve macroscopic behavior across an exact 2x authored refinement without per-patch retuning, while four authored patches may compile to one disposable runtime relation?
 
-After at most one deliberate compliance-resolution challenge, force composition of earned semantics unless new evidence changes the frontier.
+Candidate authored hypothesis remains experiment-local:
+
+```text
+NormalCompliancePatch {
+  id
+  target: { cellId, face }
+  normalStiffnessPerAreaNPerM3
+  normalDampingPerAreaNsPerM3
+}
+```
+
+The opposing face is inferred from local matter adjacency and patch area from source geometry. COARSE uses one `0.25 m²` patch; FINE uses four `0.0625 m²` patches over the same physical interface. Frozen candidate values `K_n=40000 N/m³`, `C_n=7200 N·s/m³` aggregate to the same `10000 N/m`, `1800 N·s/m` at both resolutions. A deliberately wrong fixed-per-patch control aggregates to `40000/7200` and must be physically distinguishable.
+
+This is not accepted ontology and not yet evidence.
 
 ## Current exact next action
 
-Prepare and critically freeze the **COMPLIANCE-RESOLUTION** falsifier before implementing it:
+Implement only the frozen PR #13 C0 slice:
 
-- define the same physical geometry/interface at at least two authored resolutions or patch counts;
-- hold physical mass, interface area, loading and intended macroscopic compliant meaning constant;
-- derive candidate local coefficients from physical area rather than voxel count;
-- specify a naive copied-per-patch control expected to change macroscopic stiffness with patch count;
-- define permitted runtime aggregation so authored patch count is not forced to equal solver relation count;
-- freeze quantitative coarse/fine equivalence and discrimination gates before any executable result;
-- abort or redesign if the semantics cannot be stated independently of current cell resolution.
+- local face/neighbor resolution and fail-closed validation;
+- deterministic coarse and exact 2x refined fixtures;
+- blocked rigid adjacency -> same two physical regions at both resolutions;
+- area-derived patch contributions and one 1D aggregate runtime relation;
+- naive fixed-per-patch control;
+- structural/compiler + real pinned Box3D tests under frozen gates;
+- canonical Node test registration;
+- Draft/core execution and red-result classification before any repair.
 
-## Promotion / abstraction stance
+Do not edit the frozen preflight after seeing results merely to obtain PASS.
 
-- Keep `ElasticSeam` experiment-local; do not promote it or a generic compliant relation into `src/foundation` yet.
-- Do not treat `N/m` or `N*s/m` per discrete seam as a constitutive field.
-- Existing browser/candidate evidence for ANVIL-07 is integration/regression evidence, not direct elasticity evidence.
-- No owner manual gate was required for ANVIL-07's quantitative claim.
+## Strategic horizon
+
+If ANVIL-08 resolves cleanly, stop the scaling challenge. **ACTIVATE** is the leading next composition checkpoint; compliant REBIND remains later unless new evidence changes the frontier.
+
+Do not promote `NormalCompliancePatch`, `ElasticSeam`, generic compliant surface/property fields or runtime aggregation into foundation from ANVIL-08 alone.
 
 ## Process boundaries
 
-- Per-experiment method: `docs/EXPERIMENT_PROTOCOL.md`.
-- Macro anti-drift method: `docs/RESEARCH_COMPASS.md`.
-- Agent rules and long-horizon implementation cadence: `AGENTS.md`.
-- Current takeover: `docs/CURRENT_HANDOFF.md` + `.anvil/project-state.json`.
+- `AGENTS.md` — truth hierarchy and implementation cadence.
+- `docs/EXPERIMENT_PROTOCOL.md` — per-experiment lifecycle.
+- `docs/RESEARCH_COMPASS.md` — macro anti-drift method.
+- `docs/CURRENT_HANDOFF.md` + `.anvil/project-state.json` — current takeover state.
+- `docs/FOUNDATION.md` — only already-earned reusable boundaries.
 
-Use delta-audit by default. Run a full Research Compass loop after promotion, meaningful falsification, architectural contradiction, frontier change, composition checkpoint or major interruption.
-
-Known non-blocking infrastructure debt:
-
-- `main` lacks server-side branch protection/required checks;
-- generic production build remains coupled to historical Forge manifest generation;
-- Node test registration is manually enumerated in `package.json`.
-
-Do not change those systems as a side effect of the next physics experiment unless they become material blockers.
+Known non-blocking infrastructure debt remains unchanged: no server-side main protection, production build still writes historical Forge manifest, and Node test registration is manually enumerated.
