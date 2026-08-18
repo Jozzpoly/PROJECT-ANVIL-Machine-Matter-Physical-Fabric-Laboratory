@@ -2,61 +2,75 @@
 
 **Machine Matter / Physical Fabric Laboratory**
 
-PROJECT ANVIL is an experimental R&D laboratory for testing a specific idea:
+PROJECT ANVIL is an experimental R&D laboratory for testing a deliberately unusual idea:
 
-> A machine should be authored as persistent semantic matter and physical intent, then compiled into disposable runtime representations appropriate to the simulation.
+> A machine should be authored as persistent semantic matter and local physical intent, then compiled into disposable runtime representations appropriate to the simulation.
 
-The project is deliberately not a product roadmap, a VAW rewrite, a JV port, or a promise to simulate every physical domain in one solver. Its job is to falsify the useful parts of the idea with small executable experiments.
+The long-term target is not a catalog of chassis, wheels, engines and joints. The working dream is closer to **painting local properties** — matter, bindings, interfaces and functions — and letting useful machine structure emerge from their composition. Names such as steel/rubber, stiff/elastic/breakable, bearing/friction surface, torque/sensor/signal are research vocabulary, not a frozen ontology and not direct aliases for Box3D objects.
 
-## First accepted checkpoint
+The current cubic-cell dialect is only a laboratory representation. It is not a commitment that Machine Matter must remain voxel-based.
 
-**ANVIL-00 / COLLAPSE** is accepted within its stated fixture/scope.
+## Current accepted stack
 
-It demonstrates:
+`main` contains the latest promoted bounded evidence:
+
+- **ANVIL-00 / COLLAPSE** — persistent matter compiles deterministically into reduced rigid runtime representation;
+- **ANVIL-01 / CUT** — bounded runtime topology replacement with source identity and rigid-field motion transfer;
+- **ANVIL-02 / BEARING** — a local authored rotational interface derives two rigid islands plus a passive revolute relation;
+- **ANVIL-03 / REBIND** — the same persistent bearing can be reconstructed on changed disposable runtime bodies after a nearby CUT while moving;
+- **ANVIL-04 / LOAD-REBIND** — bounded cold bearing reconstruction survives the declared multi-kN external load without migrating hidden joint-cache state;
+- **ANVIL-05 / TORQUE** — persistent signed active intent can act through BEARING as an equal/opposite torque pair without encoding Box3D joint motor mode in authored source.
+
+These results are deliberately narrow. Passing one fixture does not promote a universal Bond, Relation, FUNCTION, power or control architecture.
+
+## What is actually being tested
+
+The project separates four domains:
 
 ```text
-persistent MatterDocument
-        ↓
-deterministic rigidification
-        ↓
-mass / COM + independently reduced collision view
-        ↓
-disposable PhysicalPlan
-        ↓
-stock Box3D 0.1.0 runtime
+AUTHORED TRUTH
+persistent semantic matter / local intent
+        │
+        │ compile
+        ▼
+COMPILED REPRESENTATION
+rigid islands / relations / actions / provenance
+        │
+        │ lower
+        ▼
+RUNTIME PHYSICS
+solver-owned and disposable
+        │
+        │ observe
+        ▼
+EVIDENCE
+measurements / lineage / owner judgement when needed
 ```
 
-The experiment passed semantic tests, independent Box3D mass/COM checks, real solver stepping, production Chromium execution and owner manual validation.
+The important claim is the separation itself: authored identity must not become synonymous with one body, collider, joint, grid resolution or solver.
 
-The one-cell topology edit remains an **authoring-time recompile**, not runtime fracture. See [`docs/experiments/ANVIL-00-COLLAPSE.md`](docs/experiments/ANVIL-00-COLLAPSE.md) for the exact evidence boundary.
+## Research discipline
 
-## Laboratory foundation
+ANVIL is not a product roadmap, VAW rewrite, JV port or promise to model every physical domain in one solver. It advances through small executable falsifiers.
 
-Only a small set of demonstrated or measurement-neutral concepts is promoted for reuse:
+Read:
 
-- solver-neutral spatial/runtime state;
-- deterministic mass properties for the current box-element dialect;
-- source-ID provenance and compiled-entity lineage;
-- continuity measurement primitives;
-- explicit evidence reports and falsification protocol.
+- [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — current orchestration state and exact strongest evidence;
+- [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — long-horizon vision invariants, frontier map and macro critical-validation loop;
+- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle;
+- [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — what has actually earned reuse;
+- [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and boundaries.
 
-See:
+## Current frontier
 
-- [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — what is actually promoted and what is deliberately not;
-- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — how future falsifiers are run and judged;
-- [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — VAW/JURE/JV/JES donor capabilities and boundaries;
-- [`docs/experiments/TEMPLATE.md`](docs/experiments/TEMPLATE.md) — experiment record skeleton.
+ANVIL-05 is the first bounded active result, but it exposed an important semantic debt: its authored `TorqueMark` still references persistent `bearingId` directly.
 
-## Next research direction
+That is not a runtime-ID leak, but it can become a path back toward a conventional component graph. Before adding control systems, the next research step attacks this risk directly:
 
-The next intended falsifier is **ANVIL-01 / CUT**: a moving runtime topology transaction from one compiled rigid island into multiple bodies with measured identity, spatial, velocity, momentum and energy continuity.
+**ANVIL-06 / TORQUE-PATCH** — test whether active torque can be authored as a local property on source matter/interface and deterministically discover the bearing through locality/topology, with no authored bearing reference and fail-closed invalid placement.
 
-The foundation intentionally does **not** implement the transfer policy. CUT must test and earn that behavior.
+This is intentionally a semantic-composition experiment, not a new solver-actuator experiment.
 
 ## Evidence rule
 
-Documentation and green CI are not physics acceptance by themselves. Each experiment must state its hypothesis, fixture, observable evidence, limits and verdict. Negative results are retained.
-
-## Repository state
-
-This repository was intentionally initialized empty on 2026-08-17. `main` is the latest accepted checkpoint; active experiments and foundation promotions use explicit branches/PRs.
+Documentation and green CI are never physics acceptance by themselves. Every experiment states a falsifiable hypothesis, bounded fixture, observable gates, meaningful controls, limitations and evidence class. Negative results that reduce the search space are retained.

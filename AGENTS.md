@@ -13,7 +13,12 @@ ANVIL is a falsification-driven R&D laboratory. Prefer a small executable experi
 
 Do not turn a passing build, synthetic test, or code presence into a product-quality claim.
 
-Before significant research work, read `docs/EXPERIMENT_PROTOCOL.md`. Use `docs/DONOR_MAP.md` before substantial donor harvesting.
+Before significant research work, read both:
+
+- `docs/RESEARCH_COMPASS.md` for macro direction, frontier balance and anti-component-drift checks;
+- `docs/EXPERIMENT_PROTOCOL.md` for the bounded evidence lifecycle.
+
+Use `docs/DONOR_MAP.md` before substantial donor harvesting.
 
 ## Git and lifecycle discipline
 
@@ -68,6 +73,21 @@ Use the evidence classes and verdict vocabulary in `docs/EXPERIMENT_PROTOCOL.md`
 
 For a deterministic clear visual gate, roughly three meaningful owner observations are normally enough; do not impose 10–20 repeat runs as ritual.
 
+## Strategic anti-drift discipline
+
+A successful experiment is not automatically the right next direction.
+
+After each strategically meaningful promotion:
+
+- state what part of the Machine Matter vision became more credible;
+- inspect whether new authored concepts are becoming conventional parts/components in disguise;
+- prefer local physical semantics over explicit cross-component references when locality/topology can genuinely resolve the relationship;
+- review frontier balance across Matter, Bindings, Interfaces, Function, Control/Signal/Power, Surface, Topology/Continuity and Adaptation/Representation;
+- compare at least two next falsifiers by information gain and lock-in risk;
+- after 2–3 new primitive results, force a composition checkpoint rather than endlessly adding vocabulary.
+
+Do not let current cubic cells, Box3D, BEARING or TORQUE become the ontology merely because they are the first things that passed.
+
 ## Promotion discipline
 
 Do not promote incidental fixture details into the global architecture.
@@ -86,6 +106,7 @@ If an abstraction prescribes the answer to an untested physics question, it belo
 - Persistent authored identity and runtime body/collider identity are separate domains.
 - Foundation spatial/runtime state must not expose Box3D handles or Box3D-specific math types.
 - Structure, mechanics, surfaces, future power/control and visual representation should not be collapsed into one mega-object without evidence.
+- Prefer testing local matter/property composition before introducing a generic component graph.
 - Do not add `CarCompiler`, `WheelPart`, or other domain-specific foundations merely because a demo needs them.
 - Do not assume the current sparse cubic cell dialect is the final Machine Matter representation.
 
