@@ -1,6 +1,7 @@
 import "./bearing-demo.css";
 import "./bearing-owner-language.css";
 import "./cut-owner-gate.css";
+import "./rebind-demo.css";
 
 const experiment = new URLSearchParams(window.location.search).get("experiment");
 
@@ -15,6 +16,8 @@ if (experiment === "cut") {
     await import("./bearing-owner-gate.js");
     await import("./bearing-owner-language.js");
   })();
+} else if (experiment === "rebind") {
+  void import("./rebind-demo.js");
 } else {
   void import("./main.js");
 }
