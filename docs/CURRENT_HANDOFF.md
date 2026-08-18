@@ -1,105 +1,80 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-08 / COMPLIANCE-RESOLUTION PROMOTED — POST-PROMOTION GROUNDED**
+Status: **ANVIL-08 ACCEPTED / ANVIL-09 ACTIVATE FROZEN PREFLIGHT ACTIVE — NO EXECUTABLE RESULT YET**
 
 This is a short takeover pointer, not a science archive. Live Git and executable evidence override this file if they differ.
 
 ## Start here
 
 1. Resolve live `main` from GitHub before writing.
-2. Accepted material truth is through **ANVIL-08 / COMPLIANCE-RESOLUTION**.
-3. Treat material checkpoint `78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a` as a claim to verify against live Git.
-4. Read `docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-EVIDENCE.md` for the exact evidence chain.
-5. If promotion provenance matters, verify Ready run `32191041240`, source `5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201`, synthetic merge `92d4eb6677a9029bafea0a19b2185c4de479a95d`, and qualified tree `00230b73e283bdb39eedc3df00299b6d14c5aba9`.
-6. No next experiment is active. `ACTIVATE` is the leading strategic candidate only; it is not frozen or implemented.
+2. Accepted material truth is still through **ANVIL-08 / COMPLIANCE-RESOLUTION**.
+3. Active unaccepted experiment is **ANVIL-09 / ACTIVATE** on Draft PR **#14**, branch `experiment/anvil-09-activate`.
+4. Frozen preflight source is `d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70`; read `docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT.md` from the active branch before implementation.
+5. Do not reinterpret the existence of a frozen preflight as executable evidence. ANVIL-09 currently has no A/B, real-solver or product result.
+6. Verify the active PR head contains the frozen preflight commit before writing material code.
 
-## Accepted ANVIL-08 promotion identity
+## Accepted boundary
+
+ANVIL-08 material checkpoint remains:
 
 ```text
-preflight head          a1e1000cfd6b40c9e84e2d86a4f735f37205af9f
-A/B source/run          60efa6a7b526223eb5de58d294dee03563dc64ff / 32190374538
-C0 source/run           e0cdb9e4e1397042f012ae532dddc7e0e5816d05 / 32190721229
-hardening source/run    5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201 / 32190959941
-Ready run               32191041240
-Ready synthetic merge   92d4eb6677a9029bafea0a19b2185c4de479a95d
-qualified tree          00230b73e283bdb39eedc3df00299b6d14c5aba9
-actual material merge   78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a
-evidence grounding      04b6429a7d714b0595d5b7b550bc9ca587dbd904
+material merge       78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a
+evidence grounding   04b6429a7d714b0595d5b7b550bc9ca587dbd904
+qualified tree       00230b73e283bdb39eedc3df00299b6d14c5aba9
 ```
 
-Ready core was **44/44 PASS + production build PASS**. Candidate downloaded the exact staged build, passed the packaged launcher self-test and **19/19 Chromium tests**. The actual merge tree is identical to the Ready synthetic tree.
+Its accepted result remains bounded to the frozen one-dimensional exact-2x compliance-resolution fixture. It is not continuum convergence or generic deformable matter.
 
-## Accepted interpretation
+## Active ANVIL-09 boundary
 
-ANVIL-08 supports only the frozen statement:
+Frozen question:
 
-> In the one-dimensional fixture, local normal-compliance meaning expressed per physical source-face area survives an exact 2x authored source refinement without manual per-patch retuning, while four authored patches may compile to one disposable runtime compliant relation.
+> Can one unchanged persistent local TORQUE-PATCH with signed `+100 N*m` effort be compiled once and transiently switched `OFF -> ON -> OFF` at runtime such that OFF supplies no active torque rather than braking, ON reproduces the accepted torque action, and a fresh runtime from the same persistent compilation defaults OFF — without mutating authored/compiled truth or using Box3D motor semantics?
 
-Key evidence:
+Key correction already frozen before implementation:
 
-- COARSE_AREA: 7 cells @ 0.5 m, 1 patch, aggregate `k=10000 N/m`, `c=1800 N*s/m`;
-- FINE_AREA: 56 cells @ 0.25 m, 4 patches, same aggregate `k/c`;
-- loaded extension was `0.09999978542327881 m` for both candidate resolutions;
-- recovered extension was `-0.0000023245811462402344 m` for both;
-- deliberately wrong fixed-per-patch control loaded at `0.024999499320983887 m` with aggregate `k=40000 N/m`, `c=7200 N*s/m`;
-- the fine source had 4 authored compliance patches while direct solver receipt reported 1 runtime joint.
+- transient state is **OFF | ON only**;
+- signed `effortNm` remains persistent authored meaning;
+- no reverse command, analog throttle, routing, signals, power, servo or braking semantics;
+- activation is runtime-only and must not enter `TorquePatch`, accepted compilation schemas, Matter serialization or `src/foundation`.
 
-The result establishes a bounded representation-decoupling example: source patch count need not equal runtime relation count.
-
-## Hard boundaries
-
-ANVIL-08 does **not** establish:
-
-- continuum convergence;
-- arbitrary resolution independence;
-- generic deformable matter;
-- generic compliant Surface/Bond/Relation/property-field ontology;
-- arbitrary rotation, shear, bending, torsion or patch geometry;
-- contact-loaded compliance, damage, plasticity or fatigue;
-- compliant CUT/REBIND continuity;
-- control, signals or power.
-
-`NormalCompliancePatch`, its area-normalized coefficient names, the ANVIL-08 relation schema, the ANVIL-07 compatibility adapter and 4→1 aggregation remain experiment-local. Do not promote them into `src/foundation` from this result.
-
-The 4-authored-patches → 1-runtime-relation reduction is justified only in the frozen 1D mode with rotations/shear locked. Distributed patches are not generally equivalent to one centroid relation when rotational or heterogeneous modes become live.
-
-## Strategic frontier after ANVIL-08
-
-The planned representation/scaling challenge is complete. Do **not** add a third resolution or sweep merely to strengthen a green story.
-
-The leading next strategic candidate is now **ACTIVATE**, because the Research Compass composition rule says the next useful information should come from composing already-earned semantics rather than adding another isolated primitive.
-
-The intended next question is roughly:
-
-> Can transient control state drive already-earned persistent local function/mechanical semantics — most naturally TORQUE/TORQUE-PATCH through BEARING — without mutating construction truth and without turning Box3D motor/control state into authored ontology?
-
-This is only a strategic question. No ANVIL-09 name/schema/preflight is frozen yet.
+Frozen schedules and thresholds live only in the preflight. Do not copy or retune them elsewhere before execution.
 
 ## Exact next action
 
-Before any implementation:
+Execute **Micro A/B only** on Draft PR #14:
 
-1. run a bounded Research Compass / meso preparation for ACTIVATE;
-2. separate persistent construction/function meaning from transient control state;
-3. decide the smallest lifecycle semantics for activation/deactivation and restart/reconstruction;
-4. design negative controls that distinguish authored function from transient command and distinguish command from solver motor state;
-5. reuse accepted TORQUE/TORQUE-PATCH causal mechanics rather than inventing a new actuator if possible;
-6. freeze quantitative gates and non-claims before executable results;
-7. only then create/activate the next experiment.
+1. re-lock live `main`, PR base/head and confirm frozen preflight ancestry;
+2. implement the smallest experiment-local ACTIVATE runtime boundary consuming the already-supported TORQUE-PATCH compilation;
+3. prove default OFF, OFF/ON fail-closed state domain, source/compilation immutability and single-compilation reuse;
+4. prove no Box3D motor/velocity-setter control path and no runtime identity leakage into activation state;
+5. do not alter accepted TORQUE/TORQUE-PATCH semantics or `src/foundation`;
+6. run Draft/core validation;
+7. stop for a checkpoint before implementing real-solver C0-C3 unless A/B is clean and scope remains frozen.
+
+If a clean minimal adapter requires rewriting accepted TORQUE/TORQUE-PATCH semantics or foundation, stop and re-audit rather than refactoring through the boundary.
+
+## Later only if A/B remains clean
+
+- C0-C3: same authored source + same compiled object, OFF/ON/OFF versus continued-ON causal control in real pinned Box3D;
+- C4: dispose activated runtime, reconstruct from the same compilation, verify default OFF;
+- meso audit immediately after bounded C evidence;
+- if A/B + C0-C4 resolve cleanly, stop ANVIL-09 instead of adding reverse/throttle/routing/UI/power/REBIND/compliance.
 
 ## Do not do now
 
 - do not reopen ANVIL-08;
-- do not change its frozen gates or coefficients;
-- do not add another compliance resolution/sweep;
-- do not promote ANVIL-08 experiment-local schema into foundation;
-- do not start compliant REBIND merely because compliance now has one scaling result;
-- do not call ACTIVATE active before a new preflight is critically frozen;
-- do not let transient control become persistent construction identity or solver-specific motor ontology.
+- do not modify frozen ANVIL-09 gates merely to obtain PASS;
+- do not add reverse command or reinterpret signed `effortNm` as motor capacity;
+- do not add analog throttle, signal routing, ports, buses, sensors, power or energy semantics;
+- do not modify `src/foundation` for ANVIL-09;
+- do not combine ACTIVATE with CUT/REBIND or compliance in this experiment;
+- do not call ANVIL-09 supported before executable evidence exists;
+- do not mark PR #14 Ready before the bounded scientific question is sufficiently resolved.
 
 ## Stable project documents
 
-- `AGENTS.md` — truth hierarchy and long-horizon implementation cadence.
+- `AGENTS.md` — truth hierarchy and implementation cadence.
 - `docs/EXPERIMENT_PROTOCOL.md` — per-experiment evidence lifecycle.
 - `docs/RESEARCH_COMPASS.md` — macro anti-drift / frontier validation.
 - `docs/FOUNDATION.md` — only already-earned reusable boundaries.
