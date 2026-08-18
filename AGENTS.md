@@ -13,30 +13,60 @@ ANVIL is a falsification-driven R&D laboratory. Prefer a small executable experi
 
 Do not turn a passing build, synthetic test, or code presence into a product-quality claim.
 
-Before significant research work, also read `docs/EXPERIMENT_PROTOCOL.md`. Use `docs/DONOR_MAP.md` before substantial donor harvesting.
+Before significant research work, read `docs/EXPERIMENT_PROTOCOL.md`. Use `docs/DONOR_MAP.md` before substantial donor harvesting.
 
-## Git discipline
+## Git and lifecycle discipline
 
-- Resolve repository, branch and live HEAD before significant work.
-- `main` is for verified checkpoints. Develop bounded experiments on explicit branches/PRs.
-- `foundation/**` branches are only for promoting already demonstrated boundaries or neutral measurement infrastructure. Do not use them to hide a new physics hypothesis from the experiment protocol.
+- Resolve repository, branch, live `main` and HEAD before significant work.
+- `main` is for accepted checkpoints. Material code changes go through explicit experiment/foundation PRs.
+- Open experiment PRs early as **Draft**. Draft is the fast research loop.
+- Mark a PR **Ready** only when it deserves the expensive browser/Forge candidate gate.
+- If deep experimentation resumes, convert the PR back to Draft.
+- Once an owner candidate artifact is handed off, freeze that branch head until the owner verdict.
+- On owner ACCEPT, prefer merging the **exact owner-tested source head** after external provenance/base checks. Do not append acceptance Markdown to the experiment branch before promotion.
+- After merge, grounding documentation may be updated separately if the diff is verified documentation-only.
 - Do not rewrite history or force-push without a specific recovery reason.
-- GitHub Actions may be used freely for this public laboratory.
-- Update `AI_PROJECT_MEMORY.md` when evidence changes the current research truth.
+- Do not make direct material code changes to `main`; documentation-only grounding is allowed when the exact changed paths are verified.
+- Update `AI_PROJECT_MEMORY.md` when evidence changes current research truth, but keep it as a concise orchestration index rather than an archive.
+
+## CI discipline
+
+ANVIL uses two evidence speeds:
+
+**Draft/core gate**
+- canonical Node/npm;
+- strict TypeScript;
+- complete Node/real-Box3D regression suite;
+- production build.
+
+**Ready/candidate gate**
+- everything above must already pass;
+- exact staged production build;
+- packaged Windows launcher self-test;
+- real Chromium evidence;
+- owner-candidate Forge artifact.
+
+Do not run full Chromium/owner packaging on every solver iteration merely for ceremony. Do not skip the candidate gate when a browser/owner claim is required.
+
+Documentation-only commits after an already verified exact-head merge do not need solver/browser requalification; verify that they are actually documentation-only.
 
 ## Experimental discipline
 
 Every material experiment should have:
 
-- a concrete hypothesis;
-- a bounded fixture;
+- one concrete hypothesis;
+- a bounded, discriminating fixture;
 - observable success/failure criteria;
-- at least one plausible falsifier;
+- at least one plausible falsifier/control when false-positive success is possible;
 - a recorded result and limitations.
 
-Keep negative results. Do not tune thresholds merely to make a gate green. Change one primary variable at a time where practical.
+Keep meaningful negative results. Do not tune thresholds merely to make a gate green. Change one primary physical assumption at a time where practical.
 
-Use the verdict vocabulary in `docs/EXPERIMENT_PROTOCOL.md`; distinguish static, synthetic, real-solver, product-runtime and owner-manual evidence.
+Do not add extra variants after a strong result unless they attack a remaining live assumption.
+
+Use the evidence classes and verdict vocabulary in `docs/EXPERIMENT_PROTOCOL.md`. Owner manual validation is required only when human observation adds material evidence beyond automation.
+
+For a deterministic clear visual gate, roughly three meaningful owner observations are normally enough; do not impose 10–20 repeat runs as ritual.
 
 ## Promotion discipline
 
@@ -45,7 +75,7 @@ Do not promote incidental fixture details into the global architecture.
 A reusable concept belongs in `src/foundation` / `docs/FOUNDATION.md` only when:
 
 1. accepted experiment evidence already supports it; or
-2. it is a solver/domain-neutral measurement boundary directly required to falsify the next experiment.
+2. it is a solver/domain-neutral measurement/process boundary directly required to falsify the next experiment.
 
 If an abstraction prescribes the answer to an untested physics question, it belongs inside that experiment instead.
 
@@ -56,12 +86,12 @@ If an abstraction prescribes the answer to an untested physics question, it belo
 - Persistent authored identity and runtime body/collider identity are separate domains.
 - Foundation spatial/runtime state must not expose Box3D handles or Box3D-specific math types.
 - Structure, mechanics, surfaces, future power/control and visual representation should not be collapsed into one mega-object without evidence.
-- Do not add `CarCompiler`, `WheelPart`, or other domain-specific foundations merely because a demo needs them. Specialization is allowed only when its physical or usability need is demonstrated and explicit.
+- Do not add `CarCompiler`, `WheelPart`, or other domain-specific foundations merely because a demo needs them.
 - Do not assume the current sparse cubic cell dialect is the final Machine Matter representation.
 
 ## Box3D policy
 
-Stock Box3D is not sacred. Native JV already demonstrates evidence-backed core modification. However, ANVIL starts each hypothesis at the shallowest sufficient intervention level:
+Stock Box3D is not sacred. Native JV already demonstrates evidence-backed core modification. ANVIL starts each hypothesis at the shallowest sufficient intervention level:
 
 1. stock Box3D primitives;
 2. external physical model / compiler lowering;
