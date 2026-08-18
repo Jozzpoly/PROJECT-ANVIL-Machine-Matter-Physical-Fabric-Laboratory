@@ -23,6 +23,16 @@ const FREE_RECOVERY_ALLOWANCE_M = 0.05;
 const MIN_FREE_REMAINING_EXTENSION_M = 0.20;
 const MAX_ELASTIC_MOMENTUM_KG_MPS = 0.05;
 const MAX_ELASTIC_BARYCENTER_DRIFT_M = 0.0005;
+const RUNTIME_TUNING_TOLERANCE = 1e-6;
+
+const EXPECTED_MOTION_LOCKS = Object.freeze({
+  linearX: false,
+  linearY: true,
+  linearZ: true,
+  angularX: true,
+  angularY: true,
+  angularZ: true,
+});
 
 function clone(value) {
   return structuredClone(value);
@@ -42,27 +52,99 @@ function assertFiniteDiagnostics(diagnostics, label) {
   }
 }
 
-function assertRuntimeReceipt(receipt, expectedBodies, expectedRelation) {
+function bodySourceCells(compilation, bodyId) {
+  const body = compilation.physicalPlan.bodies.find((candidate) => candidate.id === bodyId);
+  assert.ok(body, `compiled body ${bodyId} missing`);
+  return [...body.sourceCellIds].sort();
+}
+
+function bodyMass(compilation, bodyId) {
+  const body = compilation.physicalPlan.bodies.find((candidate) => candidate.id === bodyId);
+  assert.ok(body, `compiled body ${bodyId} missing`);
+  return body.massKg;
+}
+
+function assertEquivalentElasticCompilation(actualCompilation, expectedCompilation, label) {
+  const actual = actualCompilation.relation;
+  const expected = expectedCompilation.relation;
+  assert.ok(actual, `${label} relation missing`);
+  assert.ok(expected, `${label} baseline relation missing`);
+  assert.equal(actual.sourceSeamId, expected.sourceSeamId, `${label} source seam id changed`);
+  assert.deepEqual(actual.endpointA, expected.endpointA, `${label} endpointA changed`);
+  assert.deepEqual(actual.endpointB, expected.endpointB, `${label} endpointB changed`);
+  assert.deepEqual(actual.normalWorld, expected.normalWorld, `${label} normal changed`);
+  assert.deepEqual(
+    bodySourceCells(actualCompilation, actual.bodyAId),
+    bodySourceCells(expectedCompilation, expected.bodyAId),
+    `${label} bodyA source-cell mapping changed`,
+  );
+  assert.deepEqual(
+    bodySourceCells(actualCompilation, actual.bodyBId),
+    bodySourceCells(expectedCompilation, expected.bodyBId),
+    `${label} bodyB source-cell mapping changed`,
+  );
+  expectNear(bodyMass(actualCompilation, actual.bodyAId), bodyMass(expectedCompilation, expected.bodyAId), 1e-12, `${label} bodyA mass`);
+  expectNear(bodyMass(actualCompilation, actual.bodyBId), bodyMass(expectedCompilation, expected.bodyBId), 1e-12, `${label} bodyB mass`);
+  expectNear(actual.effectiveMassKg, expected.effectiveMassKg, 1e-12, `${label} effective mass`);
+  expectNear(actual.linearHertz, expected.linearHertz, 1e-12, `${label} hertz`);
+  expectNear(actual.linearDampingRatio, expected.linearDampingRatio, 1e-12, `${label} damping ratio`);
+}
+
+function assertRuntimeReceipt(receipt, compilation) {
+  const expectedBodyIds = compilation.physicalPlan.bodies.map((body) => body.id).sort();
+  const expectedJointCount = compilation.relation === null ? 0 : 1;
+
   assert.equal(receipt.engineVersion, "0.1.0");
-  assert.equal(receipt.bodyCount, expectedBodies);
-  assert.equal(receipt.relationCreated, expectedRelation);
+  assert.equal(receipt.variant, compilation.variant);
+  assert.equal(receipt.bodyCount, compilation.physicalPlan.bodies.length);
+  assert.equal(receipt.jointCount, expectedJointCount);
+  assert.equal(receipt.relationCreated, expectedJointCount === 1);
   assert.deepEqual(receipt.gravity, { x: 0, y: 0, z: 0 });
   assert.equal(receipt.contactsDisabled, true);
-  assert.equal(receipt.linearDampingPerBody, 0);
-  assert.equal(receipt.angularDampingPerBody, 0);
-  assert.deepEqual(receipt.motionLocks, {
-    linearX: false,
-    linearY: true,
-    linearZ: true,
-    angularX: true,
-    angularY: true,
-    angularZ: true,
-  });
+
+  for (const record of [
+    receipt.bodyMassErrorsKg,
+    receipt.bodyLocalCenterErrorsM,
+    receipt.bodyLinearDamping,
+    receipt.bodyAngularDamping,
+    receipt.bodySleepEnabled,
+    receipt.bodyMotionLocks,
+  ]) {
+    assert.deepEqual(Object.keys(record).sort(), expectedBodyIds, "runtime receipt body keys differ from compiled bodies");
+  }
+
+  for (const bodyId of expectedBodyIds) {
+    assert.equal(receipt.bodyLinearDamping[bodyId], 0, `${bodyId} runtime linear damping is not zero`);
+    assert.equal(receipt.bodyAngularDamping[bodyId], 0, `${bodyId} runtime angular damping is not zero`);
+    assert.equal(receipt.bodySleepEnabled[bodyId], false, `${bodyId} runtime sleep unexpectedly enabled`);
+    assert.deepEqual(receipt.bodyMotionLocks[bodyId], EXPECTED_MOTION_LOCKS, `${bodyId} runtime motion locks differ`);
+  }
+
   for (const error of Object.values(receipt.bodyMassErrorsKg)) {
     assert.ok(Math.abs(error) <= 0.1, `runtime body mass error ${error} kg exceeds 0.1 kg`);
   }
   for (const error of Object.values(receipt.bodyLocalCenterErrorsM)) {
     assert.ok(Math.abs(error) <= 7e-5, `runtime local COM error ${error} m exceeds 7e-5 m`);
+  }
+
+  if (compilation.relation === null) {
+    assert.equal(receipt.jointTuning, null);
+  } else {
+    assert.ok(receipt.jointTuning);
+    expectNear(
+      receipt.jointTuning.linearHertz,
+      compilation.relation.linearHertz,
+      RUNTIME_TUNING_TOLERANCE,
+      "runtime weld linear hertz",
+    );
+    expectNear(
+      receipt.jointTuning.linearDampingRatio,
+      compilation.relation.linearDampingRatio,
+      RUNTIME_TUNING_TOLERANCE,
+      "runtime weld linear damping ratio",
+    );
+    expectNear(receipt.jointTuning.angularHertz, 0, RUNTIME_TUNING_TOLERANCE, "runtime weld angular hertz");
+    expectNear(receipt.jointTuning.angularDampingRatio, 1, RUNTIME_TUNING_TOLERANCE, "runtime weld angular damping ratio");
   }
 }
 
@@ -104,6 +186,7 @@ test("ANVIL-07 source and compiler gates preserve one local elastic seam without
 
   const relation = elastic.relation;
   assert.ok(relation);
+  assert.equal(relation.sourceSeamId, "elastic-seam:0");
   assert.deepEqual(relation.endpointA, { cellId: "a:2", face: "x+" });
   assert.deepEqual(relation.endpointB, { cellId: "b:0", face: "x-" });
   assert.deepEqual(relation.normalWorld, { x: 1, y: 0, z: 0 });
@@ -120,19 +203,47 @@ test("ANVIL-07 source and compiler gates preserve one local elastic seam without
   expectNear(relation.linearDampingRatio, 0.6961432213383856, 1e-12, "derived weld damping ratio");
   expectNear(LOAD_N / relation.stiffnessNPerM, 0.1, 1e-12, "ideal static extension");
 
-  const swapped = clone(fixture);
-  swapped.matter.cells = [...swapped.matter.cells].reverse();
-  [swapped.seam.endpointA, swapped.seam.endpointB] = [swapped.seam.endpointB, swapped.seam.endpointA];
-  const swappedElastic = compileElasticSeam(swapped, "ELASTIC");
-  assert.ok(swappedElastic.relation);
-  assert.deepEqual(swappedElastic.relation.endpointA, relation.endpointA);
-  assert.deepEqual(swappedElastic.relation.endpointB, relation.endpointB);
-  assert.deepEqual(swappedElastic.relation.normalWorld, relation.normalWorld);
-  assert.equal(swappedElastic.relation.bodyAId, relation.bodyAId);
-  assert.equal(swappedElastic.relation.bodyBId, relation.bodyBId);
-  expectNear(swappedElastic.relation.effectiveMassKg, relation.effectiveMassKg, 1e-12, "swapped effective mass");
-  expectNear(swappedElastic.relation.linearHertz, relation.linearHertz, 1e-12, "swapped hertz");
-  expectNear(swappedElastic.relation.linearDampingRatio, relation.linearDampingRatio, 1e-12, "swapped damping ratio");
+  const reordered = clone(fixture);
+  reordered.matter.cells = [...reordered.matter.cells].reverse();
+  assertEquivalentElasticCompilation(compileElasticSeam(reordered, "ELASTIC"), elastic, "source-order-only");
+
+  const endpointSwapped = clone(fixture);
+  [endpointSwapped.seam.endpointA, endpointSwapped.seam.endpointB] = [
+    endpointSwapped.seam.endpointB,
+    endpointSwapped.seam.endpointA,
+  ];
+  assertEquivalentElasticCompilation(compileElasticSeam(endpointSwapped, "ELASTIC"), elastic, "endpoint-swap-only");
+
+  const reorderedAndSwapped = clone(endpointSwapped);
+  reorderedAndSwapped.matter.cells = [...reorderedAndSwapped.matter.cells].reverse();
+  assertEquivalentElasticCompilation(
+    compileElasticSeam(reorderedAndSwapped, "ELASTIC"),
+    elastic,
+    "source-order-plus-endpoint-swap",
+  );
+
+  for (const [label, mutate, pattern] of [
+    ["blank id", (seam) => { seam.id = ""; }, /id must be non-empty/],
+    ["whitespace id", (seam) => { seam.id = " \t "; }, /id must be non-empty/],
+    ["zero stiffness", (seam) => { seam.normalStiffnessNPerM = 0; }, /stiffness must be finite and positive/],
+    ["negative stiffness", (seam) => { seam.normalStiffnessNPerM = -1; }, /stiffness must be finite and positive/],
+    ["NaN stiffness", (seam) => { seam.normalStiffnessNPerM = Number.NaN; }, /stiffness must be finite and positive/],
+    ["infinite stiffness", (seam) => { seam.normalStiffnessNPerM = Number.POSITIVE_INFINITY; }, /stiffness must be finite and positive/],
+    ["negative damping", (seam) => { seam.normalDampingNsPerM = -1; }, /damping must be finite and non-negative/],
+    ["NaN damping", (seam) => { seam.normalDampingNsPerM = Number.NaN; }, /damping must be finite and non-negative/],
+    ["infinite damping", (seam) => { seam.normalDampingNsPerM = Number.POSITIVE_INFINITY; }, /damping must be finite and non-negative/],
+  ]) {
+    const invalid = clone(fixture);
+    mutate(invalid.seam);
+    assert.throws(() => compileElasticSeam(invalid, "ELASTIC"), pattern, label);
+  }
+
+  const zeroDamping = clone(fixture);
+  zeroDamping.seam.normalDampingNsPerM = 0;
+  const zeroDampingCompilation = compileElasticSeam(zeroDamping, "ELASTIC");
+  assert.ok(zeroDampingCompilation.relation);
+  assert.equal(zeroDampingCompilation.relation.dampingNsPerM, 0);
+  assert.equal(zeroDampingCompilation.relation.linearDampingRatio, 0);
 
   const sameCell = clone(fixture);
   sameCell.seam.endpointB = { ...sameCell.seam.endpointA };
@@ -166,14 +277,22 @@ test("ANVIL-07 C0 discriminates RIGID / ELASTIC / FREE under the frozen load-unl
   const freeCompilation = compileElasticSeam(fixture, "FREE");
   assert.ok(elasticCompilation.relation);
 
+  const elasticBodyA = elasticCompilation.physicalPlan.bodies.find(
+    (body) => body.id === elasticCompilation.relation.bodyAId,
+  );
+  const elasticBodyB = elasticCompilation.physicalPlan.bodies.find(
+    (body) => body.id === elasticCompilation.relation.bodyBId,
+  );
+  assert.ok(elasticBodyA && elasticBodyB);
+
   const rigid = await ElasticSeamPhysics.create(rigidCompilation, fixture.matter.materials);
   const elastic = await ElasticSeamPhysics.create(elasticCompilation, fixture.matter.materials);
   const free = await ElasticSeamPhysics.create(freeCompilation, fixture.matter.materials);
 
   try {
-    assertRuntimeReceipt(rigid.receipt, 1, false);
-    assertRuntimeReceipt(elastic.receipt, 2, true);
-    assertRuntimeReceipt(free.receipt, 2, false);
+    assertRuntimeReceipt(rigid.receipt, rigidCompilation);
+    assertRuntimeReceipt(elastic.receipt, elasticCompilation);
+    assertRuntimeReceipt(free.receipt, freeCompilation);
 
     for (let step = 0; step < LOADED_STEPS; step += 1) {
       rigid.applyOutwardLoad(LOAD_N);
@@ -222,18 +341,41 @@ test("ANVIL-07 C0 discriminates RIGID / ELASTIC / FREE under the frozen load-unl
     console.log(JSON.stringify({
       probe: "ANVIL-07/ELASTIC-SEAM-C0",
       sourceCells: fixture.matter.cells.length,
+      compiledBodyCounts: {
+        rigid: rigidCompilation.physicalPlan.bodies.length,
+        elastic: elasticCompilation.physicalPlan.bodies.length,
+        free: freeCompilation.physicalPlan.bodies.length,
+      },
+      runtimeBodyCounts: {
+        rigid: rigid.receipt.bodyCount,
+        elastic: elastic.receipt.bodyCount,
+        free: free.receipt.bodyCount,
+      },
+      runtimeJointCounts: {
+        rigid: rigid.receipt.jointCount,
+        elastic: elastic.receipt.jointCount,
+        free: free.receipt.jointCount,
+      },
       loadN: LOAD_N,
       loadedSteps: LOADED_STEPS,
       unloadedSteps: UNLOADED_STEPS,
       massKg: {
-        left: 292.5,
-        right: 390.0,
+        rigidTotal: totalMass(rigidCompilation.physicalPlan),
+        elasticTotal: totalMass(elasticCompilation.physicalPlan),
+        freeTotal: totalMass(freeCompilation.physicalPlan),
+        left: elasticBodyA.massKg,
+        right: elasticBodyB.massKg,
         effective: elasticCompilation.relation.effectiveMassKg,
       },
       derived: {
         linearHertz: elasticCompilation.relation.linearHertz,
         linearDampingRatio: elasticCompilation.relation.linearDampingRatio,
         idealStaticExtensionM: LOAD_N / elasticCompilation.relation.stiffnessNPerM,
+      },
+      solverReadback: {
+        rigid: rigid.receipt,
+        elastic: elastic.receipt,
+        free: free.receipt,
       },
       rigid: { loaded: rigidLoaded, recovered: rigidRecovered },
       elastic: { loaded: elasticLoaded, recovered: elasticRecovered },

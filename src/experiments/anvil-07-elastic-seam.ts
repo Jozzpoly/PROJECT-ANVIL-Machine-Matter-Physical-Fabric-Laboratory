@@ -68,25 +68,37 @@ export interface ElasticSeamCompilation {
   readonly relation: ElasticSeamRelationPlan | null;
 }
 
+export interface ElasticSeamMotionLocksReceipt {
+  readonly linearX: boolean;
+  readonly linearY: boolean;
+  readonly linearZ: boolean;
+  readonly angularX: boolean;
+  readonly angularY: boolean;
+  readonly angularZ: boolean;
+}
+
+export interface ElasticSeamJointTuningReceipt {
+  readonly linearHertz: number;
+  readonly linearDampingRatio: number;
+  readonly angularHertz: number;
+  readonly angularDampingRatio: number;
+}
+
 export interface ElasticSeamRuntimeReceipt {
   readonly engineVersion: string;
   readonly variant: ElasticSeamVariant;
   readonly relationCreated: boolean;
   readonly bodyCount: number;
+  readonly jointCount: number;
   readonly bodyMassErrorsKg: Readonly<Record<string, number>>;
   readonly bodyLocalCenterErrorsM: Readonly<Record<string, number>>;
   readonly gravity: Vec3;
-  readonly contactsDisabled: true;
-  readonly linearDampingPerBody: 0;
-  readonly angularDampingPerBody: 0;
-  readonly motionLocks: {
-    readonly linearX: false;
-    readonly linearY: true;
-    readonly linearZ: true;
-    readonly angularX: true;
-    readonly angularY: true;
-    readonly angularZ: true;
-  };
+  readonly contactsDisabled: boolean;
+  readonly bodyLinearDamping: Readonly<Record<string, number>>;
+  readonly bodyAngularDamping: Readonly<Record<string, number>>;
+  readonly bodySleepEnabled: Readonly<Record<string, boolean>>;
+  readonly bodyMotionLocks: Readonly<Record<string, ElasticSeamMotionLocksReceipt>>;
+  readonly jointTuning: ElasticSeamJointTuningReceipt | null;
 }
 
 export interface ElasticSeamDiagnostics {
@@ -401,6 +413,11 @@ export class ElasticSeamPhysics {
     const runtimeMassByBodyId = new Map<string, number>();
     const massErrors: Record<string, number> = {};
     const centerErrors: Record<string, number> = {};
+    const bodyLinearDamping: Record<string, number> = {};
+    const bodyAngularDamping: Record<string, number> = {};
+    const bodySleepEnabled: Record<string, boolean> = {};
+    const bodyMotionLocks: Record<string, ElasticSeamMotionLocksReceipt> = {};
+    let contactsDisabled = true;
 
     try {
       for (const body of compilation.physicalPlan.bodies) {
@@ -434,7 +451,8 @@ export class ElasticSeamPhysics {
           shapeDef.baseMaterial.friction = material.friction;
           shapeDef.filter.maskBits = 0n;
           try {
-            b3.b3CreateHullShape(bodyId, shapeDef, hull);
+            const shapeId = b3.b3CreateHullShape(bodyId, shapeDef, hull);
+            contactsDisabled = contactsDisabled && b3.b3Shape_GetFilter(shapeId).maskBits === 0n;
           } finally {
             (hull as unknown as { delete?: () => void }).delete?.();
           }
@@ -444,6 +462,18 @@ export class ElasticSeamPhysics {
         runtimeMassByBodyId.set(body.id, mass.mass);
         massErrors[body.id] = mass.mass - body.massKg;
         centerErrors[body.id] = Math.hypot(mass.center.x, mass.center.y, mass.center.z);
+        bodyLinearDamping[body.id] = b3.b3Body_GetLinearDamping(bodyId);
+        bodyAngularDamping[body.id] = b3.b3Body_GetAngularDamping(bodyId);
+        bodySleepEnabled[body.id] = b3.b3Body_IsSleepEnabled(bodyId);
+        const locks = b3.b3Body_GetMotionLocks(bodyId);
+        bodyMotionLocks[body.id] = {
+          linearX: locks.linearX,
+          linearY: locks.linearY,
+          linearZ: locks.linearZ,
+          angularX: locks.angularX,
+          angularY: locks.angularY,
+          angularZ: locks.angularZ,
+        };
       }
 
       let jointId: b3JointId | null = null;
@@ -472,6 +502,17 @@ export class ElasticSeamPhysics {
         jointId = b3.b3CreateWeldJoint(worldId, def);
       }
 
+      const counters = b3.b3World_GetCounters(worldId);
+      const gravity = b3.b3World_GetGravity(worldId);
+      const jointTuning: ElasticSeamJointTuningReceipt | null = jointId === null
+        ? null
+        : {
+            linearHertz: b3.b3WeldJoint_GetLinearHertz(jointId),
+            linearDampingRatio: b3.b3WeldJoint_GetLinearDampingRatio(jointId),
+            angularHertz: b3.b3WeldJoint_GetAngularHertz(jointId),
+            angularDampingRatio: b3.b3WeldJoint_GetAngularDampingRatio(jointId),
+          };
+
       return new ElasticSeamPhysics(
         b3,
         worldId,
@@ -481,22 +522,18 @@ export class ElasticSeamPhysics {
         {
           engineVersion: `${version.major}.${version.minor}.${version.revision}`,
           variant: compilation.variant,
-          relationCreated: jointId !== null,
-          bodyCount: bodyIds.size,
+          relationCreated: counters.jointCount === 1,
+          bodyCount: counters.bodyCount,
+          jointCount: counters.jointCount,
           bodyMassErrorsKg: massErrors,
           bodyLocalCenterErrorsM: centerErrors,
-          gravity: { ...ZERO },
-          contactsDisabled: true,
-          linearDampingPerBody: 0,
-          angularDampingPerBody: 0,
-          motionLocks: {
-            linearX: false,
-            linearY: true,
-            linearZ: true,
-            angularX: true,
-            angularY: true,
-            angularZ: true,
-          },
+          gravity: { x: gravity.x, y: gravity.y, z: gravity.z },
+          contactsDisabled,
+          bodyLinearDamping,
+          bodyAngularDamping,
+          bodySleepEnabled,
+          bodyMotionLocks,
+          jointTuning,
         },
         runtimeMassByBodyId,
       );
