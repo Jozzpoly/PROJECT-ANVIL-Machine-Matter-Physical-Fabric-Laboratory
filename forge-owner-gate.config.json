@@ -1,8 +1,8 @@
 {
   "schema": "anvil-forge-active-gate/v1",
   "project": "PROJECT ANVIL / Physical Fabric Laboratory",
-  "gate": "ANVIL-02 / BEARING",
-  "entryPath": "/?experiment=bearing",
+  "gate": "ANVIL-03 / REBIND",
+  "entryPath": "/?experiment=rebind",
   "forgeRevision": "v0.2.1-human-owner-copy",
   "artifactName": "anvil-browser-laboratory"
 }

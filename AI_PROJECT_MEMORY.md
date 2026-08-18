@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last grounding: 2026-08-18.
+Last grounding: 2026-08-18 after ANVIL-03 owner acceptance.
 
 ## Identity and authority
 
@@ -12,48 +12,50 @@ Authority order:
 2. executed evidence;
 3. direct owner feedback;
 4. canonical documentation;
-5. historical conversation/branch names only as leads.
+5. conversation/branch names only as leads.
 
-Always resolve live Git before meaningful work. Never let later tooling/docs redefine which exact artifact the owner actually tested.
+Always resolve live Git before meaningful work. Never let later docs or tooling redefine which exact artifact the owner actually tested.
 
-## Current state
+## Current live state at this grounding
 
-Accepted `main` at the start of ANVIL-02:
+Accepted `main` before ANVIL-03 promotion:
 
-`6e936dd5934fffb3c7de3482a7aca9dc985102e5`
+`36d363d5c828fa8f1bf96f183bd7393573dec216`
 
 It contains:
 
-- ANVIL-00 / COLLAPSE — owner accepted;
-- promoted laboratory foundation;
+- ANVIL-00 / COLLAPSE — owner accepted and promoted;
+- laboratory foundation — promoted;
 - ANVIL-01 / CUT — owner accepted and promoted;
-- Forge V0.1 baseline.
+- ANVIL-02 / BEARING — owner accepted and promoted;
+- Forge V0.2.1 human-owner communication layer — merged and automated-validated.
 
-Active branch at this grounding:
+Active research branch:
 
-`experiment/anvil-02-bearing`
+`experiment/anvil-03-rebind`
 
 PR:
 
-`#5 — ANVIL-02: bearing from a local authored interface`
+`#7 — ANVIL-03: rebind a persistent bearing across moving CUT`
 
-**ANVIL-02 / BEARING is OWNER ACCEPTED for its declared bounded claim.**
+**ANVIL-03 / REBIND is OWNER ACCEPTED for its declared bounded claim and awaits docs-grounded promotion.**
 
-The exact owner-tested source remains immutable evidence:
+Immutable owner-tested identity:
 
 ```text
-source head      3869cbb3ece204acd7f5c05cf7da43e53e219c0c
-PR checkout      a107661d2f8854cf45a51047f93f06b2d5b8c0a4
-Actions run      32080991801 attempt 1
-artifact ID      9305115231
-artifact SHA256  336987e773b643c1b25f472cf1f585c2724f98760412359015f7f464f381bdac
-owner            ACCEPT after 17 observed BEARING runs
+source head      e03e227df073ec45946f9e83a9716ca6d7fe8af3
+PR checkout      72ea1e01c3d5b5fe268933449c5d4a48a1aad3f3
+Actions run      32085543984 attempt 1
+artifact ID      9306595449
+artifact SHA256  98ae32912516cb8287c02bf12aa669b57628f7ef7e47be9f647d05791918ad44
+Forge revision   v0.2.1-human-owner-copy
+owner            ACCEPT after 14 observed REBIND runs
 owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
 ```
 
-Live GitHub cross-check after handoff confirmed source, synthetic checkout, successful run, artifact ID and digest. An owner screen recording was also reviewed and visually supported the reported A/B behavior.
+External GitHub provenance handshake after handoff passed. A user-supplied screenshot also visibly supported the intended left-connected/right-separated terminal state.
 
-PR #5 may be promoted after a final docs-only promotion validation. If this memory is read after that merge, resolve live `main` and treat the actual merge commit as current truth; the exact owner-tested source above must still remain the acceptance artifact identity.
+If this memory is read after promotion, resolve live `main`; the exact owner-tested source/artifact above remains the acceptance identity even though a later documentation commit and merge may become the repository head.
 
 ## Research intent
 
@@ -61,11 +63,11 @@ ANVIL is an R&D laboratory for **Machine Matter / Physical Fabric**.
 
 Working premise:
 
-> persistent authored matter and physical intent may compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
+> persistent authored matter and physical intent can compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
 
 Machines should increasingly emerge from matter, local physical relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies, colliders, joints and solver objects are interpretations, not authoritative construction identity.
 
-Do not promote an experiment-local trick into universal ontology because one fixture passes.
+Do not promote experiment-local tricks into universal ontology because one fixture passes.
 
 ## Toolchain truth
 
@@ -108,198 +110,133 @@ Still not foundation:
 - vehicle-specific concepts;
 - generic scene/entity framework.
 
-## ANVIL-00 / COLLAPSE — accepted baseline
+## Accepted experiment stack
 
-For its bounded sparse-cell fixture ANVIL-00 established:
+### ANVIL-00 / COLLAPSE
 
-- persistent cell/material identity without Box3D IDs in authored truth;
-- deterministic rigid-island compilation;
-- integrated mass/COM;
-- collision representation distinct from authored resolution;
-- disposable Box3D lowering;
-- intact `51 cells -> 1 body -> 8 collision boxes`;
-- one-cell authoring edit `50 cells -> 2 bodies -> 9 collision boxes`;
-- strict TS, semantic tests, real Box3D, production browser and owner manual acceptance.
+Bounded proof that persistent authored cells/material can deterministically compile to a coarser disposable rigid-body/collider representation. One source edit changes compiled topology. Not dynamic state migration.
 
-Boundary: COLLAPSE deletes a source cell and rebuilds neutral runtime state. It is not dynamic state migration.
+### ANVIL-01 / CUT
 
-## ANVIL-01 / CUT — accepted continuity result
-
-Exact owner-tested artifact:
-
-```text
-source head      9c4b3372ad60e20ade2d7d9a31dd373a356263d0
-Actions run      32073741628
-artifact ID      9302675515
-artifact SHA256  34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40
-owner            ACCEPT after 10 observed runs
-owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
-```
-
-CUT demonstrated a mass-preserving topology change with persistent source identity and bounded rigid motion-state continuity:
+Owner accepted mass-preserving topology continuity:
 
 `51 source cells / 1 body -> same 51 source cells / 2 bodies`.
 
-Important boundary: CUT does not prove in-place replacement in one populated persistent Box3D world, contact-manifold migration, external relation/joint migration, arbitrary fracture, full angular-momentum conservation, deformables or a generic connection ontology.
-
-CUT is a continuity experiment, not a destruction roadmap.
-
-## ANVIL-02 / BEARING — owner accepted
-
-Canonical docs:
-
-- `docs/experiments/ANVIL-02-BEARING-PREFLIGHT.md`;
-- `docs/experiments/ANVIL-02-BEARING-EVIDENCE.md`;
-- `docs/experiments/ANVIL-02-BEARING-OWNER-GATE.md`.
-
-### Research question
-
-Can one local authored rotational interface between two otherwise rigidly face-connected source regions cause ANVIL to compile the same persistent matter into two rigid islands plus one solver-neutral rotational relation, while Box3D keeps a shared pivot coincident and allows relative rotation?
-
-### Why it matters
-
-Before ANVIL-02, `MatterDocument` contained matter/material/grid information but no local mechanical signal. Hand-creating a Box3D revolute joint would test only Box3D.
-
-ANVIL-02 introduced the smallest experiment-local authored signal needed to test the Machine Matter idea:
+The accepted rigid-field transfer is:
 
 ```text
-stable bearing ID
+child COM = parent COM + R_parent * authored COM offset
+v_child   = v_parent + omega_parent x r_world
+R_child   = R_parent
+omega     = omega_parent
+```
+
+CUT does not prove contact-manifold migration, arbitrary fracture, in-place world mutation or relation migration.
+
+### ANVIL-02 / BEARING
+
+Owner accepted one experiment-local authored bearing interface:
+
+```text
+stable source bearing ID
 endpoint A = persistent cell ID + face
 endpoint B = persistent cell ID + opposite face
 free axis  = x | y | z
 ```
 
-It deliberately contains no Box3D IDs and is not promoted as a universal relation schema.
+The same seven source cells compile from one rigid island to two bodies plus one Box3D revolute relation. The relation keeps a shared pivot while allowing free relative rotation, with a strong no-relation A/B control. An arbitrary common 3D rigid transform also passed without earning a generic authored-frame ontology.
 
-### Fixture and result
+### ANVIL-03 / REBIND
 
-Seven equal-material `0.5 m` source cells form asymmetric 3-cell and 4-cell lobes with one rigid seam:
+Canonical docs:
 
-`a:2 x+ <-> b:0 x-`
+- `docs/experiments/ANVIL-03-REBIND-PREFLIGHT.md`;
+- `docs/experiments/ANVIL-03-REBIND-EVIDENCE.md`;
+- `docs/experiments/ANVIL-03-REBIND-OWNER-GATE.md`.
 
-Without the bearing mark: one rigid island.
+REBIND composes the two previous capabilities instead of adding a new Box3D feature.
 
-With the mark: same seven source cells -> two rigid bodies + one derived bearing relation.
-
-The compiler fails closed for invalid/non-adjacent/non-opposite endpoints, axis normal to the shared face, and an alternate rigid bypass around the seam.
-
-Base real-solver evidence after 120 fixed 60 Hz steps:
+Declared transaction:
 
 ```text
-bearing anchor gap       0.00001546371140869226 m
-no-relation control gap  1.3662249602059333 m
-relative angle           2.010232448577881 rad
+same 7 source cells
+2 runtime bodies + 1 source bearing
+          ↓ nearby CUT while moving
+3 runtime bodies + same source bearing
+bearing endpoint runtime body: body:a:0 -> body:a:2
 ```
 
-Predeclared gates were respectively `<= 0.0025 m`, `>= 0.25 m`, `>= 0.35 rad`.
+The new endpoint body is resolved from persistent source-cell provenance, not from the old disposable body ID.
 
-The fixture therefore has large discrimination margin. No physical threshold was loosened.
+C0 moving fixture and C1 arbitrary common-3D-transform fixture both passed the same frozen tolerances. Final owner candidate passed **31/31** real-Box3D/Node tests and **17/17** Chromium tests. Owner then repeated the real package 14 times and accepted the intended visual result.
 
-### Common-transform falsifier
+Strongest correct claim:
 
-A harder gate was declared before execution: apply one arbitrary common 3D rigid transform to the complete compiled device without adding a general authored frame system.
+> persistent source provenance + persistent authored bearing endpoints are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for the declared moving fixtures, while maintaining observable pose/velocity/pivot continuity and free relative rotation.
 
-Observed:
+Architectural implication earned by evidence:
 
-```text
-initial transformed mismatch  1.7889085181965112e-7 m
-bearing gap                   4.252712514504838e-6 m
-no-relation control           1.2319540243918932 m
-relative angle                1.0926251411437988 rad
-```
+- source matter and authored physical intent may outlive disposable body and joint identities;
+- runtime body IDs are not suitable construction identity;
+- a relation can be **re-derived** after topology compilation from persistent source semantics rather than migrated as an authoritative solver object;
+- CUT and BEARING therefore compose at the semantic/compiler boundary for this bounded case.
 
-Result: current body-local anchor/axis semantics are sufficient for this common-rigid-transform fixture. **Do not add a JURE-like frame ontology now.** The experiment has not earned that complexity.
+Important boundary: REBIND creates a **fresh Box3D world and fresh revolute joint**. It does not migrate internal joint impulse/warm-start caches. Call this semantic relation continuity, not joint-state migration.
 
-### Browser + owner evidence
+## Forge — current truth after third field trial
 
-Final automated owner-tested source passed:
-
-- strict TypeScript;
-- **28/28** Node / exact real-Box3D tests;
-- production build;
-- Forge V0.2 launcher self-test;
-- unsafe entry-path rejection checks;
-- **12/12** real Chromium tests;
-- artifact upload.
-
-Owner then ran the package 17 times and reported the intended visual contrast:
-
-- left: the structures remain connected at the green bearing marker and rotate relative to one another;
-- right: the no-relation control separates and flies apart, with the red distance line making the separation visible.
-
-Owner verdict: **ACCEPT**.
-
-### Explicit non-claims
-
-ANVIL-02 does not prove:
-
-- arbitrary authored non-grid orientation semantics;
-- multiple interacting bearings or closed kinematic loops;
-- motors, limits, compliance, friction torque or breakage;
-- power/control networks;
-- relation continuity across CUT/recompile transactions;
-- a generic Relation/Joint/Constraint ontology;
-- universal authored frame entities;
-- generality of `BearingMark` to other physical interfaces.
-
-## Forge — current truth after second field trial
-
-Forge exists to reduce owner-validation friction:
+Forge exists only to reduce owner-validation friction:
 
 `agent evidence -> packaged browser build -> double-click launcher -> simple visual owner decision -> generated technical report -> agent verifies provenance live`.
 
 Do **not** build a universal hub yet. Forge must keep earning its shape from actual ANVIL owner gates.
 
-### Forge V0.2 functional result
+BEARING field trial exposed a communication failure: technical terms such as schema/provenance/canonical/fail-closed were unreadable in the primary owner flow.
 
-BEARING was the second real consumer. It exposed and justified one cross-gate generalization: active gate + entry path could no longer be hardcoded to CUT.
+Forge V0.2.1 changed only the human-facing layer while preserving strict internal verdict/provenance semantics.
 
-V0.2 therefore added:
+REBIND is its first real field trial and **passed for this gate**:
 
-- `forge-owner-gate.config.json` for active gate/entry/revision/artifact;
-- manifest schema `anvil-forge-owner-gate/v2` with `entryPath`;
-- generic `START_ANVIL.cmd`;
-- safe same-origin entry-path validation;
-- BEARING-specific fail-closed owner report;
-- negative browser tests for wrong gate, local/unverified artifact and evidence mutation after ACCEPT.
+- correct Windows launcher/path;
+- plain Polish visual instruction;
+- ordinary decisions `DZIAŁA / NIE DZIAŁA / NIE WIEM`;
+- technical details not required for the owner decision;
+- exact technical report still sufficient for external provenance verification;
+- owner correctly restated the intended A/B behavior and selected `DZIAŁA` after 14 runs.
 
-The real Windows handoff, 17 repetitions, verdict and generated report all worked. External GitHub provenance verification also succeeded.
+Do not infer universal usability from one successful V0.2.1 consumer. Keep future improvements evidence-driven and ANVIL-specific.
 
-### Forge V0.2 owner-UX defect
+## Preserved boundaries after REBIND
 
-The owner found the opening Forge explanation difficult to understand and described it as technical jargon. This is a real product defect in Forge's communication layer, despite the functional pass.
+Do not claim that ANVIL currently has:
 
-The owner is a visual creator/non-programmer. Primary Forge instructions must therefore be written in ordinary Polish and explain only what must be observed.
-
-**Earned rule for the next Forge revision:**
-
-- primary UI: plain human language;
-- say exactly what should visibly happen;
-- explain visible failure signs;
-- use ordinary action labels;
-- hide `schema`, SHA, run ID, artifact, provenance, source-interface notation and similar implementation details under collapsed `Szczegóły techniczne`;
-- generated report may remain fully technical because the agent, not the owner, consumes it.
-
-Do not turn this into a generic UI framework. Apply the rule minimally to the next Forge owner surface and let another field trial validate it.
-
-## Preserved negative evidence from ANVIL-02
-
-Do not erase:
-
-1. first browser slice failed strict TypeScript closure narrowing; fixed without weakening strictness;
-2. browser initially showed default `300x150` canvases because experiment CSS did not load; fixed the CSS route rather than relaxing QA;
-3. owner panel initially stretched the scene to ~1397 px at a 900 px viewport; fixed independent viewport/panel bounds and added upper layout gates;
-4. first BEARING Forge V0.2 owner layer became a global TS script and failed strict checking; explicit module scope fixed it;
-5. no physical threshold was relaxed to make failures green.
+- generic Relation/Joint/Constraint ontology;
+- universal authored frames;
+- in-place mutation of a populated persistent Box3D world;
+- Box3D warm-start/joint-cache migration;
+- contact-manifold migration;
+- arbitrary load/contact continuity through topology transactions;
+- arbitrary cuts/fracture/merge topology;
+- multiple-relation or closed-loop mechanism continuity;
+- motors/limits/power/control state migration;
+- deformable/compliant matter;
+- damage/plasticity/debris systems.
 
 ## Immediate next actions
 
-1. Revalidate the docs-only owner-acceptance head of PR #5.
-2. Promote ANVIL-02 to `main` only if that exact promotion gate is green and the PR head has not moved unexpectedly.
-3. Preserve `3869cbb3...` + artifact `9305115231` as the immutable owner-tested identity even though promotion documentation comes later.
-4. After promotion, handle the Forge communication defect separately; do not rewrite the accepted BEARING artifact and pretend it was owner-tested.
-5. Before selecting ANVIL-03, critically compare at least these next falsifiers:
-   - composition of multiple local bearing interfaces;
-   - a local actuation/torque intent lowering onto an already-earned bearing;
-   - continuity of a derived relation across a CUT/recompile transaction.
-6. Prefer the smallest falsifier that advances Machine Matter rather than merely exercising another Box3D API. Do not build generic relation graphs, power networks or frame systems in advance.
+1. Treat `e03e227d...` + artifact `9306595449` as the immutable owner-tested ANVIL-03 identity.
+2. Run one final docs-grounded CI on the owner-acceptance head; do not change REBIND physics or thresholds.
+3. Promote PR #7 only if that final CI is green and the PR head/base have not moved unexpectedly.
+4. After merge, compare the tested synthetic-merge tree with the actual `main` merge tree.
+5. Only then select ANVIL-04.
+
+## Next research decision after promotion
+
+Do not automatically build more fracture or a generic mechanism framework.
+
+The two highest-value next falsifiers are:
+
+1. **loaded relation continuity** — repeat relation reconstruction while the bearing carries a meaningful external/constraint load, attacking the current absence of solver-cache/contact/load continuity evidence;
+2. **local actuation/function** — add the smallest experiment-local authored torque/actuation intent to an already-earned bearing, beginning the `FUNCTION` part of Machine Matter without creating a generic power/control network.
+
+Prefer the first if we need to harden the continuity foundation before introducing active machine semantics. Prefer the second if the current semantic-rebuild model remains stable enough and the goal is to advance from passive structure toward an actual machine. Do not combine both in one first falsifier.
