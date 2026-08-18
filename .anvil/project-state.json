@@ -3,64 +3,65 @@
   "repository": "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
   "authority": "checkpoint-claim-verify-against-live-git",
   "accepted": {
-    "through": "ANVIL-06 / TORQUE-PATCH",
-    "materialCheckpoint": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
-    "lastMaterialMerge": "68f68104734084e0e284c77776a42e954e783d4d"
+    "through": "ANVIL-07 / ELASTIC-SEAM",
+    "materialCheckpoint": "62dcc651f73dc3f228109d3d8922afd534b75950",
+    "lastMaterialMerge": "62dcc651f73dc3f228109d3d8922afd534b75950",
+    "evidenceGrounding": "97ab4d72475ae3d15ae79a496cb7bdb6689c952f"
   },
   "active": {
+    "experiment": null,
+    "pr": null,
+    "branch": null,
+    "phase": "post-anvil-07-promotion-grounded-awaiting-next-preflight",
+    "activeVerdict": null,
+    "readyForPromotion": false
+  },
+  "anvil07": {
     "experiment": "ANVIL-07 / ELASTIC-SEAM",
     "pr": 12,
-    "branch": "experiment/anvil-07-elastic-seam",
-    "baseAtFreeze": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
-    "preC0CheckpointHead": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
-    "checkpointHead": "1a31a69096f48d2eccb08ba88d683607f15d0ce3",
-    "phase": "draft-c0-supported-evidence-hardening-required",
-    "activeVerdict": "SUPPORTED FOR FIXTURE",
-    "evidenceBoundary": "A+B+C real-solver C0 on frozen one-dimensional fixture; active and unaccepted",
-    "promotionReadiness": "not-ready-evidence-hardening-required",
-    "readyForPromotion": false,
-    "physicsC0Implemented": true,
-    "physicsC0Executed": true
-  },
-  "frozenResearch": {
+    "status": "promoted",
+    "verdict": "SUPPORTED FOR FIXTURE",
+    "evidenceBoundary": "accepted bounded seven-cell one-dimensional compliant-seam result; not generic deformable matter",
     "preflight": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT.md",
     "preflightAmendment": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT-AMENDMENT-01.md",
+    "evidenceLog": "docs/experiments/ANVIL-07-ELASTIC-SEAM-EVIDENCE.md",
     "capabilitySource": "58c4580702d4604f2effcdc501cde09d796becea",
     "capabilityRun": 32151014026,
     "preC0HardeningSource": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
     "preC0HardeningRun": 32159805481,
     "c0Source": "1a31a69096f48d2eccb08ba88d683607f15d0ce3",
     "c0Run": 32166041812,
-    "c0Suite": "42/42 PASS + production build PASS"
+    "evidenceHardeningSource": "a34a769e4892bb5a3c117389af7c2bba47866623",
+    "evidenceHardeningRun": 32188332165,
+    "readyRun": 32188493917,
+    "readySyntheticMerge": "c206a008458e2a244bf65663f0c11705a1d1c948",
+    "qualifiedTree": "d9833ba637f11c11ca7f01f67924b128191e1ada",
+    "materialMerge": "62dcc651f73dc3f228109d3d8922afd534b75950",
+    "readyEvidence": "42/42 Node PASS + production build PASS + 19/19 Chromium PASS + launcher self-test PASS"
   },
-  "postC0Audit": {
-    "classification": "test/evidence hardening; no physical falsification identified",
-    "researchCompass": "completed",
-    "gaps": [
-      "source-cell reorder and endpoint-swap invariance are currently perturbed together instead of independently",
-      "blank seam id and invalid stiffness/damping domains are validated in code but lack adversarial test assertions",
-      "runtime isolation relies partly on harness receipts instead of direct solver-state observation where getters are available",
-      "required raw report omits compiled body counts and reports fixture masses as literals rather than compiled values"
-    ]
+  "nextCandidate": {
+    "name": "COMPLIANCE-RESOLUTION",
+    "status": "strategic-candidate-not-frozen-not-active",
+    "primaryFalsifier": "whether the same intended physical compliant interface retains macroscopic meaning across changed source resolution/interface patch count without per-voxel retuning",
+    "runnerUp": "ACTIVATE",
+    "later": "compliant REBIND",
+    "nextAction": "Run a bounded preflight/macro preparation pass for COMPLIANCE-RESOLUTION. Define coarse/fine authored representations of the same physical interface, derive candidate area-normalized local compliance without promoting it to foundation, include a naive fixed-per-patch control, define permitted runtime aggregation, and freeze quantitative gates before implementation. Abort or redesign if the intended physical meaning cannot be stated independently of voxel count."
   },
-  "nextAction": "Keep PR #12 Draft. Apply only preflight-defined evidence hardening: separate source-order and endpoint-swap invariance checks; add adversarial id/stiffness/damping domain checks; observe actual solver motion-lock/damping/joint tuning when the pinned binding exposes getters (otherwise use a bounded adversarial runtime probe); derive and report body counts/masses from compilation. Do not alter physics or frozen thresholds. Then rerun Draft/core and classify the result before any Ready decision.",
   "doNotDoNow": [
-    "treat ANVIL-07 as accepted project truth",
-    "mark PR #12 Ready before the post-C0 evidence gaps are closed",
-    "merge PR #12 merely because the original C0 is green",
-    "change the frozen C0 gates after seeing the result",
-    "add breakage, plasticity, TORQUE, ACTIVATE, contacts, or generic Bond architecture to ANVIL-07 C0",
-    "promote ELASTIC-SEAM into foundation",
-    "start ANVIL-08 before the ANVIL-07 promotion decision is resolved",
-    "confuse Ready Chromium regression with direct ELASTIC-SEAM physics evidence"
+    "reopen or enrich ANVIL-07",
+    "change ANVIL-07 frozen C0 gates or coefficients",
+    "promote ElasticSeam or a generic compliant relation into foundation",
+    "assume normalStiffnessNPerM or normalDampingNsPerM per discrete seam are resolution-independent material properties",
+    "treat COMPLIANCE-RESOLUTION as active before a new preflight is frozen",
+    "start ACTIVATE merely because it is easier than the leading falsifier",
+    "start compliant REBIND before compliance scaling/representation meaning is understood"
   ],
   "takeoverVerification": [
     "resolve live main",
-    "resolve PR #12 state and live head",
-    "verify C0 source 1a31a69096f48d2eccb08ba88d683607f15d0ce3 and run 32166041812 unless a newer audited hardening head exists",
-    "compare live main with accepted.materialCheckpoint and classify later docs/meta grounding separately from material truth",
-    "compare active branch with live main / merge-base without rebasing for aesthetics",
-    "read both frozen ANVIL-07 preflight documents from the active branch",
-    "keep capability evidence distinct from real-solver C0 physics evidence and post-C0 evidence hardening"
+    "verify accepted.materialCheckpoint 62dcc651f73dc3f228109d3d8922afd534b75950 is an ancestor of live main",
+    "verify ANVIL-07 evidence log exists at or after evidenceGrounding 97ab4d72475ae3d15ae79a496cb7bdb6689c952f",
+    "if promotion provenance matters, verify Ready run 32188493917 source a34a769e4892bb5a3c117389af7c2bba47866623 and synthetic merge c206a008458e2a244bf65663f0c11705a1d1c948",
+    "verify synthetic and actual merge trees are both d9833ba637f11c11ca7f01f67924b128191e1ada",
+    "confirm no new active experiment/preflight has superseded nextCandidate before writing"
   ]
 }
