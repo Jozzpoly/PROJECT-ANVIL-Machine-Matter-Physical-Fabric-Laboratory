@@ -1,0 +1,46 @@
+{
+  "schema": "anvil-project-state/v1",
+  "repository": "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
+  "authority": "checkpoint-claim-verify-against-live-git",
+  "accepted": {
+    "through": "ANVIL-06 / TORQUE-PATCH",
+    "materialCheckpoint": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
+    "lastMaterialMerge": "68f68104734084e0e284c77776a42e954e783d4d"
+  },
+  "active": {
+    "experiment": "ANVIL-07 / ELASTIC-SEAM",
+    "pr": 12,
+    "branch": "experiment/anvil-07-elastic-seam",
+    "baseAtFreeze": "e236f6a8b00858fa4d35f4fc32189f78b9cb33b2",
+    "checkpointHead": "af93a116ab59bf4d32ac58956cd9a719b86175cc",
+    "phase": "draft-pre-c0",
+    "evidenceBoundary": "capability-only",
+    "readyForPromotion": false,
+    "physicsC0Implemented": false,
+    "physicsC0Executed": false
+  },
+  "frozenResearch": {
+    "preflight": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT.md",
+    "preflightAmendment": "docs/experiments/ANVIL-07-ELASTIC-SEAM-PREFLIGHT-AMENDMENT-01.md",
+    "capabilitySource": "58c4580702d4604f2effcdc501cde09d796becea",
+    "capabilityRun": 32151014026,
+    "preC0HardeningRun": 32159805481
+  },
+  "nextAction": "Verify live takeover state, then implement only the frozen RIGID / ELASTIC / FREE ANVIL-07 C0 on the existing Draft branch.",
+  "doNotDoBeforeC0": [
+    "mark PR #12 Ready",
+    "merge PR #12",
+    "change frozen gates merely to obtain PASS",
+    "add Chromium, Forge, or owner validation ceremony",
+    "add breakage, plasticity, TORQUE, ACTIVATE, contacts, or generic Bond architecture",
+    "promote ELASTIC-SEAM into foundation"
+  ],
+  "takeoverVerification": [
+    "resolve live main",
+    "resolve PR #12 state and live head",
+    "compare live main with accepted.materialCheckpoint and classify the delta",
+    "compare active branch with live main / merge-base",
+    "read both frozen ANVIL-07 preflight documents from the active branch",
+    "verify capability evidence is not being mistaken for C0 physics evidence"
+  ]
+}

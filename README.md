@@ -2,37 +2,36 @@
 
 **Machine Matter / Physical Fabric Laboratory**
 
-PROJECT ANVIL is an experimental R&D laboratory for testing a deliberately unusual idea:
+PROJECT ANVIL is an experimental R&D laboratory for a deliberately unusual idea:
 
-> A machine should be authored as persistent semantic matter and local physical intent, then compiled into disposable runtime representations appropriate to the simulation.
+> Author persistent semantic matter and local physical intent, then compile them into disposable runtime representations appropriate to the simulation.
 
-The long-term target is not a catalog of chassis, wheels, engines and joints. The working dream is closer to **painting local properties** — matter, bindings, interfaces and functions — and letting useful machine structure emerge from their composition. Names such as steel/rubber, stiff/elastic/breakable, bearing/friction surface, torque/sensor/signal are research vocabulary, not a frozen ontology and not direct aliases for Box3D objects.
+The long-term target is not a catalog of chassis, wheels, engines and joints. The working direction is closer to **painting local properties/capabilities** — matter, bindings, interfaces and functions — and testing whether useful machine behavior can emerge from their composition.
 
-The current cubic-cell dialect is only a laboratory representation. It is not a commitment that Machine Matter must remain voxel-based.
+Research vocabulary such as steel/rubber, stiff/elastic/breakable, bearing/friction surface or torque/sensor/signal is not a frozen ontology and is not a direct alias for Box3D objects. The current cubic-cell source dialect is a laboratory representation, not a commitment that Machine Matter must remain voxel-based.
 
-## Current accepted stack
+## Evidence milestones
 
-`main` contains promoted bounded evidence for:
+Accepted bounded experiments currently include:
 
-- **ANVIL-00 / COLLAPSE** — persistent matter compiles deterministically into reduced rigid runtime representation;
-- **ANVIL-01 / CUT** — bounded runtime topology replacement with source identity and rigid-field motion transfer;
-- **ANVIL-02 / BEARING** — a local authored rotational interface derives two rigid islands plus a passive revolute relation;
-- **ANVIL-03 / REBIND** — persistent bearing semantics reconstruct on changed disposable bodies after a nearby CUT while moving;
-- **ANVIL-04 / LOAD-REBIND** — bounded cold relation reconstruction survives the declared multi-kN load without migrating hidden joint-cache state;
-- **ANVIL-05 / TORQUE** — persistent signed active intent acts through BEARING as an equal/opposite torque pair without authored Box3D motor semantics;
-- **ANVIL-06 / TORQUE-PATCH** — the same active intent can be authored on a local persistent source face with no authored `bearingId`; locality resolves the bearing and invalid placement fails closed.
+- **ANVIL-00 / COLLAPSE** — reduced rigid runtime representation from persistent source matter;
+- **ANVIL-01 / CUT** — bounded topology replacement with source identity and rigid-field motion transfer;
+- **ANVIL-02 / BEARING** — local rotational interface to passive revolute runtime relation;
+- **ANVIL-03 / REBIND** — semantic bearing reconstruction after a nearby moving CUT;
+- **ANVIL-04 / LOAD-REBIND** — bounded loaded cold relation reconstruction;
+- **ANVIL-05 / TORQUE** — signed active intent through a passive bearing without authored solver-motor semantics;
+- **ANVIL-06 / TORQUE-PATCH** — local source-face active intent resolving existing BEARING without authored `bearingId`.
 
-These results are deliberately narrow. Passing one fixture does not promote a universal Bond, Relation, FUNCTION, power or control architecture.
+Each result is deliberately narrower than a universal material, relation, FUNCTION, power or control architecture.
 
-## Active experiment
+For the **current live experiment and takeover state**, do not use this README as a roadmap. Start with:
 
-The accepted material checkpoint ends at ANVIL-06. **ANVIL-07 / ELASTIC-SEAM is active but unaccepted work in Draft PR #12.**
+- [`.anvil/project-state.json`](.anvil/project-state.json) — compact machine-readable checkpoint claim;
+- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — cold-takeover instructions.
 
-At the deliberate 2026-08-18 handoff, ANVIL-07 has a frozen preflight, a successful pinned Box3D weld-spring **capability precheck**, and a stricter pre-C0 amendment. It does **not** yet have an implemented or executed `RIGID / ELASTIC / FREE` C0 and must not be described as supported elastic matter.
+Verify both against live Git before material work.
 
-For a new conversation or interrupted session, begin with [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) and independently verify its exact branch/CI claims against live Git before continuing.
-
-## What is being separated
+## Architectural separation
 
 ```text
 AUTHORED TRUTH
@@ -40,7 +39,7 @@ persistent matter / local physical intent
         │ compile
         ▼
 COMPILED REPRESENTATION
-rigid islands / relations / actions / provenance
+runtime-ready topology / relations / actions / provenance
         │ lower
         ▼
 RUNTIME PHYSICS
@@ -53,29 +52,16 @@ measurements / lineage / human judgement only when useful
 
 Authored identity must not become synonymous with one body, collider, joint, grid resolution or solver.
 
-## Research discipline
+## Project documents
 
-ANVIL is not a product roadmap, VAW rewrite, JV port or promise to model every physical domain in one solver. It advances through small executable falsifiers.
+- [`AGENTS.md`](AGENTS.md) — agent rules, truth hierarchy, document ownership and takeover discipline;
+- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle;
+- [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — durable macro validation and anti-drift method;
+- [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — reusable boundaries already earned by evidence;
+- [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — concise accepted-state and architectural index;
+- [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and project boundaries;
+- [`docs/experiments/`](docs/experiments/) — canonical preflights and experiment evidence.
 
-Read:
+## Research rule
 
-- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — exact accepted-vs-active cold-takeover checkpoint for the next conversation;
-- [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — current orchestration state and exact strongest evidence;
-- [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — long-horizon invariants, frontier map and macro validation loop;
-- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle and interruption/handoff rule;
-- [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — what has actually earned reuse;
-- [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and boundaries.
-
-## Current frontier
-
-ANVIL-06 boundedly addressed the first FUNCTION locality debt: active intent no longer needs to name a persistent bearing component in authored source for the single-bearing fixture.
-
-The current strategic audit ranks **BINDINGS** as the largest core gap: ANVIL effectively knows rigid adjacency or separation, but has no earned local compliant/elastic binding behavior. This is a strategic ranking, not an experimentally proven universal priority.
-
-The selected active research direction is therefore **ANVIL-07 / ELASTIC-SEAM**: test the smallest local authored compliant binding that produces bounded relative deformation and restoring behavior without prematurely introducing a generic Bond ontology.
-
-`ACTIVATE` — separating persistent capability from transient command — remains important, but adding control depth immediately after two FUNCTION experiments would leave the physical binding frontier almost untouched.
-
-## Evidence rule
-
-Documentation and green CI are never physics acceptance by themselves. Every experiment states a falsifiable hypothesis, bounded fixture, observable gates, meaningful controls, limitations and required evidence class. Negative results that reduce the search space are retained.
+ANVIL advances through bounded executable falsifiers. Documentation, green CI or code presence are never physics acceptance by themselves. Negative results that reduce the search space are retained; abstractions are promoted only after evidence earns them.

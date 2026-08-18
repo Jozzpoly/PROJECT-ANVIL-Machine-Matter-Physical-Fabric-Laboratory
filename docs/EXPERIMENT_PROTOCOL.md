@@ -2,33 +2,24 @@
 
 ANVIL progresses by **bounded executable falsifiers**, not by expanding a speculative master architecture.
 
-The goal is not maximum ceremony. The goal is **maximum information gained per unit of implementation and validation work** without weakening evidence quality.
+The goal is maximum information gained per unit of implementation/validation work without weakening evidence quality.
 
 ## 0. Identity lock
 
 Before material work:
 
 - resolve live repository, `main`, intended branch and HEAD;
-- read `AI_PROJECT_MEMORY.md` and `AGENTS.md`;
-- determine whether the task changes an accepted checkpoint, an active experiment or starts a new falsifier;
-- inspect the source files that actually own the behavior under test;
+- read `AGENTS.md`;
+- for continuation/cold takeover, verify `.anvil/project-state.json` and `docs/CURRENT_HANDOFF.md` against live Git;
+- determine whether the task changes an accepted checkpoint, continues an active experiment or starts a new falsifier;
+- inspect the source/preflight files that actually own the behavior under test;
 - inspect donor repositories only when they materially reduce uncertainty.
 
 Do not reconstruct project truth from conversation history when live Git can answer it.
 
 ## 1. One primary research question
 
-Write one question that could fail.
-
-Good:
-
-> Can a moving rigid island be recompiled into two bodies at a step boundary while preserving source identity and bounded kinematic discontinuity?
-
-Bad:
-
-> Build the universal Machine Matter system with fracture, joints, surfaces and adaptive physics.
-
-If a failure would be impossible to interpret because too many assumptions change at once, narrow the experiment.
+Write one question that could fail. If a failure would be impossible to interpret because too many assumptions change at once, narrow the experiment.
 
 ## 2. Smallest discriminating fixture
 
@@ -37,13 +28,13 @@ Use the smallest fixture that can expose the failure mode, not merely the smalle
 State:
 
 - authored inputs;
-- materials/parameters;
+- physical/material parameters;
 - initial runtime state when relevant;
 - one primary intervention;
-- expected observables;
-- at least one plausible control or falsifier when a false-positive pass is possible.
+- observables;
+- plausible control/falsifier when false-positive success is possible.
 
-Prefer asymmetric fixtures when symmetry could hide an incorrect COM, orientation, mapping or force calculation.
+Prefer asymmetry when symmetry could hide mapping, COM, orientation or force errors.
 
 ## 3. Gates before implementation
 
@@ -51,23 +42,21 @@ Define pass/fail criteria before looking at the result whenever practical.
 
 Each material gate should have:
 
-- stable ID or clearly identified condition;
+- stable identity/condition;
 - observable metric/behavior;
 - tolerance and units when numeric;
-- reason the gate discriminates the hypothesis;
-- evidence class.
+- reason it discriminates the hypothesis;
+- required evidence class.
 
-Do not relax a threshold because the first implementation misses it. Change the threshold only when the original criterion is demonstrated to be physically or experimentally wrong.
+Do not relax a threshold because the first implementation misses it. Change it only when the original criterion is demonstrated to be physically/experimentally wrong, preserving the reason/history.
 
-Do not add more variants after a strong result merely to accumulate green tests. Add another falsifier only when it attacks a remaining live assumption.
+Do not add variants after a strong result merely to accumulate PASSes.
 
 ## 4. Evidence classes
 
-ANVIL distinguishes these classes:
-
 ### A. Static / structural
 
-Strict typecheck, schema validation, dependency boundaries, deterministic serialization.
+Typecheck, schema validation, dependency boundaries, source invariants, deterministic serialization/canonicalization.
 
 ### B. Pure synthetic
 
@@ -75,194 +64,173 @@ Provenance lineage, vector identities, known mass fixtures, deterministic compil
 
 ### C. Real solver
 
-The actual physics backend creates the generated representation and steps it. Prefer independent solver cross-checks over writing compiler answers back into the solver.
+The actual physics backend creates/steps the generated representation. Prefer direct observations over feeding expected compiler answers back into the solver.
 
 ### D. Real product runtime
 
-The production browser/native build is executed. Runtime errors and interaction paths are observed automatically where useful.
+Production browser/native bundle is executed and browser/runtime-specific behavior is observed.
 
 ### E. Owner manual validation
 
-The owner inspects behavior, communication, feel or visual failure modes that automation cannot establish reliably.
+Owner inspects visual continuity, feel, usability or another genuinely human judgement automation cannot establish reliably.
 
-A lower evidence class must never be described as a higher one.
-
-**Class E is conditional, not ceremonial.** Require an owner gate only when human observation adds evidence that classes A–D cannot establish efficiently. If the complete research claim is quantitative/structural and already discriminated by automated evidence, record why no owner gate is required.
+A lower evidence class must never be described as a higher one. **Class E is conditional, not ceremonial.**
 
 ## 5. Two-speed PR lifecycle
 
-`main` is the latest accepted checkpoint. Material code changes go through a PR.
+`main` is the latest accepted checkpoint plus verified documentation/process grounding. Material code changes go through a PR.
 
 Recommended branches:
 
 - `experiment/anvil-NN-short-name` for bounded falsifiers;
-- `foundation/short-name` only for already-earned reusable boundaries or neutral process/measurement infrastructure.
+- `foundation/short-name` only for already-earned reusable boundaries/neutral infrastructure.
 
 ### DRAFT = research loop
 
-Open the draft PR early, once the branch and primary hypothesis exist.
+Open Draft early once branch and primary hypothesis exist.
 
-While the PR is Draft:
+Draft runs the **core gate**:
 
-- each synchronized commit runs the **core gate**: canonical toolchain, strict TypeScript, complete Node/real-solver regression suite and production build;
-- do not pay for Chromium/Forge packaging on every solver iteration;
-- record meaningful negative evidence, but do not turn every exploratory commit into a release candidate.
+- canonical toolchain;
+- strict TypeScript;
+- complete Node/real-solver regressions;
+- production build.
 
-There should be no separate branch-push CI for experiment/foundation branches once a PR exists. The PR is the canonical integration context.
+Do not pay for Chromium/owner packaging on every solver iteration.
 
 ### READY = candidate loop
 
-Mark the PR Ready only after the core hypothesis is sufficiently supported and a real product/owner candidate is justified.
+Mark Ready only after the core hypothesis is sufficiently supported and product/candidate validation is justified.
 
-Ready triggers the **candidate gate** on the exact PR synthetic merge:
+Ready runs the candidate gate on the exact PR integration context, typically:
 
-- exact production build staged by the core gate;
-- Windows launcher self-test;
-- real Chromium evidence;
-- final Forge artifact upload.
+- exact staged production build;
+- launcher regression;
+- real Chromium when relevant;
+- final artifact/owner transport when required.
 
-If a browser/candidate defect requires substantial renewed experimentation, convert the PR back to Draft. If it is a small candidate-layer fix, keep it Ready and let each new commit rerun the full candidate gate.
-
-This Draft/Ready distinction is part of the evidence workflow, not UI decoration.
+If substantial research resumes, return the PR to Draft.
 
 ## 6. Owner candidate freeze
 
 Once an exact artifact is handed to the owner:
 
-- freeze the experiment branch head until the verdict;
-- preserve source SHA, PR synthetic checkout, run ID, artifact ID and digest;
+- freeze experiment source head until verdict;
+- preserve source SHA, integration checkout, run ID, artifact ID and digest;
 - do not append acceptance documentation to that branch before promotion;
-- do not silently rebuild and call the new artifact equivalent.
+- do not silently rebuild and call a different artifact equivalent.
 
-On **REJECT** or **INCONCLUSIVE**, resume work from a new commit while preserving the rejected/inconclusive artifact as historical evidence.
+On REJECT/INCONCLUSIVE, resume from a new commit while preserving the old evidence. On ACCEPT, prefer promotion of the exact source head the owner tested.
 
-On **ACCEPT**, the preferred promotion target is the **same exact source head the owner tested**.
-
-Before merge:
-
-1. externally cross-check the owner report against live GitHub;
-2. confirm PR head is still the owner-tested source SHA;
-3. confirm base `main` is still the base represented by the tested synthetic checkout;
-4. merge with expected-head protection;
-5. compare the tested synthetic-merge Git tree with the actual merge tree.
-
-This is stronger and cheaper than changing the branch with Markdown after acceptance and re-running the entire physics/browser pipeline.
+Before merge verify live provenance/base/head and compare tested integration tree with actual merge tree where applicable.
 
 ## 7. Post-merge grounding
 
-After an accepted exact-head merge:
+After accepted exact-head merge:
 
-- record owner acceptance in experiment documentation;
-- update `AI_PROJECT_MEMORY.md`;
-- record the actual merge SHA/tree identity;
-- preserve the owner-tested artifact identity separately from later documentation commits.
+- create/update experiment evidence/owner record;
+- update `AI_PROJECT_MEMORY.md` only as a concise index;
+- update `.anvil/project-state.json` / `docs/CURRENT_HANDOFF.md` when current takeover state changes materially;
+- preserve owner-tested artifact identity separately from later docs commits.
 
-Documentation-only grounding after an already verified exact-head merge does **not** require re-running solver/Chromium evidence. It must be verified as documentation-only by inspecting the commit/diff paths.
-
-Do not create a full docs-grounded promotion cycle merely to make Markdown changes.
+Documentation-only grounding after qualified material merge does not require solver/Chromium requalification. It must be verified documentation-only by changed paths.
 
 ## 8. Owner workload rule
 
-Forge exists to remove technical validation work from the owner.
+Forge exists to reduce owner validation burden.
 
-For a deterministic, clear A/B visual gate, default owner validation is:
+For a deterministic clear visual gate, roughly three meaningful owner observations are normally enough unless behavior is intermittent/subtle or the owner wants more confidence.
 
-- one orienting run;
-- two repeat runs;
-- verdict after roughly **3 meaningful observations**.
-
-More repetitions are useful only when behavior is intermittent, probabilistic, subtle, subjective or the owner wants additional confidence. Do not make 10–20 repetitions a default ritual.
-
-Primary owner UI should say what to look at in ordinary language. SHA/schema/provenance/numeric diagnostics belong in collapsed technical details and the generated agent report.
+Primary owner UI must use ordinary language; provenance/diagnostics belong in technical details/report.
 
 ## 9. Verdict vocabulary
 
-Use explicit verdicts:
+- **SUPPORTED FOR FIXTURE** — declared automated gates pass for bounded scope;
+- **OWNER ACCEPTED** — required human gate passed for exact artifact;
+- **REJECTED** — evidence falsifies tested claim;
+- **INCONCLUSIVE** — fixture/evidence does not discriminate;
+- **BLOCKED** — required evidence could not execute;
+- **REGRESSION** — previously accepted invariant no longer holds.
 
-- **SUPPORTED FOR FIXTURE** — declared automated gates pass for the bounded scope;
-- **OWNER ACCEPTED** — required human gate passed for the exact artifact;
-- **REJECTED** — evidence falsifies the tested claim;
-- **INCONCLUSIVE** — the experiment does not discriminate the hypothesis;
-- **BLOCKED** — required evidence could not be executed;
-- **REGRESSION** — a previously accepted invariant no longer holds.
-
-Never use `DONE` as a substitute for a scientific verdict.
+Never use `DONE` as a scientific verdict.
 
 ## 10. Promotion rule
 
-After an accepted experiment, ask which parts actually deserve reuse.
+Promote only boundaries that are demonstrated by accepted evidence or are neutral measurement/process infrastructure required for future falsification.
 
-Promote only boundaries that are:
-
-- demonstrated by completed evidence; or
-- neutral measurement/infrastructure directly required by the next falsifier.
-
-Do not promote incidental fixture details or build generic ontology because several experiments happen to share vocabulary.
+Do not promote incidental fixture details or generic ontology merely because several experiments share vocabulary.
 
 ## 11. Donor harvest rule
 
-When another Jozzpoly project has a relevant mechanism:
+When another Jozzpoly project is relevant:
 
-1. inspect its current live source/evidence;
-2. identify the exact transferable idea or code;
-3. separate project-specific assumptions from reusable logic;
+1. inspect current live source/evidence;
+2. identify exact transferable idea/code;
+3. separate donor-specific assumptions from reusable logic;
 4. port minimally rather than merging product architectures;
-5. preserve third-party licensing/provenance.
+5. preserve licensing/provenance.
 
-A donor implementation proves an approach exists, not that ANVIL needs it.
+A donor proves an approach exists, not that ANVIL needs its architecture.
 
 ## 12. Negative evidence
 
-Keep useful failures and record why they failed.
+Keep failures that reduce the search space. Do not hide discontinuity/instability/wrong topology behind damping, resets, interpolation or loose gates unless those mechanisms are the tested hypothesis.
 
-A failure should reduce the search space. Do not hide discontinuities, instability or wrong topology behind damping, resets, visual interpolation or loose gates unless the experiment explicitly tests those mechanisms.
+Do not preserve every typo as scientific history; preserve failures that teach something about model, fixture, lowering, toolchain or owner workflow.
 
-Do not preserve every transient typo as scientific history. Preserve failures that teach us something about the model, fixture, lowering, toolchain contract or owner workflow.
+## 13. Documentation economy and ownership
 
-## 13. Documentation economy
+One fact should have one canonical owner:
 
-Avoid repeating the same detailed metrics in PR body, evidence file, owner-gate file and project memory.
+- **preflight** — question, fixture, frozen gates, controls, non-claims;
+- **evidence log** — executed results, meaningful negative evidence, promotion identity;
+- **owner-gate record** — exact artifact + human verdict only when Class E required;
+- **PR body** — concise operational phase/verdict + canonical links;
+- **AI_PROJECT_MEMORY.md** — accepted capability/architecture index + strategic pointer;
+- **`.anvil/project-state.json`** — compact current machine-readable checkpoint claim;
+- **`docs/CURRENT_HANDOFF.md`** — short takeover instructions + accepted/active boundary + next/do-not-do;
+- **`docs/FOUNDATION.md`** — stable promoted reusable boundaries only;
+- **`docs/RESEARCH_COMPASS.md`** — stable macro method/invariants only;
+- **README** — stable entry point.
 
-Preferred ownership:
+Do not repeat detailed metrics/thresholds across these files merely for convenience.
 
-- **preflight** — question, fixture, frozen gates, non-claims;
-- **evidence log** — executed technical results and meaningful negative evidence;
-- **owner-gate record** — exact artifact identity + human verdict, only when class E is required;
-- **PR body** — concise current verdict + links/summary;
-- **AI_PROJECT_MEMORY.md** — current accepted state, strongest claims/boundaries, exact latest owner identity, next decision.
+## 14. Select next experiment by information gain
 
-The memory is an orchestration index, not a complete experiment archive.
+Before selecting a new falsifier:
 
-## 14. Start the next experiment only when the previous one taught us something
+- state what previous evidence actually established;
+- name strongest remaining uncertainty;
+- compare at least two plausible next experiments by information gain vs added complexity/lock-in;
+- use `docs/RESEARCH_COMPASS.md` when the decision is strategic.
 
-Before selecting the next falsifier:
+Do not continue a successful experiment merely by adding adjacent features.
 
-- state what the previous experiment actually established;
-- name the strongest remaining assumption or uncertainty;
-- compare at least two plausible next experiments by information gain vs added complexity;
-- prefer the smallest experiment that attacks the most consequential uncertainty.
+## 15. Interruption and cold takeover
 
-Do not continue a successful experiment merely by adding repetitions or adjacent features. Do not combine two new physical hypotheses in one first falsifier.
+Long conversations and agent sessions are disposable too. Project continuity lives in Git.
 
-## 15. Interruption and cold-takeover checkpoint
+### Preparing deliberate handoff
 
-Long conversations and agent sessions are disposable too. Project continuity must live in Git, not in one chat context.
+1. leave accepted material truth on `main` and active unaccepted material work on its Draft branch;
+2. update `.anvil/project-state.json` with stable accepted checkpoint + active PR/head/phase/evidence boundary; do **not** embed a self-invalidating live-main SHA as authority;
+3. update `docs/CURRENT_HANDOFF.md` as a short pointer to canonical sources, exact next action and do-not-do list;
+4. update `AI_PROJECT_MEMORY.md` only if accepted/strategic truth changed;
+5. do not merge/rebase an active experiment merely for takeover aesthetics;
+6. verify handoff grounding changes are docs/meta-only;
+7. preserve capability/toolchain prechecks distinctly from the physical hypothesis they enable.
 
-When preparing a deliberate handoff or stopping at a meaningful boundary:
+### Cold takeover minimum
 
-1. leave accepted material truth on `main` and active unaccepted material work on its Draft/experiment branch;
-2. update `docs/CURRENT_HANDOFF.md` with exact accepted-vs-active state, live SHAs, executed evidence boundary, frozen next action and explicit do-not-do list;
-3. update `AI_PROJECT_MEMORY.md` only with the concise current orchestration state;
-4. do not merge an active experiment merely for convenience;
-5. verify any `main` handoff/grounding commit is documentation-only;
-6. preserve capability/toolchain prechecks as a distinct evidence category from the physical hypothesis they enable.
+1. resolve live `main`;
+2. read state/handoff as checkpoint claims;
+3. resolve referenced active PR/head;
+4. compare live `main` against accepted material checkpoint and classify the delta;
+5. inspect active branch merge-base/delta;
+6. read active preflight/evidence from live branch;
+7. verify only the evidence material to the next action;
+8. reconcile mismatch before implementation.
 
-A new conversation must treat the handoff as a claim to verify:
+If the fingerprint matches, use **delta-audit** and continue. Do not reconstruct the entire historical experiment chain merely for reassurance.
 
-- resolve live `main`;
-- resolve referenced PR/base/head;
-- read live experiment preflight/evidence files;
-- inspect material branch diff and relevant CI;
-- reconcile any mismatch before implementation.
-
-The desired result is that the owner can start a new conversation without manually reconstructing technical history, while the incoming agent still performs an independent live-state takeover instead of trusting stale prose.
+Run a deeper macro audit after promotion, meaningful falsification, architectural contradiction, frontier change or major interruption.
