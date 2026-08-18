@@ -3,29 +3,28 @@
   "repository": "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
   "authority": "checkpoint-claim-verify-against-live-git",
   "accepted": {
-    "through": "ANVIL-08 / COMPLIANCE-RESOLUTION",
-    "materialCheckpoint": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
-    "lastMaterialMerge": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
-    "evidenceGrounding": "04b6429a7d714b0595d5b7b550bc9ca587dbd904"
+    "through": "ANVIL-09 / ACTIVATE",
+    "materialCheckpoint": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
+    "lastMaterialMerge": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
+    "evidenceGrounding": "3da72fadec5cd145a8be149bacd12084c8d4fcde"
   },
   "active": {
-    "experiment": "ANVIL-09 / ACTIVATE",
-    "pr": 14,
-    "branch": "experiment/anvil-09-activate",
-    "phase": "draft-science-supported-awaiting-ready-candidate",
-    "activeVerdict": "SUPPORTED FOR FROZEN FIXTURE IN DRAFT — NOT PROMOTED",
+    "experiment": null,
+    "pr": null,
+    "branch": null,
+    "phase": "post-anvil-09-promotion-grounded-awaiting-macro-audit",
+    "activeVerdict": null,
     "readyForPromotion": false
   },
   "anvil09": {
     "experiment": "ANVIL-09 / ACTIVATE",
-    "status": "draft-science-supported-active-unaccepted",
     "pr": 14,
-    "branch": "experiment/anvil-09-activate",
+    "status": "promoted",
+    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
     "preflight": "docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT.md",
     "preflightSource": "d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70",
     "preflightAmendment": "docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT-AMENDMENT-01.md",
-    "acceptedBaseAtFreeze": "c1d9a42dd8668d98eefed847f649628af99a1c2e",
-    "currentHead": "d0b8b95e345781d21c5296751dcccbba1d30522e",
+    "evidenceLog": "docs/experiments/ANVIL-09-ACTIVATE-EVIDENCE.md",
     "abSource": "60144f1a86de68128970da1c51a66ca4c296b53e",
     "abRun": 32194089479,
     "firstC0C3Source": "ae460c79949b38b85f1d60874a5abb3898edab55",
@@ -36,46 +35,46 @@
     "correctedC0C3Run": 32194696873,
     "c4Source": "d0b8b95e345781d21c5296751dcccbba1d30522e",
     "c4Run": 32194805534,
-    "latestDraftIntegration": "867b80a1ea45849e695a5a86590581c80e9395b3",
-    "primaryFalsifier": "whether one unchanged persistent signed +100 N*m TORQUE-PATCH can be compiled once and transiently switched OFF -> ON -> OFF at runtime without mutating authored/compiled truth, braking on OFF, or using Box3D motor semantics",
-    "evidenceBoundary": "A/B plus corrected C0-C3 plus C4 supported in the frozen single-bearing fixture; no browser-specific ACTIVATE evidence and no promotion yet",
-    "draftEvidence": "50/50 Node PASS + production build PASS at C4; continued-ON speed advantage 0.5506405234336853 rad/s against pre-frozen >=0.25 C3 gate; fresh runtime from same compilation defaulted OFF and remained inert",
-    "negativeEvidence": "runs 32194408369 and 32194525529 preserved a physically invalid preflight C2 sub-gate requiring passive relative-speed change <=0.15 rad/s; amendment revokes only that assumption without changing runtime or inventing a new post-hoc threshold",
-    "nextAction": "Re-lock live main and PR head, mark PR #14 Ready, and run the existing exact candidate integration/launcher/Chromium regression gate. Treat browser results as product regression evidence only, not direct ACTIVATE physics evidence."
+    "readySource": "d61a6649be4a9f882bb717aabe07ac470ff542c1",
+    "readyRun": 32195221850,
+    "readyBase": "dac6fa160821bb028971cca3bfc9d18c4c0b8469",
+    "readySyntheticMerge": "e7c7659ac9afc6ad29f4d2514bbaa1ec95f2a64e",
+    "qualifiedTree": "e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
+    "materialMerge": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
+    "evidenceGrounding": "3da72fadec5cd145a8be149bacd12084c8d4fcde",
+    "readyEvidence": "50/50 Node PASS + production build PASS + exact staging artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS",
+    "acceptedResult": "In the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once and transiently switched OFF/ON/OFF at runtime; OFF supplies no active torque rather than braking, ON reproduces accepted causal torque, and a fresh runtime from the same compilation defaults OFF without activation entering persistent authored/compiled truth or Box3D motor semantics.",
+    "negativeEvidence": "Runs 32194408369 and 32194525529 exposed an invalid frozen C2 assumption that passive relative revolute speed should remain nearly constant; amendment 01 revoked only that sub-gate with no runtime change or replacement post-hoc threshold. The pre-frozen C3 comparative control remained the causal discriminator. Ready run 32195113438 was also rejected as promotion evidence because GitHub supplied a stale merge ref before branch synchronization."
   },
   "anvil08": {
     "experiment": "ANVIL-08 / COMPLIANCE-RESOLUTION",
-    "pr": 13,
     "status": "promoted",
-    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
-    "evidenceBoundary": "accepted bounded one-dimensional exact-2x source-refinement result; not continuum convergence or generic deformable matter",
     "materialMerge": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
     "evidenceLog": "docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-EVIDENCE.md",
     "qualifiedTree": "00230b73e283bdb39eedc3df00299b6d14c5aba9"
   },
   "nextCandidate": {
-    "name": "ACTIVATE",
-    "status": "draft-science-supported-awaiting-candidate-qualification",
-    "later": "active command/function continuity through REBIND is the leading successor only after ANVIL-09 promotion and a fresh macro audit",
-    "nextAction": "Ready candidate regression for PR #14; no additional research variants."
+    "name": "POST-ANVIL-09 MACRO AUDIT",
+    "status": "required-not-yet-frozen-not-active",
+    "leadingHypothesis": "active command/function continuity through REBIND",
+    "reason": "ANVIL-09 has now separately earned a bounded transient activation lifecycle; the next experiment must be selected again by Research Compass information gain rather than by momentum.",
+    "nextAction": "Run a fresh post-promotion Research Compass audit comparing active command/function continuity through REBIND against the strongest alternatives. Do not create or freeze ANVIL-10 until that comparison is complete."
   },
   "doNotDoNow": [
-    "add reverse command or reinterpret signed effortNm as a bidirectional rating",
-    "add analog throttle, routing, ports, buses, controllers, sensors or power semantics",
-    "modify src/foundation for ANVIL-09",
-    "refactor accepted TORQUE/TORQUE-PATCH",
-    "combine ACTIVATE with CUT/REBIND or compliance inside ANVIL-09",
-    "add another solver variant merely to collect PASS results",
+    "extend ANVIL-09 with reverse command, analog throttle, routing, UI, power or additional solver variants",
+    "reinterpret signed effortNm as a bidirectional actuator rating",
+    "promote ACTIVATE, TorquePatch, FUNCTION, Control, Signal or routing abstractions into src/foundation from ANVIL-09 alone",
     "treat browser regression as direct ACTIVATE physics evidence",
-    "treat ANVIL-09 as accepted before Ready qualification and promotion"
+    "erase or downplay the two C2 red runs or the stale Ready merge-ref incident",
+    "automatically start active REBIND merely because it is the current leading hypothesis",
+    "create ANVIL-10 before the post-promotion macro comparison"
   ],
   "takeoverVerification": [
     "resolve live main",
-    "verify accepted.materialCheckpoint 78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a remains an ancestor of live main",
-    "resolve PR #14 and verify head d0b8b95e345781d21c5296751dcccbba1d30522e unless newer work is explicitly classified",
-    "verify frozen preflight d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70 remains an ancestor of the active head",
-    "read the preflight amendment and preserve both red runs as negative evidence",
-    "verify latest Draft run 32194805534 was successful before candidate qualification",
-    "verify PR changed paths remain bounded before marking Ready or merging"
+    "verify accepted.materialCheckpoint a024c8cb134aabe0033ea2990068e6479c3da2b5 is an ancestor of live main",
+    "verify evidence log exists at or after evidenceGrounding 3da72fadec5cd145a8be149bacd12084c8d4fcde",
+    "if promotion provenance matters, verify Ready source d61a6649be4a9f882bb717aabe07ac470ff542c1, run 32195221850, synthetic merge e7c7659ac9afc6ad29f4d2514bbaa1ec95f2a64e and qualified tree e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
+    "verify actual material merge a024c8cb134aabe0033ea2990068e6479c3da2b5 has tree e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
+    "confirm no newer active experiment or preflight has superseded the macro-audit pointer before writing material code"
   ]
 }
