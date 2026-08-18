@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last grounding: 2026-08-18 after ANVIL-03 promotion.
+Last grounding: 2026-08-18 after ANVIL-03 promotion and workflow audit.
 
 ## Identity and authority
 
@@ -11,26 +11,35 @@ Authority order:
 1. live Git/code and exact artifacts;
 2. executed evidence;
 3. direct owner feedback;
-4. canonical documentation;
-5. conversation/branch names only as leads.
+4. current canonical documentation;
+5. historical conversation/branches only as leads.
 
-Always resolve live Git before meaningful work. Never let later docs or tooling redefine which exact artifact the owner actually tested.
+Resolve live `main`, branch and HEAD before significant work. Never let later documentation redefine which artifact the owner actually tested.
 
 ## Current accepted state
 
-`main` promotion commit for ANVIL-03:
+ANVIL-03 promotion commit:
 
 `f2bb10b52577829c4c283933b3c6148dd55d1064`
 
-The final promotion CI tested synthetic merge:
+Its final tested synthetic merge and actual merge had identical tree:
 
-`bb82644bc5e988b61e10d410e47d674fcfc09a41`
+`3bc506275e6c197421c1c2e06385783eea9c67fd`.
 
-Both commits have the identical Git tree:
+Lean workflow foundation was then promoted through PR #8:
 
-`3bc506275e6c197421c1c2e06385783eea9c67fd`
+```text
+source head       4b1f4509db0920a7c9a49a0e4f7805e613ec5031
+synthetic merge   7e58c42b3083b1d836c9a21631908bca2a20f701
+actual merge      2e02e9eeed6694410ecc217a4d4ecc9389c26506
+tested/merged tree 607e94e339219eb95144e8f6b0cbda008d96d68c
+Draft core run    32129414961 — PASS
+Ready full run    32129452139 — core PASS + candidate PASS
+candidate browser 17/17 PASS
+candidate artifact 9321665576
+```
 
-Therefore the contents promoted to `main` are exactly the contents that passed the final promotion gate.
+The tested synthetic merge and actual workflow merge have identical Git tree.
 
 Accepted stack on `main`:
 
@@ -39,7 +48,8 @@ Accepted stack on `main`:
 - ANVIL-01 / CUT — owner accepted and promoted;
 - ANVIL-02 / BEARING — owner accepted and promoted;
 - ANVIL-03 / REBIND — owner accepted and promoted;
-- Forge V0.2.1 human-owner communication layer — automated-validated and field-tested successfully by REBIND.
+- Forge V0.2.1 — automated-validated and successfully field-tested on REBIND;
+- lean two-speed evidence workflow — promoted and self-validated.
 
 There is no active ANVIL-04 branch at this grounding.
 
@@ -56,9 +66,9 @@ owner verdict    ACCEPT after 14 observed REBIND runs
 owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
 ```
 
-External GitHub provenance handshake passed after handoff. A user-supplied screenshot visibly supported the intended left-connected/right-separated terminal state.
+External GitHub provenance handshake passed. Owner screenshot visibly supported the intended left-connected/right-separated state.
 
-Do not replace this identity with later documentation or promotion commits.
+Do not replace this identity with later merge/documentation commits.
 
 ## Research intent
 
@@ -70,62 +80,21 @@ Working premise:
 
 Machines should increasingly emerge from matter, local physical relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies, colliders, joints and solver objects are interpretations, not authoritative construction identity.
 
-Do not promote experiment-local tricks into universal ontology because one fixture passes.
+Do not promote an experiment-local trick into universal ontology because one fixture passes.
 
-## Toolchain truth
-
-- Node `24.16.0`;
-- npm `>=11.13.0 <12`, lockfile, CI uses `npm ci`;
-- exact `box3d.js@0.0.2`, runtime Box3D `0.1.0`;
-- TypeScript `7.0.2`;
-- Vite `8.1.5`;
-- Playwright `1.61.1`.
-
-Do not mix a Box3D binding upgrade into an experiment unless the pinned binding is a reproduced blocker.
-
-## Accepted laboratory foundation
-
-Read before broad architecture work:
-
-- `AGENTS.md`;
-- `docs/EXPERIMENT_PROTOCOL.md`;
-- `docs/FOUNDATION.md`;
-- `docs/DONOR_MAP.md`.
-
-Promoted neutral capabilities include:
-
-- `Vec3`, `Quat`, `RigidPose`, `RigidMotion`;
-- deterministic compensated mass/COM and current limited inertia diagonal;
-- source-provenance lineage independent of disposable runtime IDs;
-- solver-neutral runtime observation/motion boundary;
-- pose/velocity, linear-momentum and translational-energy measurements;
-- fail-closed evidence primitives.
-
-Still not foundation:
-
-- generic Bond/Joint/Constraint/Relation ontology;
-- universal authored frame entities;
-- custom contact laws;
-- damage/fracture propagation;
-- deformable/compliant matter;
-- mechanism inference;
-- power/control networks;
-- vehicle-specific concepts;
-- generic scene/entity framework.
-
-## Accepted experiment stack
+## Accepted experiment stack — strongest claims
 
 ### ANVIL-00 / COLLAPSE
 
-Bounded proof that persistent authored cells/material can deterministically compile to a coarser disposable rigid-body/collider representation. One source edit changes compiled topology. Not dynamic state migration.
+Persistent authored cells/material can deterministically compile into a coarser disposable rigid-body/collider representation. One authored edit changes compiled topology. Not dynamic state migration.
 
 ### ANVIL-01 / CUT
 
-Owner-accepted mass-preserving topology continuity:
+Owner-accepted bounded mass-preserving topology continuity:
 
 `51 source cells / 1 body -> same 51 source cells / 2 bodies`.
 
-Accepted rigid-field transfer:
+Accepted rigid-field transfer for the declared fixtures:
 
 ```text
 child COM = parent COM + R_parent * authored COM offset
@@ -134,21 +103,17 @@ R_child   = R_parent
 omega     = omega_parent
 ```
 
-CUT does not prove contact-manifold migration, arbitrary fracture, in-place world mutation or relation migration.
+CUT does not prove arbitrary fracture, contact-manifold migration, in-place world mutation or relation migration.
 
 ### ANVIL-02 / BEARING
 
-Owner accepted one experiment-local authored rotational interface expressed through persistent source endpoints, not Box3D IDs. The same seven source cells compile from one rigid island to two bodies plus one Box3D revolute relation. The relation keeps the shared pivot while allowing free relative rotation; an explicit no-relation control separates strongly. A predeclared arbitrary common 3D transform also passed.
+One experiment-local authored rotational interface, expressed through persistent source endpoints rather than Box3D IDs, can split one rigid island into two bodies plus a revolute relation. It keeps a shared pivot while allowing free relative rotation. A strong no-relation control and arbitrary common 3D transform both passed.
 
-Do not infer a generic relation ontology or universal frame system from BEARING.
+Do not infer generic relation ontology or universal frame entities.
 
 ### ANVIL-03 / REBIND
 
-Canonical docs:
-
-- `docs/experiments/ANVIL-03-REBIND-PREFLIGHT.md`;
-- `docs/experiments/ANVIL-03-REBIND-EVIDENCE.md`;
-- `docs/experiments/ANVIL-03-REBIND-OWNER-GATE.md`.
+A persistent authored bearing can be re-derived onto the correct changed runtime body after a nearby mass-preserving CUT while moving.
 
 Declared transaction:
 
@@ -160,69 +125,156 @@ same 7 source cells
 bearing endpoint runtime body: body:a:0 -> body:a:2
 ```
 
-The new endpoint body is resolved from persistent source-cell provenance, not from the old disposable body ID.
+C0 and arbitrary common-3D-transform C1 passed the same frozen tolerances. Exact owner candidate passed **31/31** Node/real-Box3D and **17/17** Chromium tests; owner accepted the visual behavior.
 
-C0 moving fixture and C1 arbitrary common-3D-transform fixture both passed the same frozen tolerances. Exact owner candidate passed **31/31** Node / real-Box3D tests and **17/17** Chromium tests. Owner then repeated the real Windows package 14 times and accepted the visual result.
-
-Strongest correct claim:
+Strongest correct interpretation:
 
 > persistent source provenance plus persistent authored bearing endpoints are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for the declared moving fixtures while maintaining observable pose/velocity/pivot continuity and free relative rotation.
 
-Architectural implication earned by evidence:
+This is **semantic relation continuity**, not Box3D joint-state migration. REBIND creates fresh runtime bodies, fresh world and fresh revolute joint; internal warm-start/joint cache is not migrated.
 
-- source matter and authored physical intent may outlive disposable body and joint identities;
-- runtime body IDs are not suitable construction identity;
-- a relation can be **re-derived** from persistent source semantics after topology recompilation rather than migrated as an authoritative solver object;
-- CUT and BEARING compose at the semantic/compiler boundary for this bounded case.
+## Current foundation boundary
 
-Important boundary: REBIND creates a **fresh Box3D world and fresh revolute joint**. It does not migrate internal joint impulse/warm-start caches. Call this **semantic relation continuity**, not joint-state migration.
+Promoted neutral capabilities include:
 
-## Forge — current truth after third field trial
+- solver-neutral `Vec3`, `Quat`, `RigidPose`, `RigidMotion`;
+- deterministic current mass/COM/inertia-diagonal measurements;
+- source-provenance lineage independent of runtime IDs;
+- solver-neutral runtime observation/motion boundary;
+- continuity measurements for pose/velocity/linear momentum/translational energy;
+- fail-closed evidence primitives;
+- the lean evidence workflow below.
+
+Still **not** foundation:
+
+- generic Bond/Joint/Constraint/Relation ontology;
+- universal authored frames;
+- custom contact laws;
+- arbitrary fracture/damage/plasticity/debris;
+- deformable/compliant matter;
+- mechanism inference;
+- power/control networks;
+- vehicle-specific concepts;
+- generic scene/entity framework.
+
+## Lean Evidence Loop — mandatory default workflow
+
+Read `docs/EXPERIMENT_PROTOCOL.md` and `AGENTS.md` for details.
+
+### 1. Start with information gain
+
+Before implementation:
+
+- name one primary falsifiable question;
+- compare plausible next experiments by information gain vs added complexity;
+- choose the smallest **discriminating** fixture, not merely the smallest fixture that can pass;
+- freeze material gates before looking at results where practical;
+- include a control/falsifier when false-positive success is plausible.
+
+Do not accumulate extra variants after a strong result unless they attack a live remaining assumption.
+
+### 2. Draft PR = fast research loop
+
+Open the experiment PR early as Draft.
+
+Each Draft synchronization runs only the **core** evidence gate:
+
+- canonical Node/npm;
+- strict TypeScript;
+- complete Node/real-Box3D regression suite;
+- production build.
+
+Do not run Chromium/Forge owner packaging on every solver iteration.
+
+Experiment/foundation branch pushes are no longer a second CI path; the PR is the canonical integration context. This removes duplicate push + pull_request runs for the same commit.
+
+### 3. Ready PR = candidate loop
+
+Mark Ready only after the core hypothesis deserves product/runtime validation.
+
+Ready runs:
+
+- core gate;
+- stages the exact build produced by core;
+- separate candidate job downloads that exact staged build;
+- Windows launcher self-test;
+- real Chromium evidence;
+- final Forge owner artifact.
+
+Core and candidate are separate jobs so a browser/dependency problem cannot hide a completed solver result.
+
+If deep research resumes, convert the PR back to Draft.
+
+### 4. Owner gate is conditional
+
+Owner validation is required only when human observation adds material evidence that automated classes A–D cannot establish efficiently.
+
+For a deterministic, obvious A/B visual gate, default manual workload is roughly **3 meaningful observations**: one orienting run plus two repeats. More only for intermittent, probabilistic, subtle or subjective behavior, or if the owner wants additional confidence.
+
+Forge primary UI must use plain language. SHA/schema/run/provenance and diagnostics are for the agent/report, not required owner reading.
+
+### 5. Freeze owner candidate
+
+Once an exact artifact is handed to the owner:
+
+- freeze the experiment branch head;
+- preserve source SHA, synthetic checkout, run, artifact and digest;
+- do not append acceptance Markdown to that branch before promotion;
+- do not silently rebuild and call the replacement equivalent.
+
+On REJECT/INCONCLUSIVE, resume from a new commit while preserving the tested candidate as evidence.
+
+On ACCEPT, prefer merging the **exact owner-tested source head**.
+
+Before merge:
+
+1. externally cross-check report/provenance live on GitHub;
+2. confirm PR head is still the owner-tested SHA;
+3. confirm `main` base still matches the tested synthetic checkout;
+4. merge with expected-head protection;
+5. compare tested synthetic-merge Git tree with actual merge tree.
+
+### 6. Ground documentation after merge
+
+Only after exact-head promotion:
+
+- write/update owner acceptance record;
+- update `AI_PROJECT_MEMORY.md`;
+- record actual merge/tree identity.
+
+Verified documentation-only grounding does **not** re-run unchanged solver/browser evidence. Do not recreate the old docs-grounded full-promotion cycle.
+
+### 7. Documentation ownership
+
+Avoid repeating the same evidence everywhere:
+
+- preflight = question, fixture, frozen gates, non-claims;
+- evidence log = executed technical results + meaningful negative evidence;
+- owner-gate record = exact artifact + human verdict when needed;
+- PR body = concise current verdict/summary;
+- project memory = current accepted state, strongest boundaries and next decision.
+
+Do not preserve every transient typo as scientific negative evidence; preserve failures that teach something about model, fixture, lowering, toolchain contract or owner workflow.
+
+## Forge current boundary
 
 Forge exists only to reduce owner-validation friction:
 
-`agent evidence -> packaged browser build -> double-click launcher -> simple visual owner decision -> generated technical report -> agent verifies provenance live`.
+`agent evidence -> packaged build -> double-click launcher -> simple visual decision -> generated technical report -> agent verifies provenance live`.
 
-Do **not** build a universal hub yet. Forge must keep earning its shape from actual ANVIL owner gates.
+Do not build a universal Forge hub/plugin/DSL/backend now. Future improvements must be earned by real ANVIL owner gates.
 
-BEARING exposed a communication failure: primary owner instructions were too technical. Forge V0.2.1 changed only the human-facing layer while retaining strict internal provenance/verdict semantics.
-
-REBIND is the first real V0.2.1 field trial and **passed for this gate**:
-
-- correct Windows launcher/path;
-- plain Polish visual instruction;
-- ordinary decisions `DZIAŁA / NIE DZIAŁA / NIE WIEM`;
-- technical details not required for the owner decision;
-- generated technical report still sufficient for external provenance verification;
-- owner correctly restated the intended A/B behavior and selected `DZIAŁA` after 14 runs.
-
-Do not infer universal usability from one successful V0.2.1 consumer.
-
-## Preserved boundaries after REBIND
-
-Do not claim that ANVIL currently has:
-
-- generic Relation/Joint/Constraint ontology;
-- universal authored frames;
-- in-place mutation of a populated persistent Box3D world;
-- Box3D warm-start/joint-cache migration;
-- contact-manifold migration;
-- arbitrary load/contact continuity through topology transactions;
-- arbitrary cuts/fracture/merge topology;
-- multiple-relation or closed-loop mechanism continuity;
-- motors/limits/power/control state migration;
-- deformable/compliant matter;
-- damage/plasticity/debris systems.
+Forge V0.2.1 successfully corrected the jargon-heavy BEARING owner flow and passed its first real field trial on REBIND. One successful consumer is not proof of universal usability.
 
 ## Next research decision
 
-ANVIL-03 is complete. Do not continue REBIND merely by adding more repetitions.
+ANVIL-03 is complete. Do not continue REBIND merely by adding repetitions.
 
-The two highest-value next falsifiers are:
+Highest-value next falsifiers:
 
-1. **loaded relation continuity** — reconstruct a bearing while it carries meaningful external/constraint load, directly attacking the current absence of joint-cache/contact/load continuity evidence;
-2. **local actuation/function** — add the smallest experiment-local authored torque/actuation intent to an already-earned bearing, beginning the `FUNCTION` part of Machine Matter without creating a generic power/control network.
+1. **loaded relation continuity** — reconstruct the bearing while it carries a meaningful external/contact/constraint load, directly attacking the biggest remaining continuity assumption;
+2. **local actuation/function** — add the smallest experiment-local authored torque/actuation intent to an already-earned bearing, beginning active Machine Matter without a generic power/control network.
 
-Current preference: **loaded relation continuity first**, because it stresses the weakest remaining assumption in the continuity foundation before active machine semantics are layered on top. If that remains stable, local actuation becomes the next cleaner step.
+Current preference remains **loaded relation continuity first**. It tests the weakest remaining assumption before active machine semantics are layered on top. If it survives, local actuation is the cleaner next step.
 
-Do not combine both into one first falsifier, and do not build generic relation graphs, fracture systems, frame ontologies or power networks in advance.
+Do not combine both in the first falsifier.
