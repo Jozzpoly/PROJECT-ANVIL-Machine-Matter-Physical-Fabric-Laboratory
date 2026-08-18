@@ -1,6 +1,6 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-09 / ACTIVATE PROMOTED — POST-PROMOTION GROUNDED / NO ACTIVE EXPERIMENT**
+Status: **ANVIL-09 ACCEPTED / POST-PROMOTION MACRO AUDIT COMPLETE / NO ACTIVE EXPERIMENT**
 
 Live Git and executable evidence override this pointer if they differ.
 
@@ -9,20 +9,20 @@ Live Git and executable evidence override this pointer if they differ.
 1. Resolve live `main` before writing.
 2. Accepted material truth is through **ANVIL-09 / ACTIVATE**.
 3. Material checkpoint: `a024c8cb134aabe0033ea2990068e6479c3da2b5`.
-4. Canonical ANVIL-09 evidence: `docs/experiments/ANVIL-09-ACTIVATE-EVIDENCE.md`.
-5. Evidence grounding checkpoint: `3da72fadec5cd145a8be149bacd12084c8d4fcde`.
-6. No experiment, PR or branch is currently active for new research.
-7. The next action is a fresh post-promotion Research Compass audit. **Active command/function continuity through REBIND is only the current leading hypothesis, not a frozen or active ANVIL-10.**
+4. Canonical evidence: `docs/experiments/ANVIL-09-ACTIVATE-EVIDENCE.md`.
+5. Evidence grounding: `3da72fadec5cd145a8be149bacd12084c8d4fcde`.
+6. No new experiment, PR or branch is active.
+7. The post-promotion Research Compass audit selected **FUNCTION-REBIND** as the leading strategic candidate, but it is **not frozen and not active**.
 
-## Accepted ANVIL-09 promotion identity
+## Accepted ANVIL-09 result
+
+ANVIL-09 supports only this bounded statement:
+
+> In the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once and transiently switched OFF/ON/OFF at runtime; OFF supplies no active torque rather than braking, ON reproduces the accepted causal torque response, and a fresh runtime reconstructed from the same persistent compilation defaults OFF, without moving activation into authored/compiled truth or using Box3D motor semantics.
+
+Promotion identity:
 
 ```text
-frozen preflight        d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70
-A/B source/run          60144f1a86de68128970da1c51a66ca4c296b53e / 32194089479
-first C0-C3 RED         ae460c79949b38b85f1d60874a5abb3898edab55 / 32194408369
-diagnostic RED          86d4def359fe9c7ee2044c39ec9dd81c096ee6e1 / 32194525529
-gate correction/run     64498d2b1eeb84baaa158f979f27970fef4f5f20 / 32194696873
-C4 source/run            d0b8b95e345781d21c5296751dcccbba1d30522e / 32194805534
 Ready source             d61a6649be4a9f882bb717aabe07ac470ff542c1
 Ready run                32195221850
 Ready base               dac6fa160821bb028971cca3bfc9d18c4c0b8469
@@ -32,65 +32,79 @@ actual material merge    a024c8cb134aabe0033ea2990068e6479c3da2b5
 evidence grounding       3da72fadec5cd145a8be149bacd12084c8d4fcde
 ```
 
-Ready/core was **50/50 Node PASS + production build PASS**. Candidate downloaded the exact staged build, launcher self-test passed and the existing Chromium regression suite passed **19/19**. The actual material merge tree is identical to the Ready-qualified synthetic tree.
+Actual material merge tree equals the Ready-qualified tree exactly.
 
-Exact candidate artifacts:
+Preserve the two meaningful C2 RED runs and the stale Ready merge-ref incident in the evidence log. Do not rewrite them into a clean all-green history.
 
-```text
-staging ID      9345607020
-staging SHA256  5e40bafdeded471a90b1a8996d97d5a02138935408d5b6c0c5a620daed7010f0
-final ID        9345638922
-final SHA256    56891a302464530077bb29fd744001e33d97b27ae543003ee3725e4363669cb4
-```
+## Post-ANVIL-09 macro verdict
 
-Launcher/Chromium are whole-product regression evidence, not direct ACTIVATE physics evidence.
+### Vision delta
 
-## Accepted interpretation
+ANVIL now has bounded evidence that active capability and transient activation need not be the same lifecycle domain. The next high-value uncertainty is no longer merely whether control can be transient; it is whether an already-earned **persistent local function remains attached to the correct matter when its disposable runtime body representation changes**.
 
-ANVIL-09 supports only the bounded statement:
+### Leading candidate — FUNCTION-REBIND
 
-> In the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once and transiently switched OFF/ON/OFF at runtime; OFF supplies no active torque rather than braking, ON reproduces the accepted causal torque response, and a fresh runtime reconstructed from the same persistent compilation defaults OFF, without moving activation into authored/compiled truth or using Box3D motor semantics.
+Primary intended question, still to be critically frozen:
 
-This earns one bounded separation between persistent active-function/action meaning and shorter-lived transient activation state.
+> Can the same persistent local TORQUE-PATCH resolve the same persistent BEARING after a nearby CUT changes disposable body decomposition, lower onto the new body identities and reproduce its causal torque action when explicitly activated after reconstruction, without authored runtime IDs or stale pre-CUT solver bindings?
 
-It does **not** earn a generic FUNCTION, Control, Signal, Port, Bus, Controller or power architecture.
+Why this leads:
 
-## Important negative evidence
+- directly composes FUNCTION/TORQUE-PATCH with Topology/REBIND;
+- attacks the disposable-runtime premise for an active machine, not another isolated primitive;
+- existing REBIND already provides before/after BearingCompilation and source lineage;
+- failure can be split structurally (wrong semantic/body rebinding) from physically (wrong post-CUT actuation);
+- it does not require generic control routing, power or a new solver primitive.
 
-Two C0-C3 runs were intentionally preserved as RED:
+### Critical scope correction
 
-```text
-32194408369
-32194525529
-```
+**Do not test transient command-state migration in the first FUNCTION-REBIND falsifier.**
 
-They exposed a bad preflight assumption that passive relative revolute speed should change by no more than `0.15 rad/s` after OFF. The asymmetric revolute multibody fixture does not make that generalized coordinate speed a conserved quantity. The correction revoked only that sub-gate, changed no runtime physics and introduced no replacement post-hoc threshold. The already-frozen continued-ON comparison remained the causal discriminator and separated by `0.5506405234336853 rad/s` against the frozen `>= 0.25` gate.
+ANVIL-09 established that a bare fresh runtime defaults OFF. For FUNCTION-REBIND, the harness should explicitly activate the pre-CUT runtime and explicitly activate the reconstructed post-CUT runtime. That keeps the primary uncertainty on persistent function rebinding.
 
-A separate first Ready attempt (`32195113438`) was not accepted as promotion evidence because GitHub supplied a stale pre-grounding PR merge ref. Branch synchronization changed no scientific PR diff, and the qualifying Ready run was then executed on the exact current integration tree.
+A later CONTROL-REBIND experiment may ask whether a higher-lived transient activation session should be preserved/reapplied across runtime reconstruction, but only after FUNCTION-REBIND itself is earned.
+
+### Feasibility constraint
+
+`compileRebind()` already yields accepted before/after bearing compilations whose runtime body IDs differ while persistent bearing endpoints remain meaningful.
+
+Existing `compileTorquePatch()` recompiles an ordinary BEARING directly from authored fixture. It therefore must **not** be blindly reused post-CUT as if it already understood the rebound `after` relation. Prefer a new experiment-local adapter that validates the unchanged source patch against the already-earned before/after bearing relations and derives the corresponding torque action without modifying accepted ANVIL-03/05/06/09 semantics.
+
+## Alternatives compared
+
+**CONTROL-REBIND** — valuable later, but preserving/reapplying ON across rebuild adds another state-lifetime and possibly routing question before persistent function rebinding itself is proven.
+
+**FUNCTION × COMPLIANCE** — high vision value, but current compliance evidence is intentionally frozen to 1D normal translation with rotations/shear locked. Torque would naturally excite rotational/distributed modes that ANVIL-08 did not earn, making a red result too confounded.
+
+**SURFACE / local contact semantics** — a major underexplored frontier, but currently lower composition leverage than testing whether the already-earned active function survives disposable topology. Keep it on the horizon rather than opening another primitive immediately.
 
 ## Exact next action
 
-Run a **fresh post-ANVIL-09 Research Compass / macro audit** before creating another experiment.
+Critically design and freeze the **FUNCTION-REBIND preflight only**, before implementation.
 
-At minimum compare:
+The preflight should at minimum:
 
-1. active command/function continuity through REBIND;
-2. function × compliance composition;
-3. a narrower control-lifecycle continuation only if it attacks a stronger uncertainty than composition.
+1. preserve one unchanged persistent TORQUE-PATCH source ID/target/effort before and after CUT;
+2. prove the same persistent BEARING identity is resolved while the relevant runtime body ID actually changes;
+3. derive before/after torque actions against the corresponding before/after bearing compilation without stale body IDs;
+4. fail closed if a stale pre-CUT body binding is reused post-CUT;
+5. use accepted REBIND motion transfer rather than inventing new continuity physics;
+6. explicitly set activation ON before and after reconstruction; do not claim command-state migration;
+7. compare post-CUT ON against a same-state post-CUT OFF control so causal actuation is discriminating;
+8. freeze anchor/continuity, causal torque and isolation thresholds before executable results;
+9. keep all new composition adapters experiment-local; no `src/foundation` changes unless evidence later earns them.
 
-Judge them by information gain, confounding, solver-shadow risk, representation lock-in and long-horizon Machine Matter value.
-
-Do not create/freeze ANVIL-10 until that comparison is complete.
+Do not create/activate ANVIL-10 until this preflight design survives adversarial review.
 
 ## Do not do now
 
-- do not extend ANVIL-09 with reverse, analog throttle, routing, UI, power or extra solver variants;
-- do not reinterpret signed `effortNm` as a bidirectional actuator capacity;
-- do not promote generic Control/FUNCTION/Signal abstractions into `src/foundation` from ANVIL-09;
-- do not erase or soften the meaningful RED history;
-- do not start REBIND composition merely because it is the current leading hypothesis;
-- do not create ANVIL-10 before the macro audit;
-- do not treat existing Chromium regression as direct ACTIVATE physics evidence.
+- no extra ANVIL-09 reverse/throttle/routing/UI/power work;
+- no generic FUNCTION/Control/Signal foundation promotion;
+- no transient command migration inside the first FUNCTION-REBIND test;
+- no edits to accepted REBIND/TORQUE/TORQUE-PATCH/ACTIVATE semantics merely for implementation convenience;
+- no FUNCTION × COMPLIANCE until its rotational/distributed confounding is independently addressed;
+- no new surface primitive merely because Surface is currently sparse;
+- do not call FUNCTION-REBIND active or accepted before its preflight is frozen and executable evidence exists.
 
 ## Stable project documents
 
