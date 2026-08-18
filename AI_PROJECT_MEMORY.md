@@ -2,7 +2,7 @@
 
 Last strategic grounding: 2026-08-19.
 
-Accepted material truth remains through **ANVIL-08 / COMPLIANCE-RESOLUTION**. **ANVIL-09 / ACTIVATE** is active and unaccepted on PR #14; its bounded Draft scientific loop is supported and research has stopped pending Ready candidate qualification.
+Accepted material truth is through **ANVIL-09 / ACTIVATE**. No new experiment is active. The next required action is a fresh post-promotion Research Compass audit before any ANVIL-10 preflight is created.
 
 ## Authority
 
@@ -18,69 +18,95 @@ ANVIL tests persistent authored Machine Matter / Physical Fabric meaning compili
 
 ## Accepted capability stack
 
-- ANVIL-00 COLLAPSE — persistent matter -> reduced rigid runtime representation.
-- ANVIL-01 CUT — bounded mass-preserving runtime topology replacement with source identity and rigid-field transfer.
-- ANVIL-02 BEARING — local authored rotational interface -> two rigid islands + passive revolute relation.
-- ANVIL-03 REBIND — persistent BEARING reconstructs onto changed disposable body decomposition.
-- ANVIL-04 LOAD-REBIND — bounded loaded reconstruction without joint-cache migration or gross first-step shock.
-- ANVIL-05 TORQUE — signed persistent active intent performs causal mechanical work through BEARING without authored Box3D motor semantics.
-- ANVIL-06 TORQUE-PATCH — local source-face placement resolves existing BEARING without authored `bearingId`.
-- ANVIL-07 ELASTIC-SEAM — bounded local compliant seam deforms and restores.
-- ANVIL-08 COMPLIANCE-RESOLUTION — frozen 1D area-normalized compliance survives exact 2x authored source refinement without per-patch retuning; four authored patches may lower to one disposable runtime relation.
+- **ANVIL-00 / COLLAPSE** — persistent matter can compile into reduced rigid runtime representation.
+- **ANVIL-01 / CUT** — bounded mass-preserving runtime topology replacement with source identity and rigid-field transfer.
+- **ANVIL-02 / BEARING** — one local authored rotational interface can derive two rigid islands plus a passive revolute relation.
+- **ANVIL-03 / REBIND** — persistent BEARING semantics can be reconstructed onto changed disposable runtime bodies.
+- **ANVIL-04 / LOAD-REBIND** — bounded loaded reconstruction without joint-cache migration or gross first-step shock.
+- **ANVIL-05 / TORQUE** — signed persistent active intent can create causal mechanical work through BEARING without authored Box3D motor semantics.
+- **ANVIL-06 / TORQUE-PATCH** — local source-face placement can resolve existing BEARING without an authored `bearingId`.
+- **ANVIL-07 / ELASTIC-SEAM** — one frozen local compliant seam can deform and restore.
+- **ANVIL-08 / COMPLIANCE-RESOLUTION** — frozen 1D area-normalized compliance survives exact 2x authored source refinement without per-patch retuning; four authored patches may compile to one disposable runtime relation.
+- **ANVIL-09 / ACTIVATE** — in the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once while runtime-only binary activation switches it OFF/ON/OFF; OFF supplies no active torque rather than braking, and a fresh runtime from the same compilation defaults OFF.
 
-ANVIL-08 material merge: `78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a`. Evidence grounding: `04b6429a7d714b0595d5b7b550bc9ca587dbd904`. Qualified tree: `00230b73e283bdb39eedc3df00299b6d14c5aba9`.
+Exact scientific evidence and promotion identities live in the corresponding evidence logs under `docs/experiments/`.
 
-Do not reinterpret ANVIL-08 as continuum convergence, arbitrary resolution invariance or generic deformable matter. Its compliant schemas and 4->1 lowering remain experiment-local.
-
-## Active frontier — ANVIL-09 / ACTIVATE
-
-PR: #14  
-Branch: `experiment/anvil-09-activate`  
-Original frozen preflight: `d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70`  
-Current Draft source: `d0b8b95e345781d21c5296751dcccbba1d30522e`
-
-Primary bounded question: can one unchanged persistent local TORQUE-PATCH with signed `+100 N*m` be compiled once while runtime-only binary activation switches `OFF -> ON -> OFF`, with OFF meaning no active torque rather than braking, and with a fresh runtime from the same compilation defaulting OFF?
-
-Important semantic boundary:
-
-- activation is only `OFF | ON`;
-- signed `effortNm` remains persistent authored meaning;
-- no transient reverse, analog throttle, routing, ports, signals, power, servo or braking semantics;
-- activation does not enter Matter/TorquePatch, accepted compilation schemas or foundation;
-- runtime uses direct equal/opposite body torque, not Box3D revolute motor or velocity setters.
-
-### Draft evidence
+## Latest accepted promotion — ANVIL-09
 
 ```text
-A/B source/run             60144f1a86de68128970da1c51a66ca4c296b53e / 32194089479
-first C0-C3 RED            ae460c79949b38b85f1d60874a5abb3898edab55 / 32194408369
-diagnostic RED             86d4def359fe9c7ee2044c39ec9dd81c096ee6e1 / 32194525529
-gate correction source/run 64498d2b1eeb84baaa158f979f27970fef4f5f20 / 32194696873
-C4 source/run               d0b8b95e345781d21c5296751dcccbba1d30522e / 32194805534
-Draft integration           867b80a1ea45849e695a5a86590581c80e9395b3
+frozen preflight        d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70
+A/B source/run          60144f1a86de68128970da1c51a66ca4c296b53e / 32194089479
+first C0-C3 RED         ae460c79949b38b85f1d60874a5abb3898edab55 / 32194408369
+diagnostic RED          86d4def359fe9c7ee2044c39ec9dd81c096ee6e1 / 32194525529
+gate correction/run     64498d2b1eeb84baaa158f979f27970fef4f5f20 / 32194696873
+C4 source/run            d0b8b95e345781d21c5296751dcccbba1d30522e / 32194805534
+Ready source             d61a6649be4a9f882bb717aabe07ac470ff542c1
+Ready run                32195221850
+Ready base               dac6fa160821bb028971cca3bfc9d18c4c0b8469
+Ready synthetic merge    e7c7659ac9afc6ad29f4d2514bbaa1ec95f2a64e
+qualified tree           e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135
+material merge            a024c8cb134aabe0033ea2990068e6479c3da2b5
+evidence grounding        3da72fadec5cd145a8be149bacd12084c8d4fcde
 ```
 
-Latest Draft/core: **50/50 Node PASS + production build PASS**.
+Ready qualification: **50/50 Node PASS + production build PASS + exact staged artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS**. The actual material merge tree equals the Ready-qualified synthetic tree exactly.
 
-Supported bounded observations:
+Candidate artifacts:
 
-- initial OFF is inert;
-- ON reproduces the accepted torque action from the same compilation without recompilation;
-- OFF leaves existing passive motion rather than braking/locking;
-- identical continued-ON control finishes `0.5506405234336853 rad/s` faster than OFF against the pre-frozen `>= 0.25` C3 gate;
-- after an activated runtime is disposed, a fresh runtime from the exact same compilation defaults OFF and remains inert;
-- authored source and compilation remain unchanged.
+```text
+staging  9345607020  sha256:5e40bafdeded471a90b1a8996d97d5a02138935408d5b6c0c5a620daed7010f0
+final    9345638922  sha256:56891a302464530077bb29fd744001e33d97b27ae543003ee3725e4363669cb4
+```
 
-Negative evidence is preserved in `ANVIL-09-ACTIVATE-PREFLIGHT-AMENDMENT-01.md`: the original C2 `|speed change| <= 0.15 rad/s` sub-gate incorrectly assumed passive relative joint speed is conserved in the asymmetric revolute fixture. It was revoked after two red runs without changing runtime or introducing a new post-hoc threshold; the already-frozen comparative C3 control remains the causal discriminator.
+Launcher/Chromium are product-regression evidence only, not direct ACTIVATE physics evidence.
 
-## Current decision
+## Strongest ANVIL-09 architectural lesson
 
-Meso verdict: **stop ANVIL-09 research**. More variants now have low information gain and would violate the stop rule.
+Persistent function/action meaning and transient activation can occupy different lifecycle domains without immediately requiring a generic control architecture.
 
-Exact next action: re-lock live main/head, mark PR #14 Ready, execute the existing exact candidate integration/launcher/Chromium regression gate, and treat those browser results as product regression evidence only. If candidate succeeds, verify provenance and promote the exact qualified source head; ground the evidence after merge.
+In the frozen fixture:
 
-Do not add reverse/throttle/routing/UI/power/REBIND/compliance or promote generic Control/FUNCTION foundation semantics inside ANVIL-09.
+```text
+persistent authored TORQUE-PATCH effort = +100 N*m
+runtime activation                     = OFF | ON
+```
 
-Leading later question, only after promotion and a fresh macro audit: active command/function continuity through REBIND.
+Activation does not enter authored Matter/TorquePatch, accepted compilation schemas or foundation. ON applies the already-earned equal/opposite body torque pair. OFF applies no active torque; it is not a brake, servo or velocity target. Disposing the runtime discards activation; recreating runtime from the exact same persistent compilation starts OFF.
 
-Known non-blocking process debt remains: server-side main protection is absent; production build still emits the historical Forge manifest; Node test registration remains manually enumerated.
+This does **not** earn transient reverse, analog throttle, routing, signals, ports, controllers, power or generic FUNCTION/Control ontology.
+
+## Negative evidence retained
+
+The first two C0-C3 runs were RED because the original preflight incorrectly required passive relative revolute speed to remain within `0.15 rad/s` of its A0 value after OFF. The asymmetric multibody fixture does not make that generalized coordinate speed a conserved invariant. Runtime physics was not changed; the bad sub-gate was revoked without a replacement post-hoc threshold, while the already-frozen continued-ON control remained the causal discriminator and separated by `0.5506405234336853 rad/s` against its frozen `>=0.25` threshold.
+
+A first Ready run was also rejected as promotion evidence because GitHub supplied a stale merge ref. The branch was synchronized with grounded `main` without changing the scientific PR diff, then requalified on the correct exact integration tree.
+
+These failures are part of the project evidence, not noise to erase.
+
+## Promotion / abstraction stance
+
+Do not promote from ANVIL-09 alone:
+
+- generic FUNCTION/device ontology;
+- generic Control / Signal / Port / Bus / Controller architecture;
+- control-state persistence/restoration model;
+- command routing or addressing;
+- power/energy/storage semantics;
+- transient reverse or analog throttle semantics;
+- ACTIVATE or TorquePatch as foundation concepts.
+
+Existing accepted compliant schemas from ANVIL-07/08 likewise remain experiment-local.
+
+## Current strategic frontier
+
+No experiment is active.
+
+The leading post-ANVIL-09 hypothesis is **active command/function continuity through REBIND**, because transient activation lifecycle and runtime topology reconstruction are now separately earned bounded capabilities. It is not automatically the next experiment.
+
+Before any ANVIL-10 branch/preflight, run a fresh Research Compass audit comparing that composition against at least FUNCTION × COMPLIANCE and the strongest genuinely independent alternative. Prefer information gain and clean attribution over roadmap momentum.
+
+## Exact next action
+
+Run the post-promotion macro audit. Do not implement, create ANVIL-10 or promote new foundation abstractions until the next falsifier has been selected and critically designed.
+
+Known non-blocking process debt remains: server-side `main` protection is absent; the production build still emits the historical Forge manifest; Node test registration remains manually enumerated.
