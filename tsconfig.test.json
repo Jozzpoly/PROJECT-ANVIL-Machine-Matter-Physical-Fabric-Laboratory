@@ -13,6 +13,7 @@
     "src/compiler.ts",
     "src/fixture.ts",
     "src/physics.ts",
-    "src/foundation/**/*.ts"
+    "src/foundation/**/*.ts",
+    "src/experiments/**/*.ts"
   ]
 }

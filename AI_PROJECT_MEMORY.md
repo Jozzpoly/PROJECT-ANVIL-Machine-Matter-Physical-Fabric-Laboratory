@@ -2,34 +2,58 @@
 
 Last grounding: 2026-08-18.
 
-## Identity and source of truth
+## Identity and authority
 
 Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 
 Authority order:
 
-1. live repository/code and exact artifacts;
+1. live Git/code and exact artifacts;
 2. executed evidence;
 3. direct owner feedback;
 4. canonical documentation;
 5. historical conversation/branch names only as leads.
 
-Resolve live Git before meaningful work. Do not let later documentation/tooling commits redefine which artifact the owner actually tested.
+Always resolve live Git before meaningful work. Never let later tooling/docs redefine which exact artifact the owner actually tested.
 
 ## Current state
 
-- accepted `main` checkpoint before this memory-only grounding commit: `3696f884cfdb3010c91540a834ce541adab049f0`;
-- that checkpoint contains ANVIL-00 / COLLAPSE, the promoted laboratory foundation, owner-accepted ANVIL-01 / CUT, and integrated Forge V0.1 validation infrastructure;
-- promotion PR: `#4 — ANVIL-01: promote accepted CUT continuity experiment`;
-- final tested PR source head: `ec4bf67817625e3c7af5333af11a91e248ef7a2e`;
-- final tested PR synthetic merge checkout: `75539187597843541ed016dd4cac342d7f4900cf`;
-- tested PR tree and actual `main` merge tree are identical: `62c1079569c093a106cdf428dfe03e4f62c7502a`;
-- exact owner-accepted CUT package remains `9c4b3372ad60e20ade2d7d9a31dd373a356263d0` and must not be redefined by later Forge changes;
-- `experiment/anvil-01-cut` is now historical experiment history, not the default base for the next research experiment; start future work from live `main` unless a specific forensic task requires otherwise.
+Accepted `main` at the start of ANVIL-02:
 
-**ANVIL-01 / CUT is OWNER ACCEPTED and PROMOTED TO `main` for its declared bounded claim.**
+`6e936dd5934fffb3c7de3482a7aca9dc985102e5`
 
-**Forge V0.1 is an AUTOMATED-VALIDATED FIELD-TRIAL BASELINE.** It is not yet a universal framework and should earn further changes through real future owner gates.
+It contains:
+
+- ANVIL-00 / COLLAPSE — owner accepted;
+- promoted laboratory foundation;
+- ANVIL-01 / CUT — owner accepted and promoted;
+- Forge V0.1 baseline.
+
+Active branch at this grounding:
+
+`experiment/anvil-02-bearing`
+
+PR:
+
+`#5 — ANVIL-02: bearing from a local authored interface`
+
+**ANVIL-02 / BEARING is OWNER ACCEPTED for its declared bounded claim.**
+
+The exact owner-tested source remains immutable evidence:
+
+```text
+source head      3869cbb3ece204acd7f5c05cf7da43e53e219c0c
+PR checkout      a107661d2f8854cf45a51047f93f06b2d5b8c0a4
+Actions run      32080991801 attempt 1
+artifact ID      9305115231
+artifact SHA256  336987e773b643c1b25f472cf1f585c2724f98760412359015f7f464f381bdac
+owner            ACCEPT after 17 observed BEARING runs
+owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
+```
+
+Live GitHub cross-check after handoff confirmed source, synthetic checkout, successful run, artifact ID and digest. An owner screen recording was also reviewed and visually supported the reported A/B behavior.
+
+PR #5 may be promoted after a final docs-only promotion validation. If this memory is read after that merge, resolve live `main` and treat the actual merge commit as current truth; the exact owner-tested source above must still remain the acceptance artifact identity.
 
 ## Research intent
 
@@ -39,32 +63,31 @@ Working premise:
 
 > persistent authored matter and physical intent may compile into disposable runtime representations whose resolution and runtime identity differ from authored truth.
 
-Machines should increasingly emerge from matter, local relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies/colliders/solver constructs are interpretations, not authoritative construction identity.
+Machines should increasingly emerge from matter, local physical relations, interfaces and function rather than from a catalog of ready-made parts. Runtime bodies, colliders, joints and solver objects are interpretations, not authoritative construction identity.
 
 Do not promote an experiment-local trick into universal ontology because one fixture passes.
 
-## Accepted ANVIL-00 / COLLAPSE baseline
+## Toolchain truth
 
-For its bounded sparse-cell fixture ANVIL-00 established:
+- Node `24.16.0`;
+- npm `>=11.13.0 <12`, lockfile, CI uses `npm ci`;
+- exact `box3d.js@0.0.2`, runtime Box3D `0.1.0`;
+- TypeScript `7.0.2`;
+- Vite `8.1.5`;
+- Playwright `1.61.1`.
 
-- persistent cell/material identity without Box3D IDs in `MatterDocument`;
-- deterministic rigid-island compilation;
-- integrated mass/COM;
-- collision representation distinct from authored resolution;
-- disposable Box3D lowering;
-- independent Box3D mass/COM cross-checks;
-- intact `51 cells → 1 body → 8 collision boxes`;
-- authoring edit `50 cells → 2 bodies → 9 collision boxes`;
-- strict TS, semantic tests, real Box3D, production build, Chromium runtime PASS;
-- owner manual acceptance.
-
-Boundary: COLLAPSE deletes one source cell and rebuilds neutral state. It is not dynamic state migration.
+Do not mix a Box3D binding upgrade into an experiment unless the pinned binding is a reproduced blocker.
 
 ## Accepted laboratory foundation
 
-Read `AGENTS.md`, `docs/EXPERIMENT_PROTOCOL.md`, `docs/FOUNDATION.md` and `docs/DONOR_MAP.md` before broad architecture work.
+Read before broad architecture work:
 
-Promoted neutral capabilities:
+- `AGENTS.md`;
+- `docs/EXPERIMENT_PROTOCOL.md`;
+- `docs/FOUNDATION.md`;
+- `docs/DONOR_MAP.md`.
+
+Promoted neutral capabilities include:
 
 - `Vec3`, `Quat`, `RigidPose`, `RigidMotion`;
 - deterministic compensated mass/COM and current limited inertia diagonal;
@@ -73,227 +96,210 @@ Promoted neutral capabilities:
 - pose/velocity, linear-momentum and translational-energy measurements;
 - fail-closed evidence primitives.
 
-Still non-foundation:
+Still not foundation:
 
-- generic Bond/Joint/Constraint ontology;
-- custom SurfaceLaw/contact model;
+- generic Bond/Joint/Constraint/Relation ontology;
+- universal authored frame entities;
+- custom contact laws;
 - damage/fracture propagation;
 - deformable/compliant matter;
 - mechanism inference;
 - power/control networks;
-- adaptive rigid↔deformable switching;
-- universal materials/voxels;
-- vehicle-specific compiler concepts;
+- vehicle-specific concepts;
 - generic scene/entity framework.
 
-## Toolchain control
+## ANVIL-00 / COLLAPSE — accepted baseline
 
-- Node `24.16.0`;
-- npm `>=11.13.0 <12`, tracked lockfile, CI uses `npm ci`;
-- exact `box3d.js@0.0.2`, runtime asserts Box3D `0.1.0`;
-- TypeScript `7.0.2`, Vite `8.1.5`, Playwright `1.61.1`.
+For its bounded sparse-cell fixture ANVIL-00 established:
 
-Do not mix a binding upgrade into an experiment unless the pinned binding is a reproduced blocker.
+- persistent cell/material identity without Box3D IDs in authored truth;
+- deterministic rigid-island compilation;
+- integrated mass/COM;
+- collision representation distinct from authored resolution;
+- disposable Box3D lowering;
+- intact `51 cells -> 1 body -> 8 collision boxes`;
+- one-cell authoring edit `50 cells -> 2 bodies -> 9 collision boxes`;
+- strict TS, semantic tests, real Box3D, production browser and owner manual acceptance.
 
-## ANVIL-01 / CUT — accepted bounded result
+Boundary: COLLAPSE deletes a source cell and rebuilds neutral runtime state. It is not dynamic state migration.
 
-Authoritative docs:
+## ANVIL-01 / CUT — accepted continuity result
 
-- `docs/experiments/ANVIL-01-CUT-PREFLIGHT.md`;
-- `docs/experiments/ANVIL-01-CUT.md`;
-- `docs/experiments/ANVIL-01-CUT-OWNER-GATE.md`.
-
-Primary mass-preserving split keeps all 51 source cells and blocks only:
-
-`cell:-1:0:0 <-> cell:0:0:0`
-
-through experiment-local `blockedFaceConnections`. This is not a promoted generic Bond.
-
-Automated progression already validated:
-
-```text
-binding round-trip
-  → mass-preserving topology
-  → free translation
-  → free rotation / rigid velocity field
-  → uniform gravity
-  → settled support
-  → dynamic impact
-  → one-lobe active contact at transaction
-```
-
-Key evidence retained:
-
-- topology `51 cells / 1 body → 51 cells / 2 bodies`, no source additions/removals, one provenance split;
-- experiment-local transfer `v_child = v_parent + ω_parent × r_world`, with child orientation/angular velocity inherited from parent;
-- rotated COM sensitivity `0.4195247840 m`, `ω×r` effect `1.4641147108 m/s`;
-- rotation momentum error ≈ `4.219e-5 kg·m/s`;
-- gravity barycenter error `3.212e-8 m`;
-- settled support 30-step barycenter error ≈ `4.596e-5 m`;
-- dynamic impact reconstructed-vs-reference errors around `10^-7 m` / `10^-7 m/s`;
-- one-lobe active contact corrected fixture produced external ground impulse `61.1181 kg·m/s` after an earlier fixture correctly failed sensitivity.
-
-Do not claim full angular-momentum/rotational-energy conservation for arbitrary rotation.
-
-### Exact owner acceptance
+Exact owner-tested artifact:
 
 ```text
 source head      9c4b3372ad60e20ade2d7d9a31dd373a356263d0
 Actions run      32073741628
 artifact ID      9302675515
 artifact SHA256  34c0365c403a229e5c4e53a304d23d331e0872601850a0d190f318a98340de40
-owner            ACCEPT after 10 observed CUT runs
-owner environment Windows 10 / Chrome 151 / 1920×911 DPR1
+owner            ACCEPT after 10 observed runs
+owner env        Windows 10 / Chrome 151 / 1920x911 DPR1
 ```
 
-Screenshot and screen recording were supplied. No obvious large teleport, whole-scene reset, freeze, explosive jump or immediate runaway was seen in manual/video inspection.
+CUT demonstrated a mass-preserving topology change with persistent source identity and bounded rigid motion-state continuity:
 
-### Evidence boundary
+`51 source cells / 1 body -> same 51 source cells / 2 bodies`.
 
-Current CUT reconstructs isolated disposable world/runtime A → B around persistent source state. It does not prove:
-
-- in-place replacement inside one persistent populated Box3D world;
-- Box3D manifold internal migration;
-- external joint/constraint state transfer;
-- arbitrary cut topology/fracture geometry;
-- full angular momentum/rotational energy conservation;
-- damage, debris, toughness, plasticity or deformables;
-- universal material/connection ontology.
+Important boundary: CUT does not prove in-place replacement in one populated persistent Box3D world, contact-manifold migration, external relation/joint migration, arbitrary fracture, full angular-momentum conservation, deformables or a generic connection ontology.
 
 CUT is a continuity experiment, not a destruction roadmap.
 
-## Forge — owner validation transport
+## ANVIL-02 / BEARING — owner accepted
 
-Forge reduces the handoff cost between agent-completed browser work and owner-visible manual validation:
+Canonical docs:
 
-```text
-agent build + automated evidence
-  → canonical browser artifact
-  → double-click launcher
-  → focused owner observation
-  → ACCEPT / REJECT / INCONCLUSIVE
-  → paste-ready report
-  → agent cross-checks reported identity live on GitHub
-```
+- `docs/experiments/ANVIL-02-BEARING-PREFLIGHT.md`;
+- `docs/experiments/ANVIL-02-BEARING-EVIDENCE.md`;
+- `docs/experiments/ANVIL-02-BEARING-OWNER-GATE.md`.
 
-Do not build a universal hub yet. Forge must earn its durable shape through repeated real ANVIL gates first.
+### Research question
 
-### Forge V0 field evidence
+Can one local authored rotational interface between two otherwise rigidly face-connected source regions cause ANVIL to compile the same persistent matter into two rigid islands plus one solver-neutral rotational relation, while Box3D keeps a shared pivot coincident and allows relative rotation?
 
-The `9c4b337...` owner package proved the real Windows path: ZIP extraction, `.cmd`, localhost PowerShell/.NET server, browser launch, repeated CUT/RESET, verdict and report generation.
+### Why it matters
 
-That field test exposed:
+Before ANVIL-02, `MatterDocument` contained matter/material/grid information but no local mechanical signal. Hand-creating a Box3D revolute joint would test only Box3D.
 
-- missing exact build provenance in report;
-- successful fallback strings for missing required metrics;
-- insufficient ACCEPT gating;
-- mostly happy-path browser coverage;
-- no launcher manifest validation;
-- visually small fixed CUT framing.
-
-### Forge V0.1 integrated hardening
-
-Developed in PR `#3` from the exact accepted CUT checkpoint and merged into the CUT branch before promotion to `main`.
-
-Final pre-integration validation:
+ANVIL-02 introduced the smallest experiment-local authored signal needed to test the Machine Matter idea:
 
 ```text
-proposal head     0f8533a7641608960dc504642644664cf5f9f8ec
-PR checkout       04a59b56f9bbc42e8c8b87f819ed342662e1d3bf
-validated tree    2486a339388f69b26bd3c32d7edb9167c29f86ac
-Actions run       32076959012
-artifact ID       9303786754
-artifact SHA256   27150515907128f6f5e60eb21c52fc04fd2d62211797defe4a9c10d965f41b51
+stable bearing ID
+endpoint A = persistent cell ID + face
+endpoint B = persistent cell ID + opposite face
+free axis  = x | y | z
 ```
 
-Integration into the CUT branch:
+It deliberately contains no Box3D IDs and is not promoted as a universal relation schema.
+
+### Fixture and result
+
+Seven equal-material `0.5 m` source cells form asymmetric 3-cell and 4-cell lobes with one rigid seam:
+
+`a:2 x+ <-> b:0 x-`
+
+Without the bearing mark: one rigid island.
+
+With the mark: same seven source cells -> two rigid bodies + one derived bearing relation.
+
+The compiler fails closed for invalid/non-adjacent/non-opposite endpoints, axis normal to the shared face, and an alternate rigid bypass around the seam.
+
+Base real-solver evidence after 120 fixed 60 Hz steps:
 
 ```text
-merge commit      95dabaf2d28439d82550566d83cfb1c221c09130
-integrated tree   2486a339388f69b26bd3c32d7edb9167c29f86ac
+bearing anchor gap       0.00001546371140869226 m
+no-relation control gap  1.3662249602059333 m
+relative angle           2.010232448577881 rad
 ```
 
-The tested PR checkout and actual integrated merge have the same tree SHA. Validation passed strict TS, **20/20** solver/compiler/foundation tests, build, launcher self-test, **7/7** Chromium tests and artifact upload.
+Predeclared gates were respectively `<= 0.0025 m`, `>= 0.25 m`, `>= 0.35 rad`.
 
-Forge V0.1 now:
+The fixture therefore has large discrimination margin. No physical threshold was loosened.
 
-- generates `forge-gate.json` with proposal source SHA, actual checkout SHA, ref, CI event/run, artifact name and Forge revision;
-- uses no successful fallback values for required evidence;
-- checks exact expected core metric values;
-- checks exact required eight-gate set;
-- blocks ACCEPT on missing/duplicate/mismatched evidence;
-- revokes already-selected ACCEPT if evidence later becomes inconsistent;
-- blocks canonical ACCEPT for local/unverified builds;
-- keeps REJECT/INCONCLUSIVE available when evidence itself is broken;
-- keeps owner launcher dependency-free (PowerShell/.NET only);
-- uses fixed larger framing without camera-follow that could hide a discontinuity.
+### Common-transform falsifier
 
-First hardening head `4270162b...` failed strict TS (`acceptButton` possibly null). Strictness was not relaxed. Preserve this negative evidence.
+A harder gate was declared before execution: apply one arbitrary common 3D rigid transform to the complete compiled device without adding a general authored frame system.
 
-### Final promotion validation to `main`
-
-PR `#4` independently revalidated the complete CUT + Forge state against the previous accepted `main`:
+Observed:
 
 ```text
-source head       ec4bf67817625e3c7af5333af11a91e248ef7a2e
-PR checkout       75539187597843541ed016dd4cac342d7f4900cf
-validated tree    62c1079569c093a106cdf428dfe03e4f62c7502a
-Actions run       32077284920
-artifact ID       9303957477
-artifact SHA256   f69af499f4f569c175fe3d0b20da5ba74a54ee40360919ef8f42728f6b160fbe
+initial transformed mismatch  1.7889085181965112e-7 m
+bearing gap                   4.252712514504838e-6 m
+no-relation control           1.2319540243918932 m
+relative angle                1.0926251411437988 rad
 ```
 
-Final promotion evidence:
+Result: current body-local anchor/axis semantics are sufficient for this common-rigid-transform fixture. **Do not add a JURE-like frame ontology now.** The experiment has not earned that complexity.
 
-- canonical Node `24.16.0` / npm `11.13.0`;
-- strict TypeScript PASS;
-- **20/20** solver/compiler/foundation tests PASS;
-- production build PASS;
-- manifest recorded `source=ec4bf678...`, `checkout=755391875...`, run `32077284920`;
-- packaged Windows launcher self-test PASS;
-- **7/7** real Chromium tests PASS;
-- artifact upload PASS.
+### Browser + owner evidence
 
-Actual `main` merge:
+Final automated owner-tested source passed:
 
-```text
-merge commit      3696f884cfdb3010c91540a834ce541adab049f0
-merged tree       62c1079569c093a106cdf428dfe03e4f62c7502a
-```
+- strict TypeScript;
+- **28/28** Node / exact real-Box3D tests;
+- production build;
+- Forge V0.2 launcher self-test;
+- unsafe entry-path rejection checks;
+- **12/12** real Chromium tests;
+- artifact upload.
 
-The actual `main` merge tree exactly equals the final tested PR merge tree. This establishes direct content identity between the final promotion gate and the promoted checkpoint.
+Owner then ran the package 17 times and reported the intended visual contrast:
 
-### Provenance handshake
+- left: the structures remain connected at the green bearing marker and rotate relative to one another;
+- right: the no-relation control separates and flies apart, with the red distance line making the separation visible.
 
-Embedded `forge-gate.json` is **identity metadata, not a cryptographic trust root**. UI therefore says `BUILD IDENTIFIED`, not `BUILD VERIFIED`.
+Owner verdict: **ACCEPT**.
 
-After owner copies a report, the agent must cross-check reported source/run/artifact against live GitHub and obtain GitHub's artifact digest before treating provenance as externally confirmed. The owner should not be asked to inspect Actions/SHA manually.
+### Explicit non-claims
 
-When tools permit, the agent should hand the owner the exact validation artifact directly rather than instructing them to navigate Actions.
+ANVIL-02 does not prove:
 
-### Forge scope discipline
+- arbitrary authored non-grid orientation semantics;
+- multiple interacting bearings or closed kinematic loops;
+- motors, limits, compliance, friction torque or breakage;
+- power/control networks;
+- relation continuity across CUT/recompile transactions;
+- a generic Relation/Joint/Constraint ontology;
+- universal authored frame entities;
+- generality of `BearingMark` to other physical interfaces.
 
-Do not add plugin architecture, validation hub, backend, cross-project DSL, screenshot database or automatic transport merely because they might be useful later. Add complexity only when a real owner gate exposes the need.
+## Forge — current truth after second field trial
 
-The next genuine Forge field trial should be the next ANVIL owner gate.
+Forge exists to reduce owner-validation friction:
 
-## JURE donor lesson
+`agent evidence -> packaged browser build -> double-click launcher -> simple visual owner decision -> generated technical report -> agent verifies provenance live`.
 
-Use JURE as process evidence, not imported ontology:
+Do **not** build a universal hub yet. Forge must keep earning its shape from actual ANVIL owner gates.
 
-- small vertical slices + targeted tests + owner gates produced useful checkpoints;
-- exact SOURCE revision/hash and fail-closed provenance mattered;
-- owner acceptance stayed scoped to inspected behavior;
-- BIND-00 owner testing falsified singleton binding, and JURE correctly did not generalize it mechanically into a framework;
-- SOURCE/provenance/authored/binding/preview/evaluated/runtime meanings remain distinct.
+### Forge V0.2 functional result
 
-Apply the same discipline to Forge: repeated real consumers reveal durable abstractions.
+BEARING was the second real consumer. It exposed and justified one cross-gate generalization: active gate + entry path could no longer be hardcoded to CUT.
 
-## Immediate next direction
+V0.2 therefore added:
 
-1. Treat live `main` as the accepted starting point for new work; do not continue from the historical CUT branch by default.
-2. Do **not** extend CUT into a destruction roadmap unless a future Machine Matter hypothesis specifically requires it.
-3. Design the next bounded falsifier around a **RELATION/HINGE-like** physical question: two material structures plus a local physical property/interface should cause compilation into the required solver relation without introducing a machine-specific compiler.
-4. Earn any frame/axis semantics from that concrete physical relation instead of importing an abstract JURE architecture phase.
-5. Use Forge V0.1 naturally for the next owner-visible gate. Cross-check its pasted provenance live on GitHub.
-6. Treat that next real field trial as the source of truth for further Forge improvements; do not add infrastructure solely because it is imaginable.
+- `forge-owner-gate.config.json` for active gate/entry/revision/artifact;
+- manifest schema `anvil-forge-owner-gate/v2` with `entryPath`;
+- generic `START_ANVIL.cmd`;
+- safe same-origin entry-path validation;
+- BEARING-specific fail-closed owner report;
+- negative browser tests for wrong gate, local/unverified artifact and evidence mutation after ACCEPT.
+
+The real Windows handoff, 17 repetitions, verdict and generated report all worked. External GitHub provenance verification also succeeded.
+
+### Forge V0.2 owner-UX defect
+
+The owner found the opening Forge explanation difficult to understand and described it as technical jargon. This is a real product defect in Forge's communication layer, despite the functional pass.
+
+The owner is a visual creator/non-programmer. Primary Forge instructions must therefore be written in ordinary Polish and explain only what must be observed.
+
+**Earned rule for the next Forge revision:**
+
+- primary UI: plain human language;
+- say exactly what should visibly happen;
+- explain visible failure signs;
+- use ordinary action labels;
+- hide `schema`, SHA, run ID, artifact, provenance, source-interface notation and similar implementation details under collapsed `Szczegóły techniczne`;
+- generated report may remain fully technical because the agent, not the owner, consumes it.
+
+Do not turn this into a generic UI framework. Apply the rule minimally to the next Forge owner surface and let another field trial validate it.
+
+## Preserved negative evidence from ANVIL-02
+
+Do not erase:
+
+1. first browser slice failed strict TypeScript closure narrowing; fixed without weakening strictness;
+2. browser initially showed default `300x150` canvases because experiment CSS did not load; fixed the CSS route rather than relaxing QA;
+3. owner panel initially stretched the scene to ~1397 px at a 900 px viewport; fixed independent viewport/panel bounds and added upper layout gates;
+4. first BEARING Forge V0.2 owner layer became a global TS script and failed strict checking; explicit module scope fixed it;
+5. no physical threshold was relaxed to make failures green.
+
+## Immediate next actions
+
+1. Revalidate the docs-only owner-acceptance head of PR #5.
+2. Promote ANVIL-02 to `main` only if that exact promotion gate is green and the PR head has not moved unexpectedly.
+3. Preserve `3869cbb3...` + artifact `9305115231` as the immutable owner-tested identity even though promotion documentation comes later.
+4. After promotion, handle the Forge communication defect separately; do not rewrite the accepted BEARING artifact and pretend it was owner-tested.
+5. Before selecting ANVIL-03, critically compare at least these next falsifiers:
+   - composition of multiple local bearing interfaces;
+   - a local actuation/torque intent lowering onto an already-earned bearing;
+   - continuity of a derived relation across a CUT/recompile transaction.
+6. Prefer the smallest falsifier that advances Machine Matter rather than merely exercising another Box3D API. Do not build generic relation graphs, power networks or frame systems in advance.
