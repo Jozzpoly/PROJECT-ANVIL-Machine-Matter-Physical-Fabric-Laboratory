@@ -4,21 +4,30 @@ on:
   push:
     branches:
       - main
-      - "experiment/**"
-      - "foundation/**"
+    paths-ignore:
+      - "docs/**"
+      - "AI_PROJECT_MEMORY.md"
+      - "README.md"
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - converted_to_draft
 
 concurrency:
-  group: anvil-ci-${{ github.workflow }}-${{ github.ref }}
+  group: anvil-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  verify:
+  core:
+    name: core
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Checkout exact proposal
         uses: actions/checkout@v4
@@ -35,8 +44,42 @@ jobs:
       - name: Typecheck and run foundation + semantic + Box3D tests
         run: npm run check
 
-      - name: Build browser laboratory
+      - name: Build production browser laboratory
         run: npm run build
+
+      - name: Stage exact browser build for candidate gate
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+        uses: actions/upload-artifact@v4
+        with:
+          name: anvil-browser-staging
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+  candidate:
+    name: candidate
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+    needs: core
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact proposal
+        uses: actions/checkout@v4
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Download exact build produced by core gate
+        uses: actions/download-artifact@v4
+        with:
+          name: anvil-browser-staging
+          path: dist
 
       - name: Validate packaged Windows owner launcher
         shell: pwsh
@@ -48,7 +91,7 @@ jobs:
       - name: Run real browser evidence gate
         run: npm run test:browser
 
-      - name: Upload browser build
+      - name: Upload owner-candidate browser artifact
         uses: actions/upload-artifact@v4
         with:
           name: anvil-browser-laboratory
