@@ -9,12 +9,24 @@
     "evidenceGrounding": "04b6429a7d714b0595d5b7b550bc9ca587dbd904"
   },
   "active": {
-    "experiment": null,
-    "pr": null,
-    "branch": null,
-    "phase": "post-anvil-08-promotion-grounded-awaiting-composition-preflight",
-    "activeVerdict": null,
+    "experiment": "ANVIL-09 / ACTIVATE",
+    "pr": 14,
+    "branch": "experiment/anvil-09-activate",
+    "phase": "frozen-preflight-draft-before-micro-ab",
+    "activeVerdict": "NO EXECUTABLE RESULT YET",
     "readyForPromotion": false
+  },
+  "anvil09": {
+    "experiment": "ANVIL-09 / ACTIVATE",
+    "status": "frozen-preflight-active-unaccepted",
+    "pr": 14,
+    "branch": "experiment/anvil-09-activate",
+    "preflight": "docs/experiments/ANVIL-09-ACTIVATE-PREFLIGHT.md",
+    "preflightSource": "d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70",
+    "acceptedBaseAtFreeze": "c1d9a42dd8668d98eefed847f649628af99a1c2e",
+    "primaryFalsifier": "whether one unchanged persistent signed +100 N*m TORQUE-PATCH can be compiled once and transiently switched OFF -> ON -> OFF at runtime without mutating authored/compiled truth, braking on OFF, or using Box3D motor semantics",
+    "evidenceBoundary": "preflight only; no A/B, solver or product result exists yet",
+    "nextAction": "Execute Micro A/B only: implement the smallest experiment-local OFF/ON activation runtime boundary around the accepted TORQUE-PATCH compilation, prove source/compilation immutability and no solver-control ontology leakage, then run the Draft/core gate and stop for checkpoint before C0-C3."
   },
   "anvil08": {
     "experiment": "ANVIL-08 / COMPLIANCE-RESOLUTION",
@@ -46,27 +58,28 @@
   },
   "nextCandidate": {
     "name": "ACTIVATE",
-    "status": "strategic-candidate-not-frozen-not-active",
-    "primaryFalsifier": "whether transient control can act on already-earned persistent local function/mechanical semantics without mutating construction truth or collapsing into solver-control ontology",
-    "compositionReason": "ANVIL-08 completed the planned representation/scaling challenge; the Research Compass composition rule now favors forcing composition instead of adding another isolated primitive",
-    "later": "compliant REBIND / continuity after composition unless new evidence changes the frontier",
-    "nextAction": "Run a bounded Research Compass/preflight preparation pass for ACTIVATE. Identify the smallest transient control state that can drive already-earned persistent TORQUE/TORQUE-PATCH semantics through existing BEARING without becoming authored construction or Box3D motor state. Freeze negative controls, lifecycle semantics and quantitative gates before implementation. Do not create an active ANVIL-09 until that preflight is critically frozen."
+    "status": "frozen-active-unaccepted",
+    "primaryFalsifier": "persistent signed torque action and transient binary activation occupy separate lifecycle domains",
+    "compositionReason": "ANVIL-08 completed the representation/scaling challenge; ACTIVATE composes already-earned TORQUE-PATCH, TORQUE and BEARING while opening the untested transient-control frontier",
+    "later": "active command/function continuity through REBIND is the leading successor only if ANVIL-09 earns transient activation and a later macro audit still ranks it highest",
+    "nextAction": "Micro A/B on Draft PR #14, then checkpoint before real-solver C0-C3."
   },
   "doNotDoNow": [
     "reopen or enrich ANVIL-08",
-    "add a third compliance resolution or parameter sweep merely to collect more PASS results",
-    "promote NormalCompliancePatch, ElasticSeam, SurfaceLaw, Bond, Relation or a generic local-property field into foundation",
-    "generalize 4 authored patches to 1 runtime relation beyond the frozen 1D validity boundary",
-    "treat ANVIL-08 as continuum convergence or generic deformable matter",
-    "start compliant REBIND before the next composition checkpoint unless new evidence changes the ranking",
-    "treat ACTIVATE as active or accepted before a new frozen preflight exists"
+    "change the frozen ANVIL-09 OFF/ON semantics or thresholds merely to obtain PASS",
+    "add transient reverse command or reinterpret signed effortNm as a bidirectional rating",
+    "add analog throttle, routing, ports, buses, controllers, sensors or power semantics",
+    "modify src/foundation for ANVIL-09",
+    "refactor accepted TORQUE/TORQUE-PATCH unless a minimal adapter is proven impossible and scope is re-audited",
+    "combine ACTIVATE with CUT/REBIND or compliance inside ANVIL-09",
+    "treat ANVIL-09 as supported before executable evidence exists"
   ],
   "takeoverVerification": [
     "resolve live main",
-    "verify accepted.materialCheckpoint 78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a is an ancestor of live main",
-    "verify ANVIL-08 evidence log exists at or after evidenceGrounding 04b6429a7d714b0595d5b7b550bc9ca587dbd904",
-    "if promotion provenance matters, verify Ready run 32191041240 source 5f0c0db3cdf7eed79c9c1fc00e3c7e1ef1817201 and synthetic merge 92d4eb6677a9029bafea0a19b2185c4de479a95d",
-    "verify Ready synthetic and actual material merge trees are both 00230b73e283bdb39eedc3df00299b6d14c5aba9",
-    "confirm no newer active experiment/preflight has superseded nextCandidate before writing"
+    "verify accepted.materialCheckpoint 78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a remains an ancestor of live main",
+    "resolve Draft PR #14 and branch experiment/anvil-09-activate",
+    "verify frozen preflight commit d5d3241ad40081d1fa5e80cef1dcf2e451ed7b70 is an ancestor of the active PR head",
+    "verify the preflight file still states FROZEN BEFORE IMPLEMENTATION and frozen OFF/ON lifecycle/gates",
+    "classify any branch changes after d5d3241a as unaccepted experiment work and verify only evidence material to the next action"
   ]
 }
