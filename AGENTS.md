@@ -95,6 +95,76 @@ Do not pay for Chromium/owner validation on every solver iteration merely for ce
 
 Documentation-only commits after an already qualified exact-head merge do not requalify unchanged material code; verify the changed paths instead.
 
+## Long-horizon implementation orchestration
+
+Long implementation runs should preserve momentum without letting momentum become authority. Use three nested review scales.
+
+### Micro loop — coherent implementation checkpoint
+
+For each bounded implementation batch:
+
+1. lock live branch/head before writing;
+2. make the smallest coherent change that can be validated as one claim;
+3. keep source + directly coupled tests/evidence atomic when practical;
+4. inspect the exact diff before moving the branch ref;
+5. run the required evidence gate;
+6. classify any red result before changing code or thresholds;
+7. record only durable checkpoint facts in their canonical owner.
+
+A normal green micro loop does not justify a strategic redesign. Continue when the result is expected, discriminating and still inside the frozen question.
+
+### Meso loop — progress and direction audit
+
+After roughly **2–4 coherent implementation checkpoints**, or immediately after any surprising result, evidence contradiction, repeated repair cycle or material scope expansion, pause implementation and audit the trajectory.
+
+The orchestrator must answer:
+
+- What new fact has actually been established since the previous audit?
+- Is the current work still attacking the frozen hypothesis, or merely polishing the implementation?
+- Has evidence debt grown faster than capability?
+- Are we accumulating solver-shadow semantics, fixture-specific assumptions or representation lock-in?
+- Is a red result teaching us something, or are we repeatedly patching around it?
+- Has the expected information gain of the next planned batch materially fallen?
+- Is owner validation being requested because it adds evidence, or because automation is incomplete?
+- Should the next action be **continue, harden, stop, split, promote, or pivot**?
+
+A meso audit should normally produce only:
+
+- current verified truth;
+- evidence quality / unresolved debt;
+- strongest live implementation risk;
+- one exact next bounded action;
+- explicit do-not-do items if direction changed.
+
+Do not create a large speculative backlog. Keep one executable next action and at most a small ranked horizon of plausible later falsifiers.
+
+### Macro loop — Research Compass
+
+Run the full `docs/RESEARCH_COMPASS.md` Critical Validation Loop after promotion, meaningful falsification, architectural contradiction, frontier change, composition checkpoint or major interruption.
+
+The macro loop may reorder future experiments even when the previous experiment passed. Passing the current fixture is evidence about that fixture, not permission to follow the old roadmap indefinitely.
+
+### Anti-momentum triggers
+
+Stop ordinary implementation and escalate to at least a meso audit when any of these appears:
+
+- two successive fixes address symptoms without reducing the same underlying uncertainty;
+- a new abstraction is introduced mainly to make the current solver lowering convenient;
+- authored meaning begins depending on current cell resolution, runtime IDs or one-to-one solver objects without explicit evidence;
+- test/evidence scaffolding starts changing the physical claim it is supposed to observe;
+- implementation complexity rises substantially while information gain stays flat;
+- the next planned step exists mainly because it was already planned;
+- a supposedly local change requires unexplained edits across multiple accepted boundaries;
+- an experiment remains green only after weakening a previously frozen discriminator.
+
+If one of these is present, classify the cause before proceeding. Prefer deleting or narrowing work over preserving sunk cost.
+
+### Orchestrator responsibility
+
+The orchestrator is responsible for periodically comparing implementation progress with ANVIL's accepted truth, active preflight, evidence quality and long-horizon invariants. It must actively correct direction when evidence warrants it rather than merely supervise execution of an old plan.
+
+This review cadence is **evidence-triggered first, checkpoint-count second, clock-time last**. Do not interrupt a clean bounded experiment merely because an arbitrary amount of wall-clock time has passed, but do not allow many green commits to accumulate without a meso review.
+
 ## Experimental discipline
 
 Every material experiment should have:
