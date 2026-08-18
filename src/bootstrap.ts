@@ -17,7 +17,10 @@ if (experiment === "cut") {
     await import("./bearing-owner-language.js");
   })();
 } else if (experiment === "rebind") {
-  void import("./rebind-demo.js");
+  void (async () => {
+    await import("./rebind-demo.js");
+    await import("./rebind-owner-gate.js");
+  })();
 } else {
   void import("./main.js");
 }
