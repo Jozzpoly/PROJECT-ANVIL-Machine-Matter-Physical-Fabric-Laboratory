@@ -1,6 +1,6 @@
 # ANVIL-04 / LOAD-REBIND — preflight
 
-Status: **DRAFT / C0 SUPPORTED, C1 NOT YET EXECUTED**
+Status: **DRAFT / C0 + C1 SUPPORTED / D0 CHROMIUM PENDING**
 
 ## Primary question
 
@@ -109,7 +109,7 @@ After 60 loaded post-CUT steps:
 
 ## C0 result boundary
 
-C0 has executed and passed all gates. Its strong result does **not** close ANVIL-04 because equilibrium at the exact constrained anchor may be unusually easy for a cold solver. C1 exists only to attack that remaining live assumption.
+C0 executed and passed all gates. Its strong result did **not** close ANVIL-04 because equilibrium at the exact constrained anchor could be unusually easy for a cold solver. C1 was added only to attack that remaining live assumption.
 
 # C1 — moving + loaded rebind
 
@@ -130,7 +130,7 @@ The load at the shared anchor has no intended generalized torque about the revol
 
 ## C1 frozen gates
 
-These thresholds are declared after C0 but **before the first C1 execution**.
+These thresholds were declared after C0 but **before the first C1 execution**.
 
 ### Pre-CUT sensitivity
 
@@ -162,6 +162,14 @@ After 60 loaded post-CUT steps:
 - constrained relative angular speed about Z >= `0.2 rad/s` so the relation has not become a hidden weld/freeze;
 - all constrained/control state finite.
 
+## C1 result boundary
+
+C1 executed and passed all frozen gates. The exact measurements and source/run identities are recorded in `ANVIL-04-LOAD-REBIND-EVIDENCE.md`.
+
+C0 + C1 are sufficient for the solver-level load question. Do **not** add arbitrary force levels or more motion variants just to accumulate green tests.
+
+The remaining ANVIL-04 uncertainty is Class D only: the new force-application and joint-force-observation path must execute through the production browser bundle and be independently re-checked by Chromium. Manual owner validation is not required unless that browser gate exposes a genuinely visual ambiguity.
+
 ## Failure interpretation
 
 A failure must not be hidden by interpolation, damping, threshold loosening, delayed measurement or reset.
@@ -187,11 +195,16 @@ A C0+C1 pass will **not** prove:
 - generic Relation/Constraint architecture;
 - in-place mutation of one persistent populated Box3D world.
 
-## Continuation if C1 passes
+## Continuation after D0
 
-Do not add arbitrary force levels or more motion variants.
+If production Chromium reproduces C1 with the independent observer:
 
-Choose the next research question by information gain:
+- do not create a redundant Forge owner package;
+- promote the exact Ready head after checking unchanged base/head identity and candidate evidence;
+- record final D0 metrics in the evidence log after merge;
+- choose the next research question by information gain.
 
-1. contact-loaded continuity, if active contact/manifold loss is needed before the next machine hypothesis; or
-2. local FUNCTION / actuation, if external-load continuity is sufficient foundation for the next step.
+The two leading next questions remain:
+
+1. contact-loaded continuity, if active contact/manifold loss is still the highest-value blocker; or
+2. local FUNCTION / actuation, if external-load continuity is sufficient foundation for the next machine hypothesis.
