@@ -4,7 +4,6 @@ import { totalLinearMomentum } from "../.test-build/src/foundation/continuity.js
 import {
   addVec3,
   magnitudeVec3,
-  rigidVelocityAtWorldPoint,
   subtractVec3,
 } from "../.test-build/src/foundation/spatial.js";
 import { velocityForRotationAboutPivot } from "../.test-build/src/experiments/anvil-02-bearing.js";
@@ -59,13 +58,40 @@ function finiteSnapshot(snapshot) {
   ].every(Number.isFinite);
 }
 
-function snapshotMotion(snapshot) {
+function scale(value, scalar) {
+  return { x: value.x * scalar, y: value.y * scalar, z: value.z * scalar };
+}
+
+function cross(a, b) {
   return {
-    position: snapshot.position,
-    rotation: snapshot.rotation,
-    linearVelocity: snapshot.linearVelocity,
-    angularVelocity: snapshot.angularVelocity,
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
   };
+}
+
+function normalize(value) {
+  const length = magnitudeVec3(value);
+  assert.ok(length > 0 && Number.isFinite(length));
+  return scale(value, 1 / length);
+}
+
+function axisAngleQuat(axis, angle) {
+  const unit = normalize(axis);
+  const half = angle / 2;
+  const s = Math.sin(half);
+  return { x: unit.x * s, y: unit.y * s, z: unit.z * s, w: Math.cos(half) };
+}
+
+function rotate(rotation, value) {
+  const qv = { x: rotation.x, y: rotation.y, z: rotation.z };
+  const t = cross(qv, value);
+  const doubled = scale(t, 2);
+  return addVec3(value, addVec3(scale(doubled, rotation.w), cross(qv, doubled)));
+}
+
+function transformPoint(rotation, translation, point) {
+  return addVec3(translation, rotate(rotation, point));
 }
 
 test("ANVIL-03 rejects treating the bearing seam itself as the nearby CUT", () => {
@@ -233,6 +259,142 @@ test("ANVIL-03 rebinds one persistent bearing onto a changed moving body decompo
     assert.ok(finalKinematics.anchorGapM <= MAX_BEARING_GAP_M, `final rebound gap ${finalKinematics.anchorGapM}`);
     assert.ok(controlKinematics.anchorGapM >= MIN_CONTROL_GAP_M, `control gap ${controlKinematics.anchorGapM} did not reach ${MIN_CONTROL_GAP_M}`);
     assert.ok(Math.abs(finalAngle) >= MIN_RELATIVE_ANGLE_RAD, `rebound angle ${finalAngle} did not reach ${MIN_RELATIVE_ANGLE_RAD}`);
+  } finally {
+    constrained.dispose();
+    control.dispose();
+  }
+});
+
+test("ANVIL-03 REBIND remains covariant under an arbitrary common rigid transform", async () => {
+  const fixture = createRebindFixture();
+  const compilation = compileRebind(fixture);
+  const before = compilation.before;
+  const after = compilation.after;
+  const bodyA = bodyById(before.physicalPlan, before.relation.bodyAId);
+  const bodyB = bodyById(before.physicalPlan, before.relation.bodyBId);
+
+  const commonRotation = axisAngleQuat({ x: 0.37, y: -0.81, z: 0.44 }, 0.91);
+  const commonTranslation = { x: 2.4, y: -1.3, z: 1.7 };
+  const pivotWorld = transformPoint(commonRotation, commonTranslation, before.relation.pivotWorld);
+  const bodyAWorld = transformPoint(commonRotation, commonTranslation, bodyA.centerOfMassWorld);
+  const bodyBWorld = transformPoint(commonRotation, commonTranslation, bodyB.centerOfMassWorld);
+  const axisWorld = normalize(rotate(commonRotation, { x: 0, y: 0, z: 1 }));
+  const omegaA = scale(axisWorld, -0.65);
+  const omegaB = scale(axisWorld, 0.95);
+  const commonDrift = { x: 0.55, y: -0.35, z: 0.72 };
+  const initialMotion = {
+    [bodyA.id]: {
+      position: bodyAWorld,
+      rotation: { ...commonRotation },
+      linearVelocity: addVec3(commonDrift, velocityForRotationAboutPivot(omegaA, bodyAWorld, pivotWorld)),
+      angularVelocity: omegaA,
+    },
+    [bodyB.id]: {
+      position: bodyBWorld,
+      rotation: { ...commonRotation },
+      linearVelocity: addVec3(commonDrift, velocityForRotationAboutPivot(omegaB, bodyBWorld, pivotWorld)),
+      angularVelocity: omegaB,
+    },
+  };
+
+  const beforeRuntime = await RebindPhysics.create(before, fixture.bearing.matter.materials, initialMotion, true);
+  let beforeSnapshots;
+  let beforeKinematics;
+  let beforeMomentum;
+  try {
+    beforeRuntime.step(PRE_CUT_STEPS);
+    beforeSnapshots = beforeRuntime.snapshots();
+    beforeKinematics = beforeRuntime.bearingKinematics();
+    beforeMomentum = momentum(beforeSnapshots);
+    assert.equal(beforeSnapshots.length, 2);
+    assert.ok(beforeKinematics.anchorGapM <= MAX_BEARING_GAP_M, `C1 pre-CUT bearing gap ${beforeKinematics.anchorGapM}`);
+    const beforeAngle = beforeRuntime.bearingAngleRad();
+    assert.notEqual(beforeAngle, null);
+    assert.ok(Math.abs(beforeAngle) >= 0.2, `C1 pre-CUT fixture rotation too weak: ${beforeAngle}`);
+  } finally {
+    beforeRuntime.dispose();
+  }
+
+  const transferredMotion = transferRebindMotion(compilation, beforeSnapshots);
+  const constrained = await RebindPhysics.create(after, fixture.bearing.matter.materials, transferredMotion, true);
+  const control = await RebindPhysics.create(after, fixture.bearing.matter.materials, transferredMotion, false);
+
+  try {
+    const immediate = constrained.snapshots();
+    const immediateKinematics = constrained.bearingKinematics();
+    assert.equal(immediate.length, 3);
+    assert.equal(constrained.receipt.relationCreated, true);
+    assert.equal(control.receipt.relationCreated, false);
+
+    const positionJumpA = assertVecNear(
+      immediateKinematics.anchorAWorld,
+      beforeKinematics.anchorAWorld,
+      MAX_ANCHOR_JUMP_M,
+      "C1 bearing A anchor position",
+    );
+    const positionJumpB = assertVecNear(
+      immediateKinematics.anchorBWorld,
+      beforeKinematics.anchorBWorld,
+      MAX_ANCHOR_JUMP_M,
+      "C1 bearing B anchor position",
+    );
+    const velocityJumpA = assertVecNear(
+      immediateKinematics.anchorVelocityA,
+      beforeKinematics.anchorVelocityA,
+      MAX_ANCHOR_VELOCITY_JUMP_MPS,
+      "C1 bearing A material-point velocity",
+    );
+    const velocityJumpB = assertVecNear(
+      immediateKinematics.anchorVelocityB,
+      beforeKinematics.anchorVelocityB,
+      MAX_ANCHOR_VELOCITY_JUMP_MPS,
+      "C1 bearing B material-point velocity",
+    );
+    assert.ok(immediateKinematics.anchorGapM <= MAX_BEARING_GAP_M, `C1 immediate rebound gap ${immediateKinematics.anchorGapM}`);
+
+    const momentumError = assertVecNear(
+      momentum(immediate),
+      beforeMomentum,
+      MAX_MOMENTUM_ERROR_KG_MPS,
+      "C1 total linear momentum",
+    );
+
+    constrained.step(1);
+    control.step(1);
+    const oneStep = constrained.snapshots();
+    assert.equal(oneStep.length, 3);
+    assert.ok(oneStep.every(finiteSnapshot), "non-finite C1 one-step REBIND state");
+    const oneStepGap = constrained.bearingKinematics().anchorGapM;
+    assert.ok(oneStepGap <= MAX_BEARING_GAP_M, `C1 one-step rebound gap ${oneStepGap}`);
+
+    constrained.step(POST_CUT_STEPS - 1);
+    control.step(POST_CUT_STEPS - 1);
+    const finalKinematics = constrained.bearingKinematics();
+    const controlKinematics = control.bearingKinematics();
+    const finalAngle = constrained.bearingAngleRad();
+    assert.notEqual(finalAngle, null);
+
+    console.log(JSON.stringify({
+      probe: "ANVIL-03/REBIND-C1",
+      commonRotation,
+      commonTranslation,
+      transformedAxisWorld: axisWorld,
+      preCutGapM: beforeKinematics.anchorGapM,
+      immediateGapM: immediateKinematics.anchorGapM,
+      positionJumpA_M: positionJumpA,
+      positionJumpB_M: positionJumpB,
+      velocityJumpA_Mps: velocityJumpA,
+      velocityJumpB_Mps: velocityJumpB,
+      immediateMomentumErrorKgMps: momentumError,
+      oneStepGapM: oneStepGap,
+      finalGapM: finalKinematics.anchorGapM,
+      noRelationControlGapM: controlKinematics.anchorGapM,
+      finalBearingAngleRad: finalAngle,
+    }));
+
+    assert.ok(finalKinematics.anchorGapM <= MAX_BEARING_GAP_M, `C1 final rebound gap ${finalKinematics.anchorGapM}`);
+    assert.ok(controlKinematics.anchorGapM >= MIN_CONTROL_GAP_M, `C1 control gap ${controlKinematics.anchorGapM} did not reach ${MIN_CONTROL_GAP_M}`);
+    assert.ok(Math.abs(finalAngle) >= MIN_RELATIVE_ANGLE_RAD, `C1 rebound angle ${finalAngle} did not reach ${MIN_RELATIVE_ANGLE_RAD}`);
   } finally {
     constrained.dispose();
     control.dispose();

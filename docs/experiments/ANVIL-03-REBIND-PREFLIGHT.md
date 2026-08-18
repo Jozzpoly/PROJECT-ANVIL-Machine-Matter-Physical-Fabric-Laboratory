@@ -89,6 +89,29 @@ Post-transaction discrimination:
 
 Thresholds are frozen before first execution. A red result must be classified as model failure, fixture weakness, lowering defect or numerical assumption before any threshold change.
 
+## C1 — arbitrary common-transform stress declared before execution
+
+C0 starts from the authored fixture orientation and then develops non-trivial rotation around the bearing axis. That is not sufficient to prove the REBIND transfer is independent of the global device orientation, because the transfer formula uses the full parent quaternion.
+
+Before looking at C0 margins, add a second solver falsifier using exactly the same source topology, CUT, timing and thresholds, but start the entire mechanism under one common arbitrary rigid transform:
+
+- common rotation: `0.91 rad` about axis proportional to `(0.37, -0.81, 0.44)`;
+- common translation: `(2.4, -1.3, 1.7) m`;
+- world bearing axis = the authored `z` axis rotated by that common quaternion;
+- common drift remains non-zero;
+- opposite A/B angular velocities are applied about the transformed world bearing axis.
+
+C1 gets **no transformed-specific tolerance loosening**. The same limits remain in force:
+
+- anchor position jump <= `0.00007 m` per side;
+- anchor material-point velocity jump <= `0.00007 m/s` per side;
+- total linear momentum error <= `0.75 kg*m/s`;
+- pre/immediate/one-step/final bearing gaps <= `0.0025 m`;
+- no-relation control gap >= `0.25 m` after 120 steps;
+- absolute final relative angle >= `0.35 rad`.
+
+A C1 failure would be evidence that the current rebinding/transfer is accidentally tied to the authored/global orientation and would earn further spatial semantics work. A pass means only covariance for this declared common-transform fixture; it still does not prove arbitrary independently authored body frames.
+
 ## Explicit non-claims
 
 Even if REBIND passes, it will not prove:
@@ -103,4 +126,4 @@ Even if REBIND passes, it will not prove:
 - generic Relation/Joint/Constraint ontology;
 - universal authored frame entities.
 
-A pass means only that persistent source provenance + a persistent authored bearing are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for this bounded moving fixture.
+A pass means only that persistent source provenance + a persistent authored bearing are sufficient to reconstruct the correct relation onto a changed disposable body decomposition for these bounded moving fixtures.
