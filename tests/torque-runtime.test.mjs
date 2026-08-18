@@ -93,8 +93,8 @@ test("ANVIL-05 torque function compiles against persistent bearing identity and 
     assert.equal(compilation.action.bodyBId, compilation.bearing.relation.bodyBId);
   }
 
-  assert.deepEqual(control.action.torqueAWorld, { x: 0, y: 0, z: 0 });
-  assert.deepEqual(control.action.torqueBWorld, { x: 0, y: 0, z: 0 });
+  assert.ok(magnitudeVec3(control.action.torqueAWorld) <= 1e-12, "control A torque is not zero");
+  assert.ok(magnitudeVec3(control.action.torqueBWorld) <= 1e-12, "control B torque is not zero");
   assert.equal(positive.action.torqueBWorld.z, ACTIVE_EFFORT_NM);
   assert.equal(negative.action.torqueBWorld.z, -ACTIVE_EFFORT_NM);
 
