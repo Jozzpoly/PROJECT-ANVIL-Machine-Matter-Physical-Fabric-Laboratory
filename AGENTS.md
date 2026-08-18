@@ -34,6 +34,33 @@ Use `docs/DONOR_MAP.md` before substantial donor harvesting.
 - Do not make direct material code changes to `main`; documentation-only grounding is allowed when the exact changed paths are verified.
 - Update `AI_PROJECT_MEMORY.md` when evidence changes current research truth, but keep it as a concise orchestration index rather than an archive.
 
+## Cold takeover and conversation handoff
+
+A new conversation or agent must not continue from chat summary alone.
+
+If `docs/CURRENT_HANDOFF.md` exists:
+
+1. read it as a **checkpoint claim**, not as unquestioned truth;
+2. fetch live `main`, every referenced open PR and exact branch HEAD;
+3. verify referenced run/artifact identities when they are material to the next action;
+4. compare the live experiment branch against its base;
+5. read the current preflight/evidence files from the actual experiment branch;
+6. reconcile any mismatch before implementation.
+
+Live Git wins over the handoff file when they differ.
+
+The handoff must distinguish explicitly:
+
+- **accepted `main` truth**;
+- **active but unaccepted experiment state**;
+- **executed evidence**;
+- **capability/tooling prechecks that are not physics evidence**;
+- **the exact next bounded action and explicit do-not-do list**.
+
+Do not merge an active Draft merely to make takeover easier. Keep experimental preflight/code on the experiment branch and use documentation-only `main` grounding to point at the live branch.
+
+When preparing a new conversation, update `docs/CURRENT_HANDOFF.md` and `AI_PROJECT_MEMORY.md`, then verify the resulting `main` diff is documentation-only. The next conversation should be able to recover the project from Git without asking the owner to reconstruct technical history.
+
 ## CI discipline
 
 ANVIL uses two evidence speeds:

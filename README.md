@@ -24,6 +24,14 @@ The current cubic-cell dialect is only a laboratory representation. It is not a 
 
 These results are deliberately narrow. Passing one fixture does not promote a universal Bond, Relation, FUNCTION, power or control architecture.
 
+## Active experiment
+
+The accepted material checkpoint ends at ANVIL-06. **ANVIL-07 / ELASTIC-SEAM is active but unaccepted work in Draft PR #12.**
+
+At the deliberate 2026-08-18 handoff, ANVIL-07 has a frozen preflight, a successful pinned Box3D weld-spring **capability precheck**, and a stricter pre-C0 amendment. It does **not** yet have an implemented or executed `RIGID / ELASTIC / FREE` C0 and must not be described as supported elastic matter.
+
+For a new conversation or interrupted session, begin with [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) and independently verify its exact branch/CI claims against live Git before continuing.
+
 ## What is being separated
 
 ```text
@@ -51,9 +59,10 @@ ANVIL is not a product roadmap, VAW rewrite, JV port or promise to model every p
 
 Read:
 
+- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — exact accepted-vs-active cold-takeover checkpoint for the next conversation;
 - [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — current orchestration state and exact strongest evidence;
 - [`docs/RESEARCH_COMPASS.md`](docs/RESEARCH_COMPASS.md) — long-horizon invariants, frontier map and macro validation loop;
-- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle;
+- [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) — per-experiment evidence lifecycle and interruption/handoff rule;
 - [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — what has actually earned reuse;
 - [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and boundaries.
 
@@ -61,9 +70,9 @@ Read:
 
 ANVIL-06 boundedly addressed the first FUNCTION locality debt: active intent no longer needs to name a persistent bearing component in authored source for the single-bearing fixture.
 
-The largest strategic imbalance is now **BINDINGS**. ANVIL effectively knows rigid adjacency or separation, but has no earned local compliant/elastic binding behavior.
+The current strategic audit ranks **BINDINGS** as the largest core gap: ANVIL effectively knows rigid adjacency or separation, but has no earned local compliant/elastic binding behavior. This is a strategic ranking, not an experimentally proven universal priority.
 
-The selected next research direction is therefore **ANVIL-07 / ELASTIC-SEAM**: test the smallest local authored compliant binding that produces bounded relative deformation and restoring behavior without prematurely introducing a generic Bond ontology.
+The selected active research direction is therefore **ANVIL-07 / ELASTIC-SEAM**: test the smallest local authored compliant binding that produces bounded relative deformation and restoring behavior without prematurely introducing a generic Bond ontology.
 
 `ACTIVATE` — separating persistent capability from transient command — remains important, but adding control depth immediately after two FUNCTION experiments would leave the physical binding frontier almost untouched.
 

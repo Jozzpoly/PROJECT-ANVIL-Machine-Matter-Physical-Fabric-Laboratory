@@ -243,3 +243,26 @@ Before selecting the next falsifier:
 - prefer the smallest experiment that attacks the most consequential uncertainty.
 
 Do not continue a successful experiment merely by adding repetitions or adjacent features. Do not combine two new physical hypotheses in one first falsifier.
+
+## 15. Interruption and cold-takeover checkpoint
+
+Long conversations and agent sessions are disposable too. Project continuity must live in Git, not in one chat context.
+
+When preparing a deliberate handoff or stopping at a meaningful boundary:
+
+1. leave accepted material truth on `main` and active unaccepted material work on its Draft/experiment branch;
+2. update `docs/CURRENT_HANDOFF.md` with exact accepted-vs-active state, live SHAs, executed evidence boundary, frozen next action and explicit do-not-do list;
+3. update `AI_PROJECT_MEMORY.md` only with the concise current orchestration state;
+4. do not merge an active experiment merely for convenience;
+5. verify any `main` handoff/grounding commit is documentation-only;
+6. preserve capability/toolchain prechecks as a distinct evidence category from the physical hypothesis they enable.
+
+A new conversation must treat the handoff as a claim to verify:
+
+- resolve live `main`;
+- resolve referenced PR/base/head;
+- read live experiment preflight/evidence files;
+- inspect material branch diff and relevant CI;
+- reconcile any mismatch before implementation.
+
+The desired result is that the owner can start a new conversation without manually reconstructing technical history, while the incoming agent still performs an independent live-state takeover instead of trusting stale prose.

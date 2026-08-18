@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last grounding: 2026-08-18 after ANVIL-06 / TORQUE-PATCH promotion and macro frontier review.
+Last grounding: 2026-08-18 after ANVIL-06 promotion, ANVIL-07 pre-C0 capability/hardening, and deliberate cold-handoff preparation.
 
 ## Identity and authority
 
@@ -15,6 +15,8 @@ Authority order:
 5. historical conversation/donor documents only as leads.
 
 Before material work resolve live `main`, open PR/branch and exact HEAD. After interruption, verify live state before writing anything.
+
+For a new conversation, read and independently verify `docs/CURRENT_HANDOFF.md` before continuing the active experiment.
 
 ANVIL tests **Machine Matter / Physical Fabric**: persistent authored matter and local physical intent compile into disposable runtime representations. Runtime bodies/colliders/joints are interpretations, not construction identity.
 
@@ -35,6 +37,43 @@ Read `docs/RESEARCH_COMPASS.md` before selecting any new major falsifier.
 - **Forge V0.2.1** — conditional owner-validation transport.
 - **Lean Evidence Loop** — Draft/core and Ready/candidate exact-build workflow.
 - **Research Compass** — macro anti-drift/frontier validation loop.
+
+## Active experiment / cold-handoff checkpoint
+
+Latest accepted **material/code** checkpoint before handoff documentation:
+
+```text
+accepted material checkpoint  e236f6a8b00858fa4d35f4fc32189f78b9cb33b2
+accepted through              ANVIL-06 / TORQUE-PATCH
+```
+
+The handoff preparation intentionally adds documentation-only commit(s) on top of that material checkpoint. A new conversation must resolve live `main` and verify the delta back to `e236...` rather than assuming a fixed handoff-document SHA.
+
+Active unaccepted work at handoff preparation:
+
+```text
+PR                #12
+branch            experiment/anvil-07-elastic-seam
+base              e236f6a8b00858fa4d35f4fc32189f78b9cb33b2
+head              af93a116ab59bf4d32ac58956cd9a719b86175cc
+state             OPEN / DRAFT
+```
+
+**Do not confuse ANVIL-07 capability PASS with ELASTIC-SEAM physics support.** There is no semantic/compiler/runtime C0 implementation yet.
+
+ANVIL-07 currently contains only:
+
+- original frozen preflight at `c7006b4f63a85ba36fb67af70460149866bb5527`;
+- exact `box3d.js@0.0.2` weld-spring capability test at source `58c4580702d4604f2effcdc501cde09d796becea`;
+- Draft/core run `32151014026`: 40/40 PASS + production build PASS;
+- docs-only pre-C0 amendment at `af93a116ab59bf4d32ac58956cd9a719b86175cc`;
+- hardening run `32159805481`: SUCCESS.
+
+The amendment adds endpoint/source-order invariance, bounded validity of the reduced-mass conversion, exact fixture calibration, anti-hidden-help requirements and mandatory diagnostics without loosening any original threshold.
+
+Next exact work after cold takeover: implement the experiment-local `RIGID / ELASTIC / FREE` C0 according to both ANVIL-07 preflight files. Keep PR #12 Draft. Do not add browser/Forge/owner ceremony, breakage/plasticity/TORQUE/ACTIVATE/contact complexity, or generic Bond architecture before C0 resolves.
+
+Canonical takeover source: `docs/CURRENT_HANDOFF.md`.
 
 ## Continuity spine
 
@@ -186,7 +225,7 @@ Detailed record: `docs/experiments/ANVIL-06-TORQUE-PATCH-EVIDENCE.md`.
 ## Frontier after ANVIL-06
 
 - **MATTER:** thin but real; current material model mostly density/friction.
-- **BINDINGS:** largest core gap; effectively rigid adjacency or separation/interface split only.
+- **BINDINGS:** largest core gap by current strategic audit; effectively rigid adjacency or separation/interface split only.
 - **INTERFACES:** bearing comparatively mature for one bounded slice.
 - **FUNCTION:** torque + local placement now supported in one bounded slice.
 - **CONTROL/SIGNAL/POWER:** unearned.
@@ -194,31 +233,9 @@ Detailed record: `docs/experiments/ANVIL-06-TORQUE-PATCH-EVIDENCE.md`.
 - **TOPOLOGY/CONTINUITY:** comparatively strong bounded spine.
 - **ADAPTATION/NON-GRID:** open.
 
-Macro comparison after ANVIL-06:
+The statement that BINDINGS is the largest gap is a strategic ranking, not an experimentally proven fact. It selected ANVIL-07 because ELASTIC-SEAM opens a new physical category after two FUNCTION experiments, not because ACTIVATE became invalid.
 
-### ELASTIC-SEAM
-
-- information gain: Very High
-- vision alignment: Very High
-- lock-in reduction: High
-- discriminability: High
-- cost: Medium–High
-- composition value: Very High
-
-Opens a completely underdeveloped core physical category: local compliant binding.
-
-### ACTIVATE
-
-- information gain: High
-- vision alignment: High
-- lock-in reduction: Medium
-- discriminability: High
-- cost: Low–Medium
-- composition value: High
-
-Important separation of persistent capability from transient command, but it would deepen FUNCTION/control immediately after ANVIL-05/06 while BINDINGS remains essentially binary.
-
-**Selected next direction: ANVIL-07 / ELASTIC-SEAM.**
+**Selected active direction: ANVIL-07 / ELASTIC-SEAM.**
 
 ACTIVATE remains high priority after the binding frontier has at least one earned non-rigid slice or when a composition experiment explicitly needs command state.
 
@@ -226,6 +243,7 @@ ACTIVATE remains high priority after the binding frontier has at least one earne
 
 Per-experiment: `docs/EXPERIMENT_PROTOCOL.md`.
 Macro direction: `docs/RESEARCH_COMPASS.md`.
+Cold takeover: `docs/CURRENT_HANDOFF.md`.
 
 Before each new major falsifier:
 
