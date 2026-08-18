@@ -21,6 +21,8 @@ if (experiment === "cut") {
     await import("./rebind-demo.js");
     await import("./rebind-owner-gate.js");
   })();
+} else if (experiment === "load-rebind") {
+  void import("./load-rebind-demo.js");
 } else {
   void import("./main.js");
 }
