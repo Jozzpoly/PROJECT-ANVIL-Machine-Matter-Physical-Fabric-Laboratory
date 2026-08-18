@@ -13,7 +13,6 @@ import {
 import {
   jointFrameForAxis,
   type BearingCompilation,
-  type BearingKinematics as _UnusedBearingKinematics,
   type BearingRelationPlan,
   type BearingRuntimeSnapshot,
 } from "./anvil-02-bearing.js";
