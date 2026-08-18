@@ -12,7 +12,7 @@
     "experiment": null,
     "pr": null,
     "branch": null,
-    "phase": "post-anvil-09-promotion-grounded-awaiting-macro-audit",
+    "phase": "post-anvil-09-macro-audited-awaiting-function-rebind-preflight",
     "activeVerdict": null,
     "readyForPromotion": false
   },
@@ -42,39 +42,39 @@
     "qualifiedTree": "e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
     "materialMerge": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
     "evidenceGrounding": "3da72fadec5cd145a8be149bacd12084c8d4fcde",
-    "readyEvidence": "50/50 Node PASS + production build PASS + exact staging artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS",
     "acceptedResult": "In the accepted single-bearing TORQUE-PATCH fixture, one unchanged persistent signed torque action can be compiled once and transiently switched OFF/ON/OFF at runtime; OFF supplies no active torque rather than braking, ON reproduces accepted causal torque, and a fresh runtime from the same compilation defaults OFF without activation entering persistent authored/compiled truth or Box3D motor semantics.",
-    "negativeEvidence": "Runs 32194408369 and 32194525529 exposed an invalid frozen C2 assumption that passive relative revolute speed should remain nearly constant; amendment 01 revoked only that sub-gate with no runtime change or replacement post-hoc threshold. The pre-frozen C3 comparative control remained the causal discriminator. Ready run 32195113438 was also rejected as promotion evidence because GitHub supplied a stale merge ref before branch synchronization."
-  },
-  "anvil08": {
-    "experiment": "ANVIL-08 / COMPLIANCE-RESOLUTION",
-    "status": "promoted",
-    "materialMerge": "78bcee7665b7a1642ca5f70014a3d0fb25c0aa1a",
-    "evidenceLog": "docs/experiments/ANVIL-08-COMPLIANCE-RESOLUTION-EVIDENCE.md",
-    "qualifiedTree": "00230b73e283bdb39eedc3df00299b6d14c5aba9"
+    "negativeEvidence": "Runs 32194408369 and 32194525529 exposed an invalid C2 passive-speed assumption; amendment 01 revoked only that sub-gate without runtime change or replacement threshold. Ready run 32195113438 was rejected as promotion evidence because of a stale GitHub merge ref."
   },
   "nextCandidate": {
-    "name": "POST-ANVIL-09 MACRO AUDIT",
-    "status": "required-not-yet-frozen-not-active",
-    "leadingHypothesis": "active command/function continuity through REBIND",
-    "reason": "ANVIL-09 has now separately earned a bounded transient activation lifecycle; the next experiment must be selected again by Research Compass information gain rather than by momentum.",
-    "nextAction": "Run a fresh post-promotion Research Compass audit comparing active command/function continuity through REBIND against the strongest alternatives. Do not create or freeze ANVIL-10 until that comparison is complete."
+    "name": "FUNCTION-REBIND",
+    "status": "strategic-candidate-not-frozen-not-active",
+    "primaryFalsifier": "whether the same persistent local TORQUE-PATCH can resolve the same persistent BEARING after a nearby CUT changes disposable body decomposition, lower onto the new body identities, and reproduce causal torque when explicitly activated post-rebuild without authored/runtime identity leakage",
+    "compositionReason": "This directly composes earned local FUNCTION/TORQUE-PATCH semantics with earned Topology/REBIND semantics and attacks the disposable-runtime premise for active machines before adding richer control vocabulary.",
+    "scopeBoundary": "Do not test transient command-state migration in this falsifier. A fresh post-rebuild runtime still defaults OFF per ANVIL-09; the experiment harness explicitly activates before and after rebuild so failure attribution stays on persistent function rebinding.",
+    "feasibility": "RebindCompilation already supplies before/after BearingCompilation and source-to-new-body lineage. Existing compileTorquePatch recompiles a normal bearing and therefore must not be reused blindly after CUT; prefer a new experiment-local adapter that resolves the existing source patch against the already-earned rebound bearing without modifying accepted ANVIL-03/05/06/09 semantics.",
+    "alternatives": [
+      "CONTROL-REBIND: preserve/reapply a higher-lived transient activation session across runtime reconstruction; valuable but adds state-lifetime/routing semantics before function rebinding is proven",
+      "FUNCTION-COMPLIANCE: compose active function with compliant matter; high vision value but current ANVIL-08 compliance is frozen 1D and does not yet support the rotational/distributed modes torque would naturally excite",
+      "SURFACE frontier: add local contact/friction/traction semantics; high eventual value but currently lower composition leverage than testing whether an already-earned active function survives disposable topology"
+    ],
+    "nextAction": "Critically design and freeze a bounded FUNCTION-REBIND preflight before implementation. Keep one persistent TORQUE-PATCH unchanged, require before/after source identity and deterministic post-CUT body rebinding, use explicit ON injection before/after rebuild rather than command-state migration, include stale-runtime-binding fail-closed controls, freeze quantitative continuity/causal gates, and do not modify foundation."
   },
   "doNotDoNow": [
     "extend ANVIL-09 with reverse command, analog throttle, routing, UI, power or additional solver variants",
     "reinterpret signed effortNm as a bidirectional actuator rating",
     "promote ACTIVATE, TorquePatch, FUNCTION, Control, Signal or routing abstractions into src/foundation from ANVIL-09 alone",
-    "treat browser regression as direct ACTIVATE physics evidence",
-    "erase or downplay the two C2 red runs or the stale Ready merge-ref incident",
-    "automatically start active REBIND merely because it is the current leading hypothesis",
-    "create ANVIL-10 before the post-promotion macro comparison"
+    "erase or downplay the two C2 red runs or stale Ready merge-ref incident",
+    "treat FUNCTION-REBIND as active or accepted before a new frozen preflight exists",
+    "test transient command-state migration in the same first FUNCTION-REBIND falsifier",
+    "modify accepted ANVIL-03/05/06/09 semantics merely to make the next composition elegant",
+    "start FUNCTION-COMPLIANCE before resolving its rotational/distributed compliance confounding"
   ],
   "takeoverVerification": [
     "resolve live main",
     "verify accepted.materialCheckpoint a024c8cb134aabe0033ea2990068e6479c3da2b5 is an ancestor of live main",
-    "verify evidence log exists at or after evidenceGrounding 3da72fadec5cd145a8be149bacd12084c8d4fcde",
+    "verify ANVIL-09 evidence log exists at or after evidenceGrounding 3da72fadec5cd145a8be149bacd12084c8d4fcde",
     "if promotion provenance matters, verify Ready source d61a6649be4a9f882bb717aabe07ac470ff542c1, run 32195221850, synthetic merge e7c7659ac9afc6ad29f4d2514bbaa1ec95f2a64e and qualified tree e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
     "verify actual material merge a024c8cb134aabe0033ea2990068e6479c3da2b5 has tree e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
-    "confirm no newer active experiment or preflight has superseded the macro-audit pointer before writing material code"
+    "confirm no newer active experiment/preflight has superseded FUNCTION-REBIND before writing material code"
   ]
 }
