@@ -1,6 +1,6 @@
 # ANVIL-10 / TORQUE-PATCH-REBIND — evidence log
 
-Status: **A + B0/B1/B2 + C0/C1/C2 SUPPORTED / RESEARCH STOP RULE REACHED / NOT YET PROMOTED**
+Status: **A + B0/B1/B2 + C0/C1/C2 SUPPORTED / PROMOTED**
 
 Canonical frozen preflight: `docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-PREFLIGHT.md`  
 Frozen preflight source: `d89f001705a8b80da822792ecef24e30af31ac89`
@@ -174,13 +174,66 @@ The active world therefore did not accidentally apply the remapped action to the
 
 Verdict: **C2 SUPPORTED**.
 
-## Supported interpretation before promotion
+## Research stop rule
 
-A + B + C evidence supports this bounded interpretation for the frozen single-bearing moving fixture:
+The frozen A + B0/B1/B2 + C0/C1/C2 gates all passed. ANVIL-10 research stopped at that boundary. No command-migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variant was added.
+
+## Ready exact-integration candidate
+
+The PR was marked Ready only after the bounded research stop rule was reached.
+
+```text
+Ready source             c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20
+Ready run                32199826901
+Ready base               b825002141d30cf2190ae3475b94020f261fc8dd
+Ready synthetic merge    94015244dc854ff03210eaa9fc6b459ac61ceb9d
+qualified tree           6cbfede282e2d9243634d5d73d0c2dfd74df269f
+```
+
+Ready core:
+
+```text
+canonical Node           24.16.0
+canonical npm            11.13.0
+Node suite               53/53 PASS
+production build         PASS
+staging artifact         9347082469
+staging size             424993 bytes
+staging SHA256           5de7bf8f97dedab7f47235ff6bd582196551d583aa467c14aa1b5bd0809874ba
+```
+
+The candidate job checked out the exact same synthetic merge, downloaded that exact staging artifact and verified the same digest before further regression validation.
+
+Candidate regression gate:
+
+```text
+Windows launcher self-test     PASS
+Chromium regression            19/19 PASS
+final artifact                 9347109470
+final size                     424993 bytes
+final SHA256                   a1467ac5fdf67671606777fefe26d06c67e92c5977b5488d140b62eab49af5ff
+```
+
+The launcher and Chromium checks are **whole-product regression evidence only**. They are not direct ANVIL-10 Class C/D evidence because ANVIL-10 introduced no browser-specific scientific uncertainty or dedicated product route.
+
+## Promotion identity
+
+PR #15 was merged with expected-head protection after reconfirming live `main`, Ready head and mergeability.
+
+```text
+actual material merge    ffde8c0babdd473454b3e769cb10fd31537a0c70
+actual merge tree        6cbfede282e2d9243634d5d73d0c2dfd74df269f
+```
+
+The actual material merge tree is **exactly identical** to the Ready-qualified synthetic tree.
+
+## Supported interpretation
+
+A + B + C evidence plus exact integration qualification support this bounded interpretation for the frozen single-bearing moving fixture:
 
 > One unchanged persistent local TORQUE-PATCH can be relowered onto a changed disposable body decomposition by resolving the same persistent BEARING after CUT; the old pre-CUT action is rejected as stale even when its old body ID remains valid, and the fresh post-CUT action produces strong causal ON-vs-OFF torque response through the correct new endpoint body without acting on the stale sibling.
 
-This is evidence for persistent local active meaning surviving one bounded runtime topology rebuild through **re-lowering**, not for persistence of compiled actions themselves.
+This is evidence for persistent local active meaning surviving one bounded runtime topology rebuild through **re-lowering**, not for persistence or migration of compiled actions themselves.
 
 ## Explicit non-claims
 
@@ -201,11 +254,3 @@ ANVIL-10 does not prove:
 - alternate authored representation/resolution invariance;
 - in-place mutation of one populated Box3D world;
 - promotion of TORQUE-PATCH/FUNCTION/ACTIVATE/REBIND into foundation.
-
-## Research stop rule
-
-The frozen A + B0/B1/B2 + C0/C1/C2 gates are all supported. The ANVIL-10 research stop rule is therefore active.
-
-Do **not** add command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants inside ANVIL-10.
-
-Next permitted action is an exact Ready integration candidate. Launcher/Chromium may provide whole-product regression evidence only; no dedicated browser or owner evidence is required for this quantitative structural/causal claim.
