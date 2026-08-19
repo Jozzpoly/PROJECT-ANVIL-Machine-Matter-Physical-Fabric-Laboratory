@@ -3,66 +3,68 @@
   "repository": "Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory",
   "authority": "checkpoint-claim-verify-against-live-git",
   "accepted": {
-    "through": "ANVIL-09 / ACTIVATE",
-    "materialCheckpoint": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
-    "lastMaterialMerge": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
-    "evidenceGrounding": "3da72fadec5cd145a8be149bacd12084c8d4fcde"
+    "through": "ANVIL-10 / TORQUE-PATCH-REBIND",
+    "materialCheckpoint": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
+    "lastMaterialMerge": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
+    "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549"
   },
   "active": {
-    "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
-    "pr": 15,
-    "branch": "experiment/anvil-10-torque-patch-rebind",
-    "phase": "preflight-frozen-no-implementation",
+    "experiment": null,
+    "pr": null,
+    "branch": null,
+    "phase": "post-anvil-10-macro-audited-awaiting-torque-patch-representation-preflight",
     "activeVerdict": null,
     "readyForPromotion": false
   },
-  "anvil09": {
-    "experiment": "ANVIL-09 / ACTIVATE",
-    "pr": 14,
-    "status": "promoted",
-    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
-    "materialMerge": "a024c8cb134aabe0033ea2990068e6479c3da2b5",
-    "evidenceGrounding": "3da72fadec5cd145a8be149bacd12084c8d4fcde",
-    "readyRun": 32195221850,
-    "qualifiedTree": "e2adf2ef0a4c9c0ce461113cafc4fe7706ca0135",
-    "evidenceLog": "docs/experiments/ANVIL-09-ACTIVATE-EVIDENCE.md"
-  },
   "anvil10": {
     "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
-    "status": "preflight-frozen-active-unaccepted",
+    "status": "promoted",
+    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
     "pr": 15,
-    "branch": "experiment/anvil-10-torque-patch-rebind",
-    "branchBaseAtFreeze": "755d351d21e622c8af6eb037e2edc1cf19a62ff5",
     "preflight": "docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-PREFLIGHT.md",
     "preflightSource": "d89f001705a8b80da822792ecef24e30af31ac89",
-    "primaryFalsifier": "whether one unchanged persistent local TORQUE-PATCH can be re-lowered onto the correct post-CUT disposable body representation while a valid-looking stale pre-CUT action is rejected, then produce causal post-CUT ON-vs-OFF response without acting on the stale sibling body",
-    "evidenceBoundary": "NO EXECUTABLE ANVIL-10 EVIDENCE YET; frozen design only",
-    "nextAction": "Implement Micro A/B only: experiment-local relowering/validation adapter, accepted before parity, required after remap and stale-action fail-closed control. Do not create the ANVIL-10 solver runtime until A/B is green and audited."
+    "abSource": "4be76be143a93acc13c45842218d5efa4e1dfe4a",
+    "abRun": 32199521910,
+    "c0c2Source": "a448167642d0fd2435d44b8efc42f972fdac698a",
+    "c0c2Run": 32199721488,
+    "readySource": "c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20",
+    "readyRun": 32199826901,
+    "readyBase": "b825002141d30cf2190ae3475b94020f261fc8dd",
+    "readySyntheticMerge": "94015244dc854ff03210eaa9fc6b459ac61ceb9d",
+    "qualifiedTree": "6cbfede282e2d9243634d5d73d0c2dfd74df269f",
+    "materialMerge": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
+    "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
+    "evidenceLog": "docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-EVIDENCE.md",
+    "acceptedResult": "For the frozen single-bearing moving fixture, one unchanged persistent local TORQUE-PATCH can be re-lowered onto the rebound BEARING after CUT, a valid-looking stale pre-CUT action is rejected even though its old body still exists, and the fresh action produces causal post-CUT ON-vs-OFF torque through the correct new endpoint body without acting on the stale sibling."
   },
   "nextCandidate": {
-    "name": null,
-    "status": "not-selected-until-anvil-10-result",
-    "horizon": [
-      "CONTROL-REBIND may become a strong successor if ANVIL-10 is supported, but must be re-ranked after the result",
-      "active torque during reconstruction is a later stress question, not part of ANVIL-10",
-      "FUNCTION-COMPLIANCE and SURFACE remain strategic alternatives"
-    ]
+    "name": "TORQUE-PATCH-REPRESENTATION",
+    "status": "strategic-candidate-not-frozen-not-active",
+    "primaryFalsifier": "whether the same physical local torque meaning can be expressed and resolved across a deliberately different authored source representation/resolution without preserving cellId@face as the semantic identity, without manual runtime-ID retargeting and without patch-count-dependent torque multiplication",
+    "reason": "ANVIL-10 reduced runtime-identity lock-in for active semantics, but TORQUE-PATCH still depends on the current cell-face authored dialect. The Research Compass says cells are a dialect, not ontology, and ANVIL-08 provides only a separate compliance-resolution precedent rather than active-function evidence.",
+    "designRisk": "Do not assume effortNm should be copied per refined face or area-normalized. The preflight must first define one physically equivalent local target/effort meaning across representations and a negative control that distinguishes representation invariance from manual retargeting.",
+    "alternatives": [
+      "CONTROL-REBIND: currently low-information for one action because carrying one OFF/ON boolean outside runtime is nearly tautological; making it discriminating would likely add addressing/routing at the same time",
+      "SURFACE/local traction: high-value underexplored frontier, but adds new vocabulary before attacking the remaining authored-representation lock-in of an already-earned active semantic",
+      "ACTIVE-DURING-REBIND: useful later stress/hardening, but lower frontier information gain after LOAD-REBIND and TORQUE-PATCH-REBIND",
+      "FUNCTION-COMPLIANCE: remains confounded by rotational/distributed modes not earned by the frozen 1D compliance model"
+    ],
+    "nextAction": "Critically design a bounded TORQUE-PATCH-REPRESENTATION preflight before implementation. First choose a physically meaningful representation-independent local target and effort contract, then freeze coarse/fine equivalence, a wrong-scaling/manual-retarget negative control, causal gates and explicit nonclaims. Do not create a new experiment branch until that design survives adversarial review."
   },
   "doNotDoNow": [
-    "implement C0/C1/C2 before Micro A/B before-parity/remap/stale-action gates are green",
-    "test transient activation-state migration in ANVIL-10",
-    "apply active torque during the reconstruction transaction",
-    "add load/contact, arbitrary-transform, multiple-patch, compliance or UI variants",
-    "modify accepted ANVIL-03/05/06/09 semantics merely for reuse convenience",
-    "promote TORQUE-PATCH, FUNCTION, ACTIVATE, REBIND or Control into src/foundation",
-    "weaken frozen ANVIL-10 discriminators after seeing executable results"
+    "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
+    "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
+    "promote TORQUE-PATCH, FUNCTION, ACTIVATE, REBIND, Control or generic invalidation into src/foundation",
+    "start CONTROL-REBIND merely because it was the previous horizon candidate",
+    "assume refined TORQUE-PATCH effort scales per face or by area before a physical authored contract is justified",
+    "treat cellId@face as final Machine Matter ontology"
   ],
   "takeoverVerification": [
     "resolve live main",
-    "verify accepted material checkpoint a024c8cb134aabe0033ea2990068e6479c3da2b5 remains an ancestor of live main",
-    "resolve PR #15 and verify frozen head d89f001705a8b80da822792ecef24e30af31ac89 unless newer work is explicitly classified",
-    "read docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-PREFLIGHT.md from the active branch",
-    "verify the frozen preflight commit changed documentation only",
-    "confirm no executable ANVIL-10 result exists before interpreting the experiment as supported or rejected"
+    "verify material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 is an ancestor of live main",
+    "verify ANVIL-10 evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 exists at or after the material merge",
+    "if promotion provenance matters, verify Ready source c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20, run 32199826901, synthetic merge 94015244dc854ff03210eaa9fc6b459ac61ceb9d and qualified tree 6cbfede282e2d9243634d5d73d0c2dfd74df269f",
+    "verify actual material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 has tree 6cbfede282e2d9243634d5d73d0c2dfd74df269f",
+    "confirm no newer active experiment/preflight supersedes TORQUE-PATCH-REPRESENTATION before writing material code"
   ]
 }
