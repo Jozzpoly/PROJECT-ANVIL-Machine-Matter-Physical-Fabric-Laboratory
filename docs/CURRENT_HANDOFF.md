@@ -1,90 +1,104 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-09 ACCEPTED / ANVIL-10 TORQUE-PATCH-REBIND PREFLIGHT FROZEN / NO IMPLEMENTATION YET**
+Status: **ANVIL-10 TORQUE-PATCH-REBIND ACCEPTED / POST-PROMOTION MACRO AUDIT COMPLETE / NO ACTIVE EXPERIMENT**
 
 Live Git and executable evidence override this pointer if they differ.
 
 ## Start here
 
 1. Resolve live `main` before writing.
-2. Accepted material truth remains through **ANVIL-09 / ACTIVATE**.
-3. Accepted material checkpoint: `a024c8cb134aabe0033ea2990068e6479c3da2b5`.
-4. Active unaccepted experiment: **ANVIL-10 / TORQUE-PATCH-REBIND**.
-5. Draft PR: **#15**.
-6. Branch: `experiment/anvil-10-torque-patch-rebind`.
-7. Frozen preflight head: `d89f001705a8b80da822792ecef24e30af31ac89`.
-8. Canonical preflight: `docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-PREFLIGHT.md`.
-9. There is **no executable ANVIL-10 evidence yet**.
+2. Accepted material truth is through **ANVIL-10 / TORQUE-PATCH-REBIND**.
+3. Material checkpoint: `ffde8c0babdd473454b3e769cb10fd31537a0c70`.
+4. Canonical evidence: `docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-EVIDENCE.md`.
+5. Evidence grounding: `ba7ce2dc67c6f7aa936e20a0294d9cc12208a549`.
+6. No experiment, PR or branch is active.
+7. The post-promotion macro audit selected **TORQUE-PATCH-REPRESENTATION** as the leading strategic candidate, but it is **not frozen and not active**.
 
-## What changed strategically
+## Accepted ANVIL-10 result
 
-The former broad pointer `FUNCTION-REBIND` was narrowed before implementation to **TORQUE-PATCH-REBIND**. Generic FUNCTION remains unearned.
+ANVIL-10 supports only this bounded statement:
 
-The primary uncertainty is now specifically whether one unchanged persistent local TORQUE-PATCH can be re-lowered onto the correct post-CUT disposable body representation while a valid-looking stale pre-CUT action is rejected.
+> For the frozen single-bearing moving fixture, one unchanged persistent local TORQUE-PATCH can be re-lowered onto the rebound BEARING after a nearby CUT; a valid-looking stale pre-CUT action is rejected even though its old body ID still exists, and the fresh post-CUT action produces causal ON-vs-OFF torque through the correct new endpoint body without acting on the stale sibling.
 
-The key adversarial fixture is important because after the accepted nearby CUT:
+The key architectural consequence is **re-lowering, not migration**: persistent local active meaning survives this bounded topology rebuild, while `TorqueActionPlan` remains disposable compiled representation.
 
-- persistent endpoint `a:2` moves from `body:a:0` to `body:a:2`;
-- stale `body:a:0` still exists as a different post-CUT body;
-- therefore checking only whether an old body ID exists would permit a semantically wrong action binding.
+Promotion identity:
 
-## Frozen experiment boundary
+```text
+frozen preflight        d89f001705a8b80da822792ecef24e30af31ac89
+A/B source/run          4be76be143a93acc13c45842218d5efa4e1dfe4a / 32199521910
+C0-C2 source/run        a448167642d0fd2435d44b8efc42f972fdac698a / 32199721488
+Ready source            c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20
+Ready run               32199826901
+Ready base              b825002141d30cf2190ae3475b94020f261fc8dd
+Ready synthetic merge   94015244dc854ff03210eaa9fc6b459ac61ceb9d
+qualified tree          6cbfede282e2d9243634d5d73d0c2dfd74df269f
+actual material merge   ffde8c0babdd473454b3e769cb10fd31537a0c70
+evidence grounding      ba7ce2dc67c6f7aa936e20a0294d9cc12208a549
+```
 
-The preflight owns all exact gates and thresholds. Do not duplicate or reinterpret them here.
+Actual material merge tree equals the Ready-qualified tree exactly.
 
-Core design decisions:
+Ready qualification: 53/53 Node PASS + production build PASS + exact staged artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS. Launcher/Chromium are whole-product regression evidence, not direct ANVIL-10 scientific evidence.
 
-- one unchanged patch: `torque-patch:seam-0`, target `a:2@x+`, effort `+100 N*m`;
-- use accepted REBIND `before`/`after` BearingCompilation and motion transfer;
-- new relowering/validation remains experiment-local;
-- against `before`, it must match accepted ANVIL-06 meaning;
-- against `after`, it must remap to the rebound relation body IDs;
-- an intentionally stale after-bearing + before-action pair must fail closed even though the old body ID still exists;
-- the moving REBIND transaction itself is passive: no torque before/during reconstruction;
-- two fresh post-CUT runtimes start OFF from the same transferred state;
-- ACTIVE is explicitly switched ON; CONTROL remains OFF;
-- stale sibling `body:a:0` must remain physically uninvolved;
-- no transient command-state migration is tested.
+## Post-ANVIL-10 macro verdict
 
-## Feasibility boundary
+### Vision delta
 
-Accepted `ActivatePhysics` cannot start from `transferRebindMotion()` state. Do **not** refactor ANVIL-09 merely to reuse it.
+ANVIL now has bounded evidence that one persistent local active semantic can survive a disposable runtime topology change without making compiled body binding persistent truth. The remaining lock-in is one level higher: the local semantic still depends on the current authored `cellId@face` dialect.
 
-If implementation begins, prefer a new experiment-local ANVIL-10 runtime consuming:
+### Leading candidate — TORQUE-PATCH-REPRESENTATION
 
-- correctly relowered post-CUT `TorquePatchCompilation`;
-- accepted REBIND transferred motion;
-- accepted `ActivateControlState` OFF/ON semantics.
+Primary intended question, still to be critically designed:
 
-No `src/foundation` changes are expected.
+> Can the same physical local torque meaning be expressed and resolved across a deliberately different authored source representation/resolution without preserving `cellId@face` as semantic identity, without manual runtime-ID retargeting and without making torque scale accidentally with source patch count?
 
-If the smallest implementation requires semantic edits to accepted ANVIL-03/05/06/09 or foundation, stop and re-audit rather than refactoring through the warning.
+Why this leads:
+
+- directly attacks the Research Compass rule that cells are a dialect, not ontology;
+- challenges an already-earned active semantic rather than opening another isolated primitive;
+- ANVIL-08 demonstrates that authored-resolution/runtime-resolution decoupling is possible for bounded compliance, but does not prove it for active function;
+- consequence is high: if TORQUE-PATCH only survives while source cell identity remains fixed, active Machine Matter is still representation-locked.
+
+### Critical design problem before preflight
+
+Do **not** assume that refined faces each inherit `+100 N*m`, or that torque must be area-normalized. Those are different physical meanings.
+
+Before freezing an experiment, define one representation-independent physical localization/effort contract that makes coarse and refined authored sources genuinely equivalent. Prefer a design that tests physical locality rather than introducing a generic function-field ontology.
+
+### Alternatives re-ranked
+
+**CONTROL-REBIND** — valuable later, but one-action carry-over is nearly tautological; making it discriminating would likely require multiple targets/addressing and therefore introduce routing at the same time.
+
+**SURFACE / local traction** — major underexplored frontier and a strong later candidate, but opens new vocabulary before resolving the remaining authored-representation lock-in of an already-earned active semantic.
+
+**ACTIVE-DURING-REBIND** — useful stress/hardening question, but lower frontier information gain after LOAD-REBIND and TORQUE-PATCH-REBIND.
+
+**FUNCTION × COMPLIANCE** — still confounded by rotational/distributed modes not earned by the frozen 1D compliance model.
 
 ## Exact next action
 
-**Micro A/B only. Do not implement the solver runtime yet.**
+Critically design a bounded **TORQUE-PATCH-REPRESENTATION preflight only** before implementation.
 
-1. Re-lock live `main`, PR #15 and active head.
-2. Implement the smallest experiment-local relowering/validation adapter.
-3. Prove accepted **before parity** against ANVIL-06.
-4. Prove required **after remap** onto the rebound body IDs.
-5. Prove the **valid-looking stale pre-CUT action fails closed** against the after relation even though `body:a:0` still exists.
-6. Audit the exact diff before moving the branch.
-7. Run Draft/core.
-8. If any A/B gate is red, classify it before changing code and do not proceed to Class C.
+The design should first answer:
 
-Only a clean A/B checkpoint may unlock the ANVIL-10 moving solver runtime.
+1. what physical local target remains the same when source cells/refinement change;
+2. what `effort` quantity remains physically equivalent across those representations;
+3. how coarse/fine authored sources can differ materially enough to prove this is not preserved-ID bookkeeping;
+4. what wrong-scaling or manual-retarget control would expose a false-positive success;
+5. which structural and real-solver gates are needed without inventing a generic field architecture.
+
+Do not create/activate ANVIL-11 until that design survives adversarial review.
 
 ## Do not do now
 
-- no C0/C1/C2 solver implementation before A/B is green;
-- no command-state migration through CUT;
-- no active torque during reconstruction;
-- no load/contact, arbitrary-transform, multiple-patch, compliance or browser-science variant;
-- no generic FUNCTION/Control/Signal/Port architecture;
-- no edits to accepted ANVIL-03/05/06/09 semantics for elegance;
-- no foundation promotion;
-- no threshold weakening after executable results.
+- no ANVIL-10 command migration, active-during-CUT, load/contact, transform, multiple-action, compliance or UI extension;
+- do not treat compiled torque actions as persistent/migrated state;
+- no generic FUNCTION/Control/Signal/Port or action-cache architecture;
+- no foundation promotion from ANVIL-10 alone;
+- do not start CONTROL-REBIND merely because it was previously on the horizon;
+- do not copy `effortNm` onto every refined face or area-normalize it without a justified physical contract;
+- do not treat `cellId@face` as final Machine Matter ontology.
 
 ## Stable project documents
 
