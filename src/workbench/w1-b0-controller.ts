@@ -46,7 +46,7 @@ const STATE_BY_PHASE: Readonly<Record<WorkbenchB0Phase, WorkbenchB0State>> = Obj
   }),
   OBSERVED: Object.freeze({
     phase: "OBSERVED",
-    torqueActivation: "OFF",
+    torqueActivation: "ON",
     cutAvailable: false,
     activationAvailable: false,
   }),
