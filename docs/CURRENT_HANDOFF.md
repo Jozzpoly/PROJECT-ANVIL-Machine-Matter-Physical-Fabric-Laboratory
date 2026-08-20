@@ -1,6 +1,6 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / W0 DESIGN ACTIVE / NO WORKBENCH IMPLEMENTATION YET**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / W0 B0 ACCEPTED PENDING MERGE / NO WORKBENCH CODE YET**
 
 Live Git and executable evidence override this pointer if they differ.
 
@@ -12,9 +12,20 @@ Live Git and executable evidence override this pointer if they differ.
 4. ANVIL-10 evidence grounding: `ba7ce2dc67c6f7aa936e20a0294d9cc12208a549`.
 5. **Epoch I is closed.** Do not reopen it merely to harden adjacent behavior.
 6. Active transaction: Draft PR **#20**, branch `integration/workbench-v0-w0-design`.
-7. Active work is **W0 Design Gate only**. No Workbench executable implementation is authorized yet.
-8. Canonical W0 design: `docs/workbench/W0-DESIGN-GATE.md`.
-9. Candidate B / active topology re-lowering specimen is provisional until adversarial W0 review and exact design freeze are complete.
+7. W0 adversarial design has selected **B0 / post-rebind activation specimen**.
+8. No Workbench executable implementation belongs in PR #20.
+9. W1 becomes authorized only after the exact W0 docs/meta transaction is merged and live Git is rechecked.
+
+## W0 authority order
+
+For Workbench scope, read in this order:
+
+1. `docs/workbench/W0-FINAL-SCOPE.md` — exact W1 implementation contract;
+2. `docs/workbench/W0-ADVERSARIAL-REVIEW.md` — why original Candidate B was narrowed;
+3. `docs/workbench/W0-VERDICT.md` — selection/acceptance logic;
+4. `docs/workbench/W0-DESIGN-GATE.md` — initial comparison/provisional history only where it does not conflict with later narrowing.
+
+The original Candidate B freedoms are **not** the implementation contract.
 
 ## Accepted scientific boundary
 
@@ -26,9 +37,7 @@ The architectural consequence is **re-lowering, not migration**. `TorqueActionPl
 
 ANVIL-10 does **not** earn generic FUNCTION, Control, Signal, routing, Surface, generic action invalidation, command migration, representation independence or foundation promotion.
 
-## Epoch I closure
-
-Final executable qualification remains:
+## Epoch I executable baseline
 
 ```text
 source                       275c872c8efbf53c396d8d0ed9873b7c023f3b93
@@ -47,92 +56,132 @@ C4 closure merge             56993324c636e55607b18059ada4e33153d263be
 
 Residual process debt remains non-blocking: server-side `main` protection is absent and deletion-safe historical refs remain. Expected-head and changed-path checks are mandatory.
 
-## W0 Design Gate
+## W0 result
 
-Primary question:
+W0 compared:
 
-> What is the smallest transparent owner-facing specimen that composes already accepted ANVIL behavior, lets the owner directly judge whether the stack begins to express useful Physical Fabric / Machine Matter, and does not require new physical semantics or generic ontology merely to make composition convenient?
+- **A — passive topology / REBIND**: rejected as first specimen because it mostly repeats existing owner-facing ANVIL-03 value;
+- **B — original active topology**: rejected as proposed because pre-CUT torque and arbitrary CUT timing silently broadened the dynamic fixture;
+- **B0 — post-rebind activation**: **accepted**;
+- **C — compliance / resolution**: deferred as a separate possible later specimen.
 
-W0 compares three credible directions:
+The adversarial review materially narrowed B rather than rubber-stamping it.
 
-- **A — passive topology / REBIND**: smallest and safest, but largely duplicates an existing owner-facing result;
-- **B — active topology / re-lowering**: Matter + BEARING + TORQUE-PATCH/ACTIVATE + frozen CUT + REBIND + fresh re-lowered action;
-- **C — compliance / resolution**: useful representation lesson, but a different owner question and not part of the first active/topology chain.
+## Exact B0 story
 
-Current result: **B is provisional lead.** It gives the highest composition/owner information gain, and the accepted ANVIL-10 path already contains its central physical transaction. It is not frozen until the final W0 adversarial review passes.
+```text
+AUTHORED:
+Matter + one persistent BEARING + one persistent local TORQUE-PATCH
 
-## Candidate B boundary
+PRE-CUT:
+known moving passive state
+→ deterministic progression to CUT READY
+→ no pre-CUT torque activation
 
-The proposed first specimen may show only already accepted or neutral behavior:
+OWNER:
+execute the one accepted nearby CUT
 
-- persistent authored cells;
+TRANSACTION:
+old runtime discarded
+motion transferred
+2 bodies → 3 bodies
+same persistent BEARING reconstructed
+same persistent TORQUE-PATCH re-lowered
+fresh post-CUT runtime/action starts OFF
+
+OWNER:
+activate torque
+
+OBSERVATION:
+bounded active window shows causal work through rebound endpoint
+stale sibling is not part of fresh action binding
+```
+
+The Workbench does **not** claim that an active action or activation state survives the CUT. Persistent source meaning survives; compiled/runtime representation is rebuilt.
+
+## Frozen B0 interaction boundary
+
+Allowed in W1:
+
+- one frozen authored fixture;
 - one persistent BEARING;
-- one persistent local TORQUE-PATCH with frozen effort;
-- authored / physical / overlay visualization;
-- run/pause/reset;
-- binary runtime-only torque OFF/ON;
-- one specifically marked nearby CUT, enabled only while torque is OFF;
-- 2-body → 3-body disposable runtime decomposition;
-- BEARING reconstruction after CUT;
-- the same source TORQUE-PATCH re-lowered against the rebound BEARING;
-- fresh post-CUT runtime starting OFF;
-- owner turning torque ON again after reconstruction;
-- optional technical/provenance disclosure.
+- one persistent TORQUE-PATCH with frozen effort;
+- **AUTHORED MATTER / RUNTIME INTERPRETATION / BOTH** views;
+- deterministic progression to **CUT READY**;
+- one marked accepted CUT action;
+- explicit 2-body → 3-body runtime change;
+- BEARING reconstruction;
+- same source TORQUE-PATCH re-lowering;
+- fresh post-CUT runtime OFF;
+- one bounded post-CUT activation/observation;
+- optional background OFF control and technical provenance reveal;
+- reset.
 
-It may **not** add arbitrary CUT, effort slider/scaling, active-during-CUT behavior, gravity/contact/load/compliance composition, activation-state migration, generic FUNCTION/Control/Signal/Surface ontology, generic `FabricRuntime`, generic entity/component/relation graph or foundation promotion.
+Not allowed in B0:
 
-## Required W0 checkpoints
-
-Before authorizing implementation:
-
-1. verify the exact PR #20 head and changed paths;
-2. verify the capability/interaction ledger against accepted source and evidence;
-3. try to reject Candidate B by finding a required new physical/semantic rule;
-4. verify that the proposed phase controller is bounded orchestration rather than a generic runtime abstraction;
-5. verify owner questions and verdict categories are capable of producing a meaningful negative result;
-6. freeze the exact W1 scope, non-claims and implementation stop conditions;
-7. merge only a docs/meta-only W0 design transaction.
+- pre-CUT torque activation;
+- arbitrary pre-CUT free-running or arbitrary CUT timing;
+- arbitrary CUT location/editor;
+- active-during-CUT;
+- activation/action/solver-state migration;
+- arbitrary torque magnitude/scaling semantics;
+- indefinite post-CUT control presented as accepted behavior;
+- gravity/contact/load/compliance composition;
+- generic FUNCTION/Control/Signal/Surface/Power architecture;
+- generic `FabricRuntime`/component/relation framework;
+- foundation promotion for integration convenience.
 
 ## Owner reality contract
 
-The future Workbench specimen must not be judged by green automation alone. Direct owner use should answer whether:
+The future B0 implementation is not successful merely because tests are green.
 
-- authored meaning is distinguishable from runtime representation;
-- the owner can predict what CUT should preserve vs replace;
-- local torque feels like persistent local capability rather than a hidden runtime motor;
-- re-lowering after CUT is understandable;
-- runtime body identity is visibly disposable;
-- the specimen creates genuine creative pull to author/change matter rather than merely inspect a prepared mechanism.
+First-pass use should let the owner describe, before detailed technical explanation:
 
-Owner outcome categories are **VALUE SIGNAL**, **LEGIBLE BUT SCRIPTED**, or **NO VALUE SIGNAL**. They are integration evidence only and do not expand scientific claims.
+- what remained the same through CUT;
+- what was replaced;
+- where the local torque meaning appears to live;
+- what they expect when the fresh post-CUT action is activated.
 
-## Stop conditions
+Then technical reveal may expose source IDs, pre/post body decomposition, rebound bearing provenance, fresh action binding and optional ON-vs-OFF diagnostics.
 
-Stop W0/W1 and formulate a separate scientific/design problem if implementation requires:
+Owner verdict classes:
 
-- new physical semantics;
-- new authored identity/reference semantics;
-- torque distribution/scaling rules;
+- **VALUE SIGNAL**;
+- **LEGIBLE BUT SCRIPTED**;
+- **NO VALUE SIGNAL**.
+
+All are integration/owner evidence only, not ANVIL scientific promotion verdicts.
+
+## W1 stop conditions
+
+Stop implementation and reclassify the problem if B0 requires:
+
+- a new physical law;
+- new persistent authored identity/reference semantics;
+- arbitrary dynamic state entering CUT;
 - active torque through CUT;
-- migration of compiled action/solver state;
+- migration of compiled action or solver state;
+- torque scaling/distribution law;
 - generic runtime/relation/function architecture;
 - hidden conventional machine-template data;
-- changes to accepted ANVIL-00…10 semantics or thresholds.
+- changes to accepted ANVIL-00…10 semantics or thresholds;
+- extra environment/compliance behavior merely to make the demo convincing.
 
-## Do not do by inheritance
+## Immediate continuation
 
-- do not implement Workbench until W0 is accepted and frozen;
-- do not create ANVIL-11 automatically;
-- do not restart TORQUE-PATCH-REPRESENTATION automatically;
-- do not treat `cellId@face` as final ontology;
-- do not promote experiment-local semantics into Foundation for integration convenience;
-- do not combine compliance with active topology in the first specimen;
-- do not turn a fixed experimental parameter into a generic editor control merely because UI makes it easy.
+While PR #20 is still open:
 
-## Cold continuation condition
+1. verify exact head and docs/meta-only paths;
+2. verify final state/handoff/memory point to B0 and `W0-FINAL-SCOPE.md`;
+3. run the required docs/meta sanity gate;
+4. merge with expected-head discipline;
+5. stop W0.
 
-A new agent reading live Git should independently conclude:
+After W0 reaches `main`:
 
-> Epoch I remains closed at ANVIL-10. PR #20 is an active **design-only** integration transaction. Candidate B is provisional, no executable Workbench exists yet, and implementation may begin only after the exact W0 design survives adversarial review and is frozen as the W1 contract.
+1. cold-verify the merged W0 contract;
+2. create a **new** W1 integration branch/PR;
+3. implement only `docs/workbench/W0-FINAL-SCOPE.md`;
+4. do not carry superseded freedoms from the original W0 design into code.
 
-If live Git or PR #20 differs, reconcile the mismatch before continuing.
+No W1 code belongs in PR #20.
