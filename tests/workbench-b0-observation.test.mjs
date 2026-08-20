@@ -44,6 +44,36 @@ test("W1 B0 runs one bounded post-CUT active observation against the accepted OF
   }
 });
 
+test("W1 B0 exposes the same frozen observation as 30 real presentation steps", async () => {
+  const specimen = await WorkbenchB0Specimen.create();
+  try {
+    specimen.continueToCutReady();
+    await specimen.executeAcceptedCut();
+
+    const started = specimen.beginObservation();
+    assert.equal(started.phase, "OBSERVING");
+    assert.equal(started.torqueActivation, "ON");
+
+    for (let step = 1; step < 30; step += 1) {
+      assert.equal(specimen.stepObservation(), null);
+      assert.equal(specimen.state.phase, "OBSERVING");
+      assert.equal(specimen.visualSnapshot().phase, "OBSERVING");
+    }
+
+    const observation = specimen.stepObservation();
+    assert.notEqual(observation, null);
+    assert.equal(observation?.observationSteps, 30);
+    assert.equal(specimen.state.phase, "OBSERVED");
+    assert.equal(specimen.state.torqueActivation, "ON");
+    assert.throws(
+      () => specimen.stepObservation(),
+      /cannot step bounded observation from OBSERVED/u,
+    );
+  } finally {
+    specimen.dispose();
+  }
+});
+
 test("W1 B0 bounded observation cannot start before the accepted CUT transaction", async () => {
   const specimen = await WorkbenchB0Specimen.create();
   try {
@@ -62,6 +92,22 @@ test("W1 B0 bounded observation cannot start before the accepted CUT transaction
       () => specimen.activateAndObserve(),
       /cannot activate bounded observation from OBSERVED/u,
     );
+  } finally {
+    specimen.dispose();
+  }
+});
+
+test("W1 B0 observation fails closed if presentation tries to exceed the frozen window", async () => {
+  const specimen = await WorkbenchB0Specimen.create();
+  try {
+    specimen.continueToCutReady();
+    await specimen.executeAcceptedCut();
+    specimen.beginObservation();
+    assert.throws(
+      () => specimen.stepObservation(31),
+      /cannot exceed the frozen 30-step window/u,
+    );
+    assert.equal(specimen.state.phase, "OBSERVING");
   } finally {
     specimen.dispose();
   }
