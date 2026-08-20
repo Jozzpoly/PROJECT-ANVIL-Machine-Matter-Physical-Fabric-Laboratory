@@ -17,7 +17,7 @@ Never turn a passing build, capability probe, synthetic test, integration demo o
 - `.anvil/project-state.json` — compact machine-readable **current checkpoint claim** only; it may describe experiment, foundation, integration or maintenance work.
 - `docs/CURRENT_HANDOFF.md` — current cold-takeover procedure, accepted-vs-active boundary, exact next action and do-not-do list.
 - `AI_PROJECT_MEMORY.md` — concise accepted capability/architecture index and current strategic pointer; not a telemetry archive.
-- `docs/ANVIL_EPOCH_I_CLOSURE.md` — one-time transition record while Epoch I closure is active; not a recurring roadmap.
+- `docs/ANVIL_EPOCH_I_CLOSURE.md` — historical one-time transition record for the completed Epoch I closure; not a recurring roadmap or live pointer.
 - `docs/experiments/*-PREFLIGHT*.md` — primary question, fixture, frozen gates, controls and non-claims for scientific experiments.
 - `docs/experiments/*-EVIDENCE.md` — executed technical results, meaningful negative evidence and promotion identity.
 - owner-gate record — exact owner-tested artifact identity and human verdict, only when Class E is required.
