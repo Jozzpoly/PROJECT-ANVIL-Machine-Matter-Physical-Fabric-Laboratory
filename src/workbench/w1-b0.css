@@ -1,0 +1,281 @@
+.wb-topbar {
+  align-items: flex-end;
+}
+
+.wb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  padding: 18px;
+  min-height: calc(100vh - 116px);
+}
+
+.wb-viewport-card {
+  min-height: 650px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.wb-viewbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1d2b3d;
+  background: rgba(9, 14, 22, 0.94);
+}
+
+.wb-viewbar > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.wb-kicker {
+  color: #72839a;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+.wb-viewbar strong {
+  color: #dfe9f5;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.wb-segmented {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.wb-segmented button {
+  min-height: 38px;
+  font-size: 10px;
+}
+
+#wb-canvas {
+  display: block;
+  width: 100%;
+  min-height: 520px;
+  flex: 1;
+  background: #070b12;
+}
+
+.wb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 11px 16px 13px;
+  border-top: 1px solid #1d2b3d;
+  color: #91a0b3;
+  font-size: 11px;
+}
+
+.wb-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wb-legend i {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  border-radius: 3px;
+}
+
+.wb-legend-source { border: 1px dashed #85bfff; }
+.wb-legend-runtime { background: rgba(124, 231, 255, 0.34); border: 1px solid #7ce7ff; }
+.wb-legend-bearing { border: 2px solid #89ff9d; border-radius: 50% !important; }
+.wb-legend-torque { border: 2px solid #ffce67; border-radius: 50% !important; }
+.wb-legend-cut { width: 16px !important; height: 0 !important; border-top: 2px dashed #ff6b73; border-radius: 0 !important; }
+
+.wb-panel {
+  align-self: stretch;
+  overflow: auto;
+}
+
+.wb-state-section {
+  padding-bottom: 4px;
+}
+
+.wb-phase {
+  min-height: 46px;
+  margin: 0 0 12px;
+  color: #dce6f2;
+  line-height: 1.45;
+}
+
+.wb-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wb-facts > div {
+  padding: 10px;
+  background: #0a111b;
+  border: 1px solid #1b2a3a;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.wb-facts span,
+.wb-facts small {
+  display: block;
+  color: #74869c;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.wb-facts strong {
+  display: block;
+  margin: 5px 0 3px;
+  color: #f1f6fb;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.wb-actions button:first-child {
+  flex: 1.3;
+}
+
+.wb-actions button:last-child {
+  flex: 1;
+}
+
+.wb-progress {
+  height: 3px;
+  margin-top: 10px;
+  background: #101a27;
+  border-radius: 999px;
+  overflow: hidden;
+  opacity: 0.45;
+}
+
+.wb-progress.active {
+  opacity: 1;
+}
+
+.wb-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #7ce7ff;
+  transition: width 50ms linear;
+}
+
+.wb-first-pass {
+  border: 1px solid #33516b;
+  background: linear-gradient(180deg, rgba(17, 34, 49, 0.86), rgba(10, 17, 27, 0.9));
+}
+
+.wb-first-pass[hidden] {
+  display: none;
+}
+
+.wb-first-pass-intro {
+  color: #dfe8f2;
+  margin: 0 0 8px;
+}
+
+.wb-first-pass ol {
+  margin: 8px 0 12px;
+  padding-left: 22px;
+  color: #b9c7d7;
+}
+
+.wb-first-pass li {
+  margin: 7px 0;
+  line-height: 1.4;
+}
+
+.wb-details {
+  margin: 0 16px 16px;
+  border: 1px solid #26384b;
+  border-radius: 9px;
+  background: #09111a;
+}
+
+.wb-details summary {
+  padding: 13px 14px;
+  cursor: pointer;
+  color: #9fb1c4;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.wb-tech-body {
+  padding: 0 14px 14px;
+}
+
+.wb-tech-body .metrics {
+  margin-top: 0;
+}
+
+.wb-boundary {
+  margin-top: 0;
+}
+
+.wb-status[data-phase="CUT_READY"] {
+  border-color: #ffce67;
+  color: #ffce67;
+}
+
+.wb-status[data-phase="POST_CUT_OFF"] {
+  border-color: #7ce7ff;
+  color: #7ce7ff;
+}
+
+.wb-status[data-phase="OBSERVING"] {
+  border-color: #ffb86b;
+  color: #ffb86b;
+}
+
+@media (max-width: 1050px) {
+  .wb-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-viewport-card {
+    min-height: 570px;
+  }
+
+  #wb-canvas {
+    min-height: 430px;
+  }
+
+  .wb-panel {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 680px) {
+  .wb-layout {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .wb-viewbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wb-segmented {
+    justify-content: flex-start;
+  }
+
+  .wb-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wb-facts > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  #wb-canvas {
+    min-height: 390px;
+  }
+}
