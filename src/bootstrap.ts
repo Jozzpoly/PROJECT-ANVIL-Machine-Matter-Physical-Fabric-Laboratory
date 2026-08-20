@@ -25,6 +25,8 @@ if (experiment === "cut") {
   void import("./load-rebind-demo.js");
 } else if (experiment === "torque") {
   void import("./torque-demo.js");
+} else if (experiment === "workbench") {
+  void import("./workbench/w1-b0-demo.js");
 } else {
   void import("./main.js");
 }
