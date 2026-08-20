@@ -51,7 +51,7 @@ jobs:
 
       - name: Stage exact browser build for candidate gate
         if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: anvil-browser-staging
           path: dist
@@ -78,7 +78,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Download exact build produced by core gate
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: anvil-browser-staging
           path: dist
@@ -94,7 +94,7 @@ jobs:
         run: npm run test:browser
 
       - name: Upload owner-candidate browser artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: anvil-browser-laboratory
           path: dist
