@@ -9,6 +9,7 @@ test("W1 B0 production browser follows the frozen owner path without front-loadi
   const status = page.locator("#wb-status");
   const primary = page.locator("#wb-primary");
   const details = page.locator("#wb-details");
+  const canvas = page.locator("#wb-canvas");
 
   await expect(status).toHaveAttribute("data-phase", "INITIAL", { timeout: 10_000 });
   await expect(status).toHaveText("READY");
@@ -25,12 +26,45 @@ test("W1 B0 production browser follows the frozen owner path without front-loadi
   }
   await expect(page.locator("#wb-view-both")).toHaveClass(/active/u);
 
-  const canvasSize = await page.locator("#wb-canvas").evaluate((canvas) => {
-    const rect = canvas.getBoundingClientRect();
-    return { width: rect.width, height: rect.height };
+  const layoutDiagnostic = await canvas.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const viewportCard = element.closest(".wb-viewport-card");
+    const layout = element.closest(".wb-layout");
+    const canvasStyle = getComputedStyle(element);
+    const cardStyle = viewportCard === null ? null : getComputedStyle(viewportCard);
+    const layoutStyle = layout === null ? null : getComputedStyle(layout);
+    return {
+      canvas: {
+        width: rect.width,
+        height: rect.height,
+        cssWidth: canvasStyle.width,
+        display: canvasStyle.display,
+        flex: canvasStyle.flex,
+        minHeight: canvasStyle.minHeight,
+      },
+      viewportCard: viewportCard === null ? null : {
+        width: viewportCard.getBoundingClientRect().width,
+        display: cardStyle?.display,
+        minWidth: cardStyle?.minWidth,
+      },
+      layout: layout === null ? null : {
+        width: layout.getBoundingClientRect().width,
+        display: layoutStyle?.display,
+        gridTemplateColumns: layoutStyle?.gridTemplateColumns,
+      },
+      stylesheets: Array.from(document.styleSheets).map((sheet) => sheet.href ?? "inline"),
+    };
   });
-  expect(canvasSize.width).toBeGreaterThan(650);
-  expect(canvasSize.height).toBeGreaterThan(430);
+  console.log(JSON.stringify({ probe: "W1/B0-LAYOUT", ...layoutDiagnostic }));
+
+  await expect.poll(
+    () => canvas.evaluate((element) => element.getBoundingClientRect().width),
+    { timeout: 5_000, message: "W1 B0 canvas should occupy the main Workbench viewport" },
+  ).toBeGreaterThan(650);
+  await expect.poll(
+    () => canvas.evaluate((element) => element.getBoundingClientRect().height),
+    { timeout: 5_000, message: "W1 B0 canvas should retain a useful observation height" },
+  ).toBeGreaterThan(430);
 
   await page.locator("#wb-view-authored").click();
   await expect(page.locator("#wb-view-authored")).toHaveClass(/active/u);
