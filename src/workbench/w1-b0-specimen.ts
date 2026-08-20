@@ -182,6 +182,7 @@ export class WorkbenchB0Specimen {
   #cutReadyReceipt: WorkbenchB0CutReadyReceipt | null = null;
   #transitionReceipt: WorkbenchB0TransitionReceipt | null = null;
   #observationReceipt: WorkbenchB0ObservationReceipt | null = null;
+  #observationStepsCompleted = 0;
   #disposed = false;
 
   private constructor(
@@ -372,23 +373,50 @@ export class WorkbenchB0Specimen {
     }
   }
 
-  activateAndObserve(): WorkbenchB0ObservationReceipt {
+  beginObservation(): WorkbenchB0State {
     this.#assertUsable();
     if (this.#controller.state.phase !== "POST_CUT_OFF") {
       throw new Error(`W1 B0 cannot activate bounded observation from ${this.#controller.state.phase}`);
     }
     const active = this.#postRuntime;
     const control = this.#controlRuntime;
-    const transition = this.#transitionReceipt;
-    if (active === null || control === null || transition === null) {
+    if (active === null || control === null || this.#transitionReceipt === null) {
       throw new Error("W1 B0 post-CUT runtime/control invariant is broken");
     }
 
     this.#controller.activateTorque();
     active.setActivation("ON");
-    active.step(POST_CUT_STEPS);
-    control.step(POST_CUT_STEPS);
+    if (active.activation !== "ON") throw new Error("W1 B0 active runtime failed to enter ON");
+    if (control.activation !== "OFF") throw new Error("W1 B0 background control was not OFF at observation start");
+    this.#observationStepsCompleted = 0;
+    this.#observationReceipt = null;
+    return this.#controller.state;
+  }
 
+  stepObservation(stepCount = 1): WorkbenchB0ObservationReceipt | null {
+    this.#assertUsable();
+    if (this.#controller.state.phase !== "OBSERVING") {
+      throw new Error(`W1 B0 cannot step bounded observation from ${this.#controller.state.phase}`);
+    }
+    if (!Number.isInteger(stepCount) || stepCount <= 0) {
+      throw new Error("W1 B0 observation stepCount must be a positive integer");
+    }
+    if (this.#observationStepsCompleted + stepCount > POST_CUT_STEPS) {
+      throw new Error("W1 B0 observation cannot exceed the frozen 30-step window");
+    }
+
+    const active = this.#postRuntime;
+    const control = this.#controlRuntime;
+    if (active === null || control === null || this.#transitionReceipt === null) {
+      throw new Error("W1 B0 observation runtime/control invariant is broken");
+    }
+
+    active.step(stepCount);
+    control.step(stepCount);
+    this.#observationStepsCompleted += stepCount;
+    if (this.#observationStepsCompleted < POST_CUT_STEPS) return null;
+
+    const transition = this.#transitionReceipt;
     const activeFinal = active.snapshots();
     const controlFinal = control.snapshots();
     const activeSibling = snapshotById(activeFinal, transition.beforeEndpointBodyId);
@@ -422,6 +450,13 @@ export class WorkbenchB0Specimen {
     return receipt;
   }
 
+  activateAndObserve(): WorkbenchB0ObservationReceipt {
+    this.beginObservation();
+    const receipt = this.stepObservation(POST_CUT_STEPS);
+    if (receipt === null) throw new Error("W1 B0 frozen observation did not complete");
+    return receipt;
+  }
+
   async reset(): Promise<WorkbenchB0State> {
     this.#assertUsable();
     this.#preRuntime?.dispose();
@@ -434,6 +469,7 @@ export class WorkbenchB0Specimen {
     this.#cutReadyReceipt = null;
     this.#transitionReceipt = null;
     this.#observationReceipt = null;
+    this.#observationStepsCompleted = 0;
     return this.#controller.reset();
   }
 
