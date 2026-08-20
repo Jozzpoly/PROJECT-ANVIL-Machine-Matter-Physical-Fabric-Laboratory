@@ -26,7 +26,9 @@ if (experiment === "cut") {
 } else if (experiment === "torque") {
   void import("./torque-demo.js");
 } else if (experiment === "workbench") {
-  void import("./workbench/w1-b0-demo.js");
+  void (async () => {
+    await import("./workbench/w1-b0-demo.js");
+  })();
 } else {
   void import("./main.js");
 }
