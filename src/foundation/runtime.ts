@@ -13,9 +13,9 @@ export interface RuntimeBodyObservation {
 }
 
 /**
- * State required by topology/state-continuity experiments such as CUT.
- * The current COLLAPSE runtime does not yet claim that it can capture/restore
- * this complete state; this contract defines what the next experiment must expose.
+ * Solver-neutral motion state used by accepted topology/state-continuity work
+ * such as CUT and REBIND. Individual runtimes may expose a narrower snapshot
+ * contract when their accepted claim does not require complete motion state.
  */
 export interface RuntimeBodyMotionState extends RuntimeBodyObservation {
   readonly linearVelocity: Vec3;
