@@ -310,11 +310,15 @@ export class WorkbenchB0Specimen {
     const controlSibling = snapshotById(controlFinal, transition.beforeEndpointBodyId);
     const activeSpeed = active.relativeAngularSpeedRadps();
     const controlSpeed = control.relativeAngularSpeedRadps();
+    const activeActivation = active.activation;
+    const controlActivation = control.activation;
+    if (activeActivation !== "ON") throw new Error("W1 B0 active runtime lost ON during bounded observation");
+    if (controlActivation !== "OFF") throw new Error("W1 B0 background control left OFF during bounded observation");
 
     const receipt: WorkbenchB0ObservationReceipt = {
       observationSteps: POST_CUT_STEPS,
-      activeActivation: active.activation,
-      controlActivation: control.activation,
+      activeActivation,
+      controlActivation,
       activeRelativeAngularSpeedRadps: activeSpeed,
       controlRelativeAngularSpeedRadps: controlSpeed,
       activeSpeedAdvantageRadps: activeSpeed - controlSpeed,
