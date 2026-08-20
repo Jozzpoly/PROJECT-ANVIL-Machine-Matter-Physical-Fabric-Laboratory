@@ -1,21 +1,30 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / NO ACTIVE ANVIL-11 / W0 DESIGN NEXT**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / W0 B0 ACCEPTED / W1 SELECTED-NOT-ACTIVE**
 
-Live Git and executable evidence override this pointer if they differ.
+Live Git and executable evidence override this checkpoint if they differ.
 
 ## Start here
 
-1. Resolve live `main` and current open PRs before writing.
-2. Accepted scientific truth is through **ANVIL-10 / TORQUE-PATCH-REBIND** only.
-3. Accepted scientific material checkpoint: `ffde8c0babdd473454b3e769cb10fd31537a0c70`.
+1. Resolve live `main` and open PRs before writing.
+2. Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only.
+3. Accepted material checkpoint: `ffde8c0babdd473454b3e769cb10fd31537a0c70`.
 4. ANVIL-10 evidence grounding: `ba7ce2dc67c6f7aa936e20a0294d9cc12208a549`.
-5. **Epoch I is closed.** No scientific experiment or integration implementation is active at this checkpoint.
-6. Final Epoch I executable qualification used source `275c872c8efbf53c396d8d0ed9873b7c023f3b93`, synthetic merge `1a7547b9b3193ef2a7260fd42fd4a76cd7c169b2`, tree `870a5b416c262eefbee13b817636a9246afb0378`, run `32372701068`; actual C3 merge `5aaa5eca256bf64f83fa7949f05d29db25b894e8` has the same tree.
-7. The selected next stage is **Physical Fabric Workbench v0 — W0 Design Gate**, not ANVIL-11 and not implementation yet.
-8. Read `docs/ANVIL_EPOCH_I_CLOSURE.md`, `docs/RESEARCH_COMPASS.md` and `docs/FOUNDATION.md` before freezing W0 scope.
+5. Epoch I is closed. W0 has selected **B0 / post-rebind activation specimen**.
+6. If PR #20 is still open, finish/reconcile that docs/meta W0 transaction before treating W0 as merged truth.
+7. If PR #20 is merged, there is no active W1 implementation yet. Create a **new** W1 integration branch/PR before writing executable Workbench code.
+8. Implement from the merged W0 contract, not from conversation memory.
 
-## Accepted boundary
+## W0 authority order
+
+For Workbench scope, later narrowing overrides the initial proposal:
+
+1. `docs/workbench/W0-FINAL-SCOPE.md` — exact W1 implementation contract;
+2. `docs/workbench/W0-ADVERSARIAL-REVIEW.md` — why original Candidate B was narrowed;
+3. `docs/workbench/W0-VERDICT.md` — selection and acceptance logic;
+4. `docs/workbench/W0-DESIGN-GATE.md` — initial comparison/provisional history only where it does not conflict with the files above.
+
+## Accepted scientific boundary
 
 ANVIL-10 supports only this bounded result:
 
@@ -23,73 +32,112 @@ ANVIL-10 supports only this bounded result:
 
 The architectural consequence is **re-lowering, not migration**. `TorqueActionPlan` remains disposable compiled representation.
 
-ANVIL-10 does **not** earn generic FUNCTION, Control, Signal, routing, Surface, generic action invalidation, command migration, representation independence or foundation promotion.
+ANVIL-10 does not earn generic FUNCTION, Control, Signal, Surface, action invalidation, command migration, representation independence or foundation promotion.
 
-## Epoch I closure result
+## Epoch I executable baseline
 
-Closure did not reopen or broaden accepted science.
+```text
+qualified / C3 tree          870a5b416c262eefbee13b817636a9246afb0378
+qualification run            32372701068
+Node test files              29
+Node / real-Box3D tests      53/53 PASS
+production build             PASS
+launcher self-test           PASS
+Chromium regression          19/19 PASS
+owner artifact               9407794380
+owner artifact digest        sha256:4280b53915286832c68eb2b6fa329c2b8a8d153a972595abc8893e2c117f786d
+Epoch I closure merge        56993324c636e55607b18059ada4e33153d263be
+```
 
-- C0 froze the pre-closure baseline and no-semantic-change invariant.
-- C1 truth/governance reset merged as `bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30`.
-- C2 infrastructure hygiene merged as `4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0`.
-- C3 repository hygiene merged as `5aaa5eca256bf64f83fa7949f05d29db25b894e8`.
-- C3/Q0 final executable qualification: 29 discovered Node test files, 53/53 Node PASS, production build PASS, neutral launcher PASS and 19/19 Chromium PASS.
-- Exact staging artifact: `9407755370`, digest `sha256:d89d72ee6909e44a6aac88957c9c67b60daaf2a338c583115a619c813a2d3ae2`.
-- Exact owner artifact: `9407794380`, 425758 bytes, digest `sha256:4280b53915286832c68eb2b6fa329c2b8a8d153a972595abc8893e2c117f786d`.
-- Branch-history classifications live in `docs/ANVIL_EPOCH_I_BRANCH_AUDIT.md`; `experiment/anvil-00-collapse` and `foundation/lab-kernel` retain substantial unique commit history and must not be treated as disposable clutter.
+This is whole-project regression/transport evidence, not a new scientific claim.
 
-This qualification is whole-project regression/transport evidence. It does not create a new scientific capability.
+Residual process debt remains non-blocking: server-side `main` protection is absent and deletion-safe historical refs remain. Expected-head and changed-path checks remain mandatory.
 
-Residual non-blocking process debt:
+## W0 decision
 
-- server-side `main` protection remains absent; expected-head checks and path audits remain mandatory;
-- deletion-safe historical refs remain until a supported direct delete operation is available and ancestry is rechecked.
+W0 compared four outcomes:
 
-## Why TORQUE-PATCH-REPRESENTATION is not next
+- **A — passive topology / REBIND:** safe but too close to the existing ANVIL-03 owner gate; fallback only.
+- **B — original active topology:** rejected as proposed because pre-CUT torque and arbitrary owner-selected CUT timing could feed unqualified dynamic states into CUT/REBIND.
+- **B0 — post-rebind activation:** **accepted**.
+- **C — compliance / resolution:** deferred as a separate possible later specimen.
 
-The old post-ANVIL-10 candidate is historical context only. Current `TorquePatch` uses `cellId@face` mainly to resolve an existing BEARING while `effortNm` is total torque; no earned physical law specifies torque distribution across refined source faces. A coarse/fine torque experiment would therefore risk inventing its own scaling contract and then confirming it.
+The adversarial review therefore changed the design materially rather than merely confirming it.
 
-Representation lock-in remains a real uncertainty, but Workbench feedback should determine what locality/interface meaning is actually worth generalizing.
+## Exact B0 story
 
-## Selected next stage — Physical Fabric Workbench v0 / W0 Design Gate
+```text
+AUTHORED
+Matter + one persistent BEARING + one persistent local TORQUE-PATCH
 
-The immediate task in the next conversation is **design, not implementation**.
+PRE-CUT
+known moving passive state
+→ deterministic progression to CUT READY
+→ no pre-CUT torque activation
 
-Primary W0 question:
+OWNER
+execute the one accepted nearby CUT
 
-> What is the smallest transparent owner-facing specimen that composes already accepted ANVIL behavior, lets the owner directly judge whether the current stack begins to express useful Physical Fabric, and does not require us to invent new physical semantics or generic ontology merely to make the composition convenient?
+TRANSACTION
+old runtime discarded
+motion transferred
+2 bodies → 3 bodies
+same persistent BEARING reconstructed
+same persistent TORQUE-PATCH re-lowered
+fresh post-CUT runtime/action starts OFF
 
-W0 should:
+OWNER
+activate torque
 
-1. cold-takeover this final Epoch I baseline;
-2. compare at least two credible minimal specimen designs;
-3. distinguish accepted capability reuse from any new semantic/physics requirement;
-4. try to falsify each composition design before code exists;
-5. freeze the smallest useful integration scope and owner observations only after that review.
+OBSERVATION
+bounded active window
+causal torque through rebound endpoint
+stale sibling is not part of the fresh action binding
+```
 
-A promising lead is:
+B0 does **not** claim that active behavior, activation state or a compiled action survives CUT. Persistent source meaning remains; disposable runtime representation is rebuilt and a fresh action is derived afterward.
 
-`Matter → BEARING → TORQUE-PATCH/ACTIVATE → CUT → REBIND → fresh re-lowered action`
+## Frozen W1 boundary
 
-but it is **not frozen scope**. A simpler passive topology/rebind specimen should remain a credible comparator.
+W1 may implement only the bounded specimen in `W0-FINAL-SCOPE.md`, including:
 
-If W0 requires a new physical law, new authored semantic identity, generic `FabricRuntime`, FUNCTION/Control/Surface ontology or hidden machine template, stop and separate that uncertainty into a scientific falsifier instead of smuggling it into integration.
+- one frozen authored fixture;
+- one persistent BEARING and one persistent TORQUE-PATCH with frozen effort;
+- **AUTHORED MATTER / RUNTIME INTERPRETATION / BOTH** views;
+- deterministic progression to **CUT READY**;
+- one marked accepted CUT;
+- explicit 2 → 3 runtime decomposition;
+- BEARING reconstruction and same-source TORQUE-PATCH re-lowering;
+- fresh post-CUT runtime starting OFF;
+- one bounded post-CUT activation/observation;
+- optional background OFF control / technical provenance reveal;
+- reset;
+- Workbench-specific bounded controller, rendering, glue and tests.
 
-## Do not do by inheritance
+W1 must not add pre-CUT torque activation, arbitrary CUT timing/location, active-during-CUT, activation/action/solver-state migration, torque scaling/editor semantics, gravity/contact/load/compliance composition, generic `FabricRuntime`, generic relation/component/FUNCTION/Control/Signal/Surface/Power architecture, or foundation promotion for integration convenience.
 
-- do not create ANVIL-11 automatically;
-- do not implement Workbench behavior before W0 design is frozen;
-- do not restart TORQUE-PATCH-REPRESENTATION merely because it was once selected;
-- do not add torque-per-face or torque-per-area scaling without a physical authored contract;
-- do not treat `cellId@face` as final Machine Matter ontology;
-- do not promote BEARING, TORQUE-PATCH, ACTIVATE, REBIND, FUNCTION, Control or Surface into Foundation from integration convenience;
-- do not refactor experiment-local runtimes into a generic framework just to make Workbench assembly easier;
-- do not reopen ANVIL-10 for adjacent hardening unless new evidence makes that uncertainty strategically dominant.
+If any forbidden capability becomes necessary, stop and reclassify the gap before changing scope.
 
-## Cold takeover success condition
+## Owner Reality Gate
 
-A new agent reading live Git should independently conclude:
+The future specimen must permit a genuine negative result. Before detailed technical explanation, the owner should describe what appeared to remain the same, what was replaced, where torque meaning seems to live, and what they expect after post-CUT activation.
 
-> Accepted science ends at ANVIL-10. Epoch I is closed. There is no active ANVIL-11. The next bounded action is an adversarial **Physical Fabric Workbench W0 Design Gate**, after which implementation may begin only if the chosen specimen can reuse accepted semantics honestly.
+Only afterward should technical details reveal persistent source identity, body decomposition, rebound bearing provenance, fresh action binding and optional control diagnostics.
 
-If live Git or open PRs contradict this, reconcile the mismatch before continuing.
+Owner verdict classes:
+
+- **VALUE SIGNAL**;
+- **LEGIBLE BUT SCRIPTED**;
+- **NO VALUE SIGNAL**.
+
+These are integration/owner evidence only, not scientific promotion verdicts.
+
+## Next action after W0 merge
+
+1. Cold-verify live `main`, open PRs and the merged W0 files.
+2. Confirm no executable Workbench code entered PR #20.
+3. Create a new W1 integration branch/PR.
+4. Implement only `docs/workbench/W0-FINAL-SCOPE.md` under its stop rules.
+5. Preserve the two-speed Draft/core → Ready/candidate validation model.
+
+Do not create ANVIL-11 by inheritance and do not restore freedoms rejected during W0.

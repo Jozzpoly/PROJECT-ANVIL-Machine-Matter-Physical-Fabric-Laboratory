@@ -43,7 +43,7 @@
       "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
       "C2 infrastructure hygiene — merged as 4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0",
       "C3 repository hygiene — merged as 5aaa5eca256bf64f83fa7949f05d29db25b894e8",
-      "C4 final qualification and cold-handoff grounding — complete when this docs/meta-only grounding reaches main"
+      "C4 final qualification and cold-handoff grounding — merged as 56993324c636e55607b18059ada4e33153d263be"
     ],
     "finalQualification": {
       "source": "275c872c8efbf53c396d8d0ed9873b7c023f3b93",
@@ -73,15 +73,25 @@
       "deletion-safe historical refs remain until a supported direct branch-delete operation is available and ancestry is rechecked"
     ]
   },
+  "workbenchW0": {
+    "status": "complete",
+    "designPr": 20,
+    "initialDesign": "docs/workbench/W0-DESIGN-GATE.md",
+    "adversarialReview": "docs/workbench/W0-ADVERSARIAL-REVIEW.md",
+    "finalScope": "docs/workbench/W0-FINAL-SCOPE.md",
+    "verdict": "docs/workbench/W0-VERDICT.md",
+    "selectedSpecimen": "B0 / post-rebind activation specimen",
+    "rejectedOriginalFreedom": "pre-CUT torque and arbitrary CUT timing/state were removed because they exceed the frozen ANVIL-10 dynamic path",
+    "scientificMeaning": "integration design only; W0 earns no new ANVIL scientific claim"
+  },
   "nextStage": {
-    "name": "Physical Fabric Workbench v0 — W0 Design Gate",
-    "type": "integration-design-owner-reality-gate",
+    "name": "Physical Fabric Workbench v0 — W1 B0 Implementation",
+    "type": "integration-implementation-owner-reality-gate",
     "status": "selected-not-active",
-    "purpose": "design the smallest honest owner-facing composition of already accepted ANVIL capabilities that can reveal whether the current stack begins to express useful Machine Matter / Physical Fabric behavior",
+    "purpose": "implement the exact B0 post-rebind activation specimen frozen by W0 without adding new scientific semantics or generic ontology",
     "scientificBoundary": "Workbench integration and owner judgement do not by themselves earn a new ANVIL-NN capability or generic ontology",
-    "firstAction": "in a new conversation, cold-takeover this final Epoch I baseline, compare at least two minimal specimen designs, adversarially reject any design that requires new physical semantics or generic architecture, and freeze a bounded W0 integration scope before implementation",
-    "implementationBoundary": "do not implement Workbench behavior until W0 design has separated accepted reuse from any new scientific uncertainty",
-    "designLead": "Matter -> BEARING -> TORQUE-PATCH/ACTIVATE -> CUT -> REBIND -> fresh re-lowered action is a promising composition lead, not frozen scope"
+    "firstAction": "cold-verify that W0 PR 20 is merged into live main, then create a separate W1 integration branch/PR and implement only docs/workbench/W0-FINAL-SCOPE.md under its stop rules",
+    "implementationContract": "docs/workbench/W0-FINAL-SCOPE.md"
   },
   "researchHorizon": {
     "status": "deferred-until-owner-reality-gate",
@@ -91,8 +101,9 @@
     "possibleLaterDirection": "representation-independent locality/interface identity may become a stronger falsifier after Workbench feedback, but it is not frozen or active"
   },
   "doNotDoNow": [
+    "implement W1 while W0 PR 20 is still open or unverified on main",
     "create or activate ANVIL-11 by inheritance",
-    "implement Physical Fabric Workbench before completing the W0 Design Gate",
+    "add pre-CUT torque activation or arbitrary CUT timing to B0",
     "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
     "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
     "promote TORQUE-PATCH, BEARING, ACTIVATE, REBIND, generic FUNCTION, Control, Surface or generic invalidation into src/foundation without new evidence",
@@ -101,12 +112,11 @@
     "refactor accepted experiment runtimes into a generic FabricRuntime merely to make Workbench composition convenient"
   ],
   "takeoverVerification": [
-    "resolve live main; this state does not embed a self-authoritative live-main SHA",
+    "resolve live main and open PRs; this state is intended as the post-W0-merge durable checkpoint and live Git overrides it while PR 20 remains open",
     "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 are ancestors of live main",
-    "verify the Epoch I executable baseline was qualified at tree 870a5b416c262eefbee13b817636a9246afb0378 by run 32372701068 before final docs/meta grounding",
-    "confirm activeWork is null against live open PRs; if a newer PR exists, inspect it before continuing",
-    "read docs/CURRENT_HANDOFF.md and docs/ANVIL_EPOCH_I_CLOSURE.md",
-    "confirm no canonical pointer starts TORQUE-PATCH-REPRESENTATION or ANVIL-11 by inheritance",
-    "begin only the Physical Fabric Workbench W0 Design Gate after the fingerprint matches"
+    "verify W0 PR 20 is merged before treating workbenchW0.status complete as live fact",
+    "read docs/workbench/W0-FINAL-SCOPE.md, W0-ADVERSARIAL-REVIEW.md and W0-VERDICT.md; later files supersede conflicting freedoms in the initial W0-DESIGN-GATE.md",
+    "confirm no executable Workbench implementation or ANVIL-11 was added inside W0",
+    "begin W1 only on a new integration branch/PR and implement only the merged W0-FINAL-SCOPE contract"
   ]
 }
