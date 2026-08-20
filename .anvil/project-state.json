@@ -12,9 +12,9 @@
   "activeWork": {
     "type": "maintenance",
     "name": "ANVIL Epoch I Closure",
-    "pr": 16,
-    "branch": "maintenance/epoch-i-closure-truth",
-    "phase": "C1-truth-and-governance-reset",
+    "pr": null,
+    "branch": "maintenance/epoch-i-infrastructure-hygiene",
+    "phase": "C2-infrastructure-hygiene",
     "scientificExperiment": null,
     "scientificClaim": null,
     "readyForPromotion": false,
@@ -49,11 +49,11 @@
     "baselineNonMainBranches": 18,
     "invariant": "closure may change truth/governance/tooling/packaging/neutral integration preparation but must not silently change ANVIL-00..10 scientific semantics",
     "checkpoints": [
-      "C0 baseline freeze",
-      "C1 truth and governance reset",
-      "C2 infrastructure hygiene",
-      "C3 repository hygiene",
-      "C4 Epoch I qualification and final freeze"
+      "C0 baseline freeze — complete",
+      "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
+      "C2 infrastructure hygiene — active",
+      "C3 repository hygiene — pending",
+      "C4 Epoch I qualification and final freeze — pending"
     ]
   },
   "nextStage": {
@@ -74,7 +74,7 @@
   },
   "doNotDoNow": [
     "create or activate ANVIL-11 during Epoch I closure",
-    "implement Physical Fabric Workbench behavior or UI inside the closure truth/governance PR",
+    "implement Physical Fabric Workbench behavior or UI during C2 infrastructure hygiene",
     "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
     "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
     "promote TORQUE-PATCH, BEARING, ACTIVATE, REBIND, generic FUNCTION, Control, Surface or generic invalidation into src/foundation without new evidence",
