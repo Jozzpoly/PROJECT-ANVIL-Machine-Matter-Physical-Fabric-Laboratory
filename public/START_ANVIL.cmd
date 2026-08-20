@@ -1,9 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title PROJECT ANVIL - Forge owner validation
-echo PROJECT ANVIL - Forge owner validation
-echo Reading the active gate from this exact artifact...
+title PROJECT ANVIL - Browser artifact
+echo PROJECT ANVIL - Browser artifact
+echo Reading provenance and entry point from this exact artifact...
+echo No scientific owner gate is active by default.
 echo.
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0serve-anvil.ps1"
 if errorlevel 1 (
