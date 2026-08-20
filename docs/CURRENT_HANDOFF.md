@@ -1,18 +1,19 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 TORQUE-PATCH-REBIND ACCEPTED / POST-PROMOTION MACRO AUDIT COMPLETE / NO ACTIVE EXPERIMENT**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSURE ACTIVE / NO ANVIL-11**
 
 Live Git and executable evidence override this pointer if they differ.
 
 ## Start here
 
-1. Resolve live `main` before writing.
-2. Accepted material truth is through **ANVIL-10 / TORQUE-PATCH-REBIND**.
-3. Material checkpoint: `ffde8c0babdd473454b3e769cb10fd31537a0c70`.
-4. Canonical evidence: `docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-EVIDENCE.md`.
-5. Evidence grounding: `ba7ce2dc67c6f7aa936e20a0294d9cc12208a549`.
-6. No experiment, PR or branch is active.
-7. The post-promotion macro audit selected **TORQUE-PATCH-REPRESENTATION** as the leading strategic candidate, but it is **not frozen and not active**.
+1. Resolve live `main` and the active work branch before writing.
+2. Accepted scientific truth is through **ANVIL-10 / TORQUE-PATCH-REBIND** only.
+3. Accepted material checkpoint: `ffde8c0babdd473454b3e769cb10fd31537a0c70`.
+4. ANVIL-10 evidence grounding: `ba7ce2dc67c6f7aa936e20a0294d9cc12208a549`.
+5. Active work is **maintenance**, not a scientific experiment: **ANVIL Epoch I Closure** on Draft PR **#16**, branch `maintenance/epoch-i-closure-truth`.
+6. Read `docs/ANVIL_EPOCH_I_CLOSURE.md` for the frozen closure scope and stop conditions.
+7. No ANVIL-11 is active, frozen or authorized by inheritance.
+8. The selected stage after closure is **Physical Fabric Workbench v0**, an owner-facing integration/reality gate using already accepted capabilities.
 
 ## Accepted ANVIL-10 result
 
@@ -20,7 +21,7 @@ ANVIL-10 supports only this bounded statement:
 
 > For the frozen single-bearing moving fixture, one unchanged persistent local TORQUE-PATCH can be re-lowered onto the rebound BEARING after a nearby CUT; a valid-looking stale pre-CUT action is rejected even though its old body ID still exists, and the fresh post-CUT action produces causal ON-vs-OFF torque through the correct new endpoint body without acting on the stale sibling.
 
-The key architectural consequence is **re-lowering, not migration**: persistent local active meaning survives this bounded topology rebuild, while `TorqueActionPlan` remains disposable compiled representation.
+The architectural consequence is **re-lowering, not migration**: persistent local active meaning survives this bounded topology rebuild while `TorqueActionPlan` remains disposable compiled representation.
 
 Promotion identity:
 
@@ -37,74 +38,75 @@ actual material merge   ffde8c0babdd473454b3e769cb10fd31537a0c70
 evidence grounding      ba7ce2dc67c6f7aa936e20a0294d9cc12208a549
 ```
 
-Actual material merge tree equals the Ready-qualified tree exactly.
+Ready qualification was 53/53 Node PASS + production build PASS + exact staged artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS. Launcher/Chromium are whole-product regression evidence, not 19 additional ANVIL-10 scientific falsifiers.
 
-Ready qualification: 53/53 Node PASS + production build PASS + exact staged artifact consumed + launcher self-test PASS + 19/19 Chromium regression PASS. Launcher/Chromium are whole-product regression evidence, not direct ANVIL-10 scientific evidence.
+## Why the previous next action was retired
 
-## Post-ANVIL-10 macro verdict
+The post-ANVIL-10 macro audit originally selected **TORQUE-PATCH-REPRESENTATION** as a strategic candidate. Subsequent adversarial review found two problems:
 
-### Vision delta
+1. the current `TorquePatch` uses `cellId@face` mainly as a local selector for an existing BEARING, while `effortNm` is a total torque action; no earned physical law says how torque should be copied or area-normalized across refined source faces;
+2. the project had accumulated enough isolated capability evidence that another narrow torque refinement had lower information value than exposing the accepted stack to direct owner evaluation as a composition.
 
-ANVIL now has bounded evidence that one persistent local active semantic can survive a disposable runtime topology change without making compiled body binding persistent truth. The remaining lock-in is one level higher: the local semantic still depends on the current authored `cellId@face` dialect.
+Therefore TORQUE-PATCH-REPRESENTATION is retained only as historical research context. It is **not the current next action** and must not be started automatically.
 
-### Leading candidate — TORQUE-PATCH-REPRESENTATION
+A later representation falsifier may instead target representation-independent locality/interface identity, but Workbench feedback should determine whether that is still the right frontier.
 
-Primary intended question, still to be critically designed:
+## Active stage — Epoch I Closure
 
-> Can the same physical local torque meaning be expressed and resolved across a deliberately different authored source representation/resolution without preserving `cellId@face` as semantic identity, without manual runtime-ID retargeting and without making torque scale accidentally with source patch count?
+The closure is not allowed to change accepted physics or semantic claims.
 
-Why this leads:
+Current checkpoint sequence:
 
-- directly attacks the Research Compass rule that cells are a dialect, not ontology;
-- challenges an already-earned active semantic rather than opening another isolated primitive;
-- ANVIL-08 demonstrates that authored-resolution/runtime-resolution decoupling is possible for bounded compliance, but does not prove it for active function;
-- consequence is high: if TORQUE-PATCH only survives while source cell identity remains fixed, active Machine Matter is still representation-locked.
+1. **C0 baseline freeze** — completed on the closure branch; exact pre-closure `main` and no-semantic-change invariant recorded.
+2. **C1 truth/governance reset** — active; make state, handoff, memory, README and agent rules agree on the Epoch I → Workbench transition.
+3. **C2 infrastructure hygiene** — after C1; fix misleading historical owner-artifact assumptions, manual test-registration omission risk and stale operational prose while preserving behavior.
+4. **C3 repository hygiene** — classify every non-main branch before any deletion; preserve unique scientific/process evidence.
+5. **C4 Epoch I qualification/freeze** — full regression, exact artifact/launcher/browser validation, test-identity audit and final cold handoff.
 
-### Critical design problem before preflight
+If any closure change requires editing accepted experiment/compiler/runtime semantics or physical thresholds, **stop and reclassify the work** instead of widening closure scope.
 
-Do **not** assume that refined faces each inherit `+100 N*m`, or that torque must be area-normalized. Those are different physical meanings.
+## Work types
 
-Before freezing an experiment, define one representation-independent physical localization/effort contract that makes coarse and refined authored sources genuinely equivalent. Prefer a design that tests physical locality rather than introducing a generic function-field ontology.
+ANVIL now distinguishes:
 
-### Alternatives re-ranked
+- **experiment** — new falsifiable scientific/semantic/physics question;
+- **foundation** — reusable boundary already supported by evidence;
+- **integration** — composition of accepted capabilities for system/owner evaluation; green integration is not automatically a new scientific claim;
+- **maintenance** — tooling/process/packaging/documentation/neutral infrastructure that preserves accepted semantics.
 
-**CONTROL-REBIND** — valuable later, but one-action carry-over is nearly tautological; making it discriminating would likely require multiple targets/addressing and therefore introduce routing at the same time.
+Physical Fabric Workbench v0 is intended to begin as **integration**, not ANVIL-11.
 
-**SURFACE / local traction** — major underexplored frontier and a strong later candidate, but opens new vocabulary before resolving the remaining authored-representation lock-in of an already-earned active semantic.
+## Selected next stage after closure — Physical Fabric Workbench v0
 
-**ACTIVE-DURING-REBIND** — useful stress/hardening question, but lower frontier information gain after LOAD-REBIND and TORQUE-PATCH-REBIND.
+Purpose:
 
-**FUNCTION × COMPLIANCE** — still confounded by rotational/distributed modes not earned by the frozen 1D compliance model.
+> Compose the smallest honest subset of already accepted ANVIL capabilities into an owner-facing specimen that lets the owner directly judge whether the current stack begins to express useful Machine Matter / Physical Fabric behavior.
 
-## Exact next action
+The Workbench should make authored truth versus disposable runtime interpretation visible and testable by a human. It should not hide limitations behind a polished demo.
 
-Critically design a bounded **TORQUE-PATCH-REPRESENTATION preflight only** before implementation.
+The first Workbench design should be decided only after cold takeover from the final Epoch I closure checkpoint. A promising existing composition to evaluate is the already earned chain around Matter → BEARING → TORQUE/ACTIVATE → CUT → REBIND → fresh torque action, but this is a design lead rather than frozen implementation scope.
 
-The design should first answer:
-
-1. what physical local target remains the same when source cells/refinement change;
-2. what `effort` quantity remains physically equivalent across those representations;
-3. how coarse/fine authored sources can differ materially enough to prove this is not preserved-ID bookkeeping;
-4. what wrong-scaling or manual-retarget control would expose a false-positive success;
-5. which structural and real-solver gates are needed without inventing a generic field architecture.
-
-Do not create/activate ANVIL-11 until that design survives adversarial review.
+Workbench must not create generic `FabricRuntime`, FUNCTION/Control/Surface ontology or new physical law merely because integration is inconvenient. If composition exposes a new scientific uncertainty, stop and formulate a separate experiment.
 
 ## Do not do now
 
-- no ANVIL-10 command migration, active-during-CUT, load/contact, transform, multiple-action, compliance or UI extension;
+- no ANVIL-11 during closure;
+- no Physical Fabric Workbench behavior/UI implementation in the truth/governance closure PR;
+- no more ANVIL-10 command migration, active-during-CUT, load/contact, transform, multiple-action, compliance or UI variants;
 - do not treat compiled torque actions as persistent/migrated state;
-- no generic FUNCTION/Control/Signal/Port or action-cache architecture;
+- no generic FUNCTION/Control/Signal/Port/Surface/action-cache architecture;
 - no foundation promotion from ANVIL-10 alone;
-- do not start CONTROL-REBIND merely because it was previously on the horizon;
-- do not copy `effortNm` onto every refined face or area-normalize it without a justified physical contract;
-- do not treat `cellId@face` as final Machine Matter ontology.
+- do not assume torque scaling across refined faces;
+- do not treat `cellId@face` as final Machine Matter ontology;
+- do not refactor accepted experiment runtimes into one generic framework merely for DRYness;
+- do not delete historical branches before ancestry/unique-history classification.
 
 ## Stable project documents
 
-- `AGENTS.md` — truth hierarchy and orchestration cadence.
-- `docs/EXPERIMENT_PROTOCOL.md` — per-experiment evidence lifecycle.
-- `docs/RESEARCH_COMPASS.md` — macro anti-drift method.
-- `docs/FOUNDATION.md` — accepted reusable boundaries only.
-- `AI_PROJECT_MEMORY.md` — concise capability/architecture index + current strategic pointer.
+- `AGENTS.md` — truth hierarchy, work types and orchestration discipline;
+- `docs/ANVIL_EPOCH_I_CLOSURE.md` — one-time Epoch I transition contract while closure is active;
+- `docs/EXPERIMENT_PROTOCOL.md` — scientific experiment lifecycle;
+- `docs/RESEARCH_COMPASS.md` — macro anti-drift method;
+- `docs/FOUNDATION.md` — accepted reusable boundaries only;
+- `AI_PROJECT_MEMORY.md` — concise accepted capability/architecture index + current strategic pointer;
 - `.anvil/project-state.json` — machine-readable current checkpoint claim.
