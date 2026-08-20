@@ -1,8 +1,21 @@
-# PROJECT ANVIL — Physical Fabric Workbench v0 / W0 Final Scope Candidate
+# PROJECT ANVIL — Physical Fabric Workbench v0 / W0 Final Scope
 
-Status: **FREEZE CANDIDATE — implementation still unauthorized until PR #20 final gate passes**
+Status: **ACCEPTED / FROZEN W1 CONTRACT — W0 MERGED / W1 SELECTED-NOT-ACTIVE**
 
-This document converts the adversarially narrowed B0 design into an exact W1 implementation contract. It is intentionally smaller than the first provisional concept.
+This document is the exact W1 implementation contract produced by the adversarially narrowed W0 design gate. It is intentionally smaller than the first provisional concept.
+
+W0 grounding:
+
+```text
+design PR                    #20
+accepted W0 head             b508cdb2a3b4faa78994a953d62624e2c787be8a
+W0 merge                     7eb545546d2261d1ab029f6cdc384003882c680e
+Ready/candidate run          32378408359
+owner artifact               9410033118
+owner artifact digest        sha256:c78f0872d4c7e985596ba636ad3c85c7412f9744cc07f4745c7bdd79c5ad0c65
+```
+
+This grounding is integration/transport evidence only. It does not create a new ANVIL scientific claim.
 
 ## 1. Selected specimen
 
@@ -255,15 +268,15 @@ W1 should retain the project's two-speed evidence discipline:
 
 Browser green proves implementation/integration behavior only. It does not create new physics evidence.
 
-## 12. W0 acceptance condition
+## 12. W0 acceptance record
 
-W0 may be accepted only if final review confirms:
+W0 was accepted only after final review confirmed:
 
-- PR #20 is docs/meta-only;
-- this scope is consistent with `W0-DESIGN-GATE.md` plus the adversarial narrowing record;
-- no required B0 behavior depends on new physical semantics;
+- PR #20 was docs/meta-only;
+- this scope was consistent with `W0-DESIGN-GATE.md` plus the adversarial narrowing record;
+- no required B0 behavior depended on new physical semantics;
 - owner evaluation can produce a meaningful negative result;
 - W1 can be attempted by explicit bounded orchestration rather than premature generic architecture;
-- the exact W0 head is grounded before implementation begins.
+- the exact W0 head was grounded before implementation begins.
 
-If all hold, the next work item is **W1 — implement B0 exactly as frozen here**.
+All conditions held. W0 was merged as `7eb545546d2261d1ab029f6cdc384003882c680e` after exact-head validation. The next work item is **W1 — implement B0 exactly as frozen here**, on a separate integration branch/PR after a fresh cold takeover.
