@@ -12,7 +12,7 @@ Research vocabulary such as steel/rubber, stiff/elastic/breakable, bearing/frict
 
 ## Evidence milestones — Epoch I
 
-Accepted bounded experiments currently include:
+The first bounded research epoch is closed with accepted science through:
 
 - **ANVIL-00 / COLLAPSE** — reduced rigid runtime representation from persistent source matter;
 - **ANVIL-01 / CUT** — bounded topology replacement with source identity and rigid-field motion transfer;
@@ -28,9 +28,11 @@ Accepted bounded experiments currently include:
 
 Each result is deliberately narrower than a universal material, relation, FUNCTION, power, control, Surface or representation-independent architecture. Exact claims and non-claims belong to the corresponding evidence records under `docs/experiments/`.
 
-## Current transition
+## After Epoch I
 
-ANVIL-00…10 form the first bounded research epoch. Before opening ANVIL-11, the project is performing an **Epoch I closure** and preparing **Physical Fabric Workbench v0**.
+ANVIL-00…10 form the first bounded research epoch, now **closed**. No ANVIL-11 is active by inheritance.
+
+The selected next stage is **Physical Fabric Workbench v0**, beginning with a **W0 Design Gate before implementation**.
 
 The Workbench is intended as an owner-facing integration/reality gate: compose already accepted capabilities into the smallest honest interactive specimen that lets the owner directly judge whether the current stack begins to express useful Machine Matter / Physical Fabric behavior.
 
@@ -39,8 +41,8 @@ Workbench success is not automatically a new scientific capability claim. If int
 For the **current live work and takeover state**, do not use this README as a roadmap. Start with:
 
 - [`.anvil/project-state.json`](.anvil/project-state.json) — compact machine-readable checkpoint claim;
-- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — cold-takeover instructions;
-- [`docs/ANVIL_EPOCH_I_CLOSURE.md`](docs/ANVIL_EPOCH_I_CLOSURE.md) — one-time closure contract while the transition is active.
+- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — cold-takeover instructions and exact next bounded action;
+- [`docs/ANVIL_EPOCH_I_CLOSURE.md`](docs/ANVIL_EPOCH_I_CLOSURE.md) — historical record of the completed Epoch I closure and its final executable qualification.
 
 Verify current-state documents against live Git before material work.
 

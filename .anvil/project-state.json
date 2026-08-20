@@ -9,17 +9,7 @@
     "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
     "verdictBoundary": "SUPPORTED FOR FROZEN FIXTURE; no generic FUNCTION, Control, Surface, representation-independence or Machine Matter ontology is earned"
   },
-  "activeWork": {
-    "type": "maintenance",
-    "name": "ANVIL Epoch I Closure",
-    "pr": 17,
-    "branch": "maintenance/epoch-i-infrastructure-hygiene",
-    "phase": "C2-infrastructure-hygiene",
-    "scientificExperiment": null,
-    "scientificClaim": null,
-    "readyForPromotion": false,
-    "scopeRecord": "docs/ANVIL_EPOCH_I_CLOSURE.md"
-  },
+  "activeWork": null,
   "anvil10": {
     "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
     "status": "promoted",
@@ -42,54 +32,81 @@
     "acceptedResult": "For the frozen single-bearing moving fixture, one unchanged persistent local TORQUE-PATCH can be re-lowered onto the rebound BEARING after CUT, a valid-looking stale pre-CUT action is rejected even though its old body still exists, and the fresh action produces causal post-CUT ON-vs-OFF torque through the correct new endpoint body without acting on the stale sibling."
   },
   "epochIClosure": {
-    "status": "in-progress",
+    "status": "complete",
     "baselineMain": "e24a0b940f111a14eaefc5efe51fb0975e30e888",
     "baselineTree": "178889bd7c4a24e1787b12fc1e726aede67e735f",
     "baselineOpenPrs": 0,
     "baselineNonMainBranches": 18,
-    "invariant": "closure may change truth/governance/tooling/packaging/neutral integration preparation but must not silently change ANVIL-00..10 scientific semantics",
+    "invariant": "closure changed truth/governance/tooling/packaging/neutral integration preparation without changing ANVIL-00..10 scientific semantics",
     "checkpoints": [
       "C0 baseline freeze — complete",
       "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
-      "C2 infrastructure hygiene — active on PR 17",
-      "C3 repository hygiene — pending",
-      "C4 Epoch I qualification and final freeze — pending"
+      "C2 infrastructure hygiene — merged as 4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0",
+      "C3 repository hygiene — merged as 5aaa5eca256bf64f83fa7949f05d29db25b894e8",
+      "C4 final qualification and cold-handoff grounding — complete when this docs/meta-only grounding reaches main"
+    ],
+    "finalQualification": {
+      "source": "275c872c8efbf53c396d8d0ed9873b7c023f3b93",
+      "syntheticMerge": "1a7547b9b3193ef2a7260fd42fd4a76cd7c169b2",
+      "qualifiedTree": "870a5b416c262eefbee13b817636a9246afb0378",
+      "actualC3Merge": "5aaa5eca256bf64f83fa7949f05d29db25b894e8",
+      "actualC3MergeTree": "870a5b416c262eefbee13b817636a9246afb0378",
+      "run": 32372701068,
+      "nodeTestFiles": 29,
+      "nodeTests": "53/53 PASS",
+      "browserTests": "19/19 PASS",
+      "launcher": "PASS",
+      "stagingArtifact": 9407755370,
+      "stagingDigest": "sha256:d89d72ee6909e44a6aac88957c9c67b60daaf2a338c583115a619c813a2d3ae2",
+      "ownerArtifact": 9407794380,
+      "ownerArtifactBytes": 425758,
+      "ownerArtifactDigest": "sha256:4280b53915286832c68eb2b6fa329c2b8a8d153a972595abc8893e2c117f786d",
+      "meaning": "whole-Epoch-I regression and owner-transport qualification only; it does not broaden any ANVIL scientific claim"
+    },
+    "branchAudit": "docs/ANVIL_EPOCH_I_BRANCH_AUDIT.md",
+    "preserveUniqueHistory": [
+      "experiment/anvil-00-collapse",
+      "foundation/lab-kernel"
+    ],
+    "residualDebt": [
+      "server-side main protection remains absent; expected-head and path-diff checks remain mandatory",
+      "deletion-safe historical refs remain until a supported direct branch-delete operation is available and ancestry is rechecked"
     ]
   },
   "nextStage": {
-    "name": "Physical Fabric Workbench v0",
-    "type": "integration-owner-reality-gate",
-    "status": "selected-after-epoch-i-closure-not-active",
-    "purpose": "compose already accepted ANVIL capabilities into the smallest honest owner-facing specimen that lets the owner directly judge whether the current stack begins to express useful Machine Matter / Physical Fabric behavior",
-    "scientificBoundary": "Workbench success is owner/integration evidence and does not by itself earn a new ANVIL-NN capability or generic ontology",
-    "firstDesignQuestion": "What is the smallest transparent specimen and interaction set that exposes authored matter versus disposable runtime interpretation and lets the owner exercise already accepted behavior without smuggling new semantics into integration code?",
-    "activationCondition": "finish Epoch I closure and cold-takeover from the final clean baseline before implementing Workbench behavior"
+    "name": "Physical Fabric Workbench v0 — W0 Design Gate",
+    "type": "integration-design-owner-reality-gate",
+    "status": "selected-not-active",
+    "purpose": "design the smallest honest owner-facing composition of already accepted ANVIL capabilities that can reveal whether the current stack begins to express useful Machine Matter / Physical Fabric behavior",
+    "scientificBoundary": "Workbench integration and owner judgement do not by themselves earn a new ANVIL-NN capability or generic ontology",
+    "firstAction": "in a new conversation, cold-takeover this final Epoch I baseline, compare at least two minimal specimen designs, adversarially reject any design that requires new physical semantics or generic architecture, and freeze a bounded W0 integration scope before implementation",
+    "implementationBoundary": "do not implement Workbench behavior until W0 design has separated accepted reuse from any new scientific uncertainty",
+    "designLead": "Matter -> BEARING -> TORQUE-PATCH/ACTIVATE -> CUT -> REBIND -> fresh re-lowered action is a promising composition lead, not frozen scope"
   },
   "researchHorizon": {
     "status": "deferred-until-owner-reality-gate",
     "importantUncertainty": "persistent local meaning is still tied to the current cellId@face authored dialect",
     "priorCandidate": "TORQUE-PATCH-REPRESENTATION",
-    "correction": "do not inherit TORQUE-PATCH-REPRESENTATION as ANVIL-11; its target/effort semantics were not sufficiently representation-independent and the owner-facing composition checkpoint now has higher information value",
+    "correction": "do not inherit TORQUE-PATCH-REPRESENTATION as ANVIL-11; its target/effort semantics were not sufficiently representation-independent and the owner-facing composition checkpoint has higher information value",
     "possibleLaterDirection": "representation-independent locality/interface identity may become a stronger falsifier after Workbench feedback, but it is not frozen or active"
   },
   "doNotDoNow": [
-    "create or activate ANVIL-11 during Epoch I closure",
-    "implement Physical Fabric Workbench behavior or UI during C2 infrastructure hygiene",
+    "create or activate ANVIL-11 by inheritance",
+    "implement Physical Fabric Workbench before completing the W0 Design Gate",
     "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
     "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
     "promote TORQUE-PATCH, BEARING, ACTIVATE, REBIND, generic FUNCTION, Control, Surface or generic invalidation into src/foundation without new evidence",
     "assume refined TORQUE-PATCH effort scales per face or by area before a physical authored contract is justified",
     "treat cellId@face as final Machine Matter ontology",
-    "refactor accepted experiment runtimes into a generic FabricRuntime merely to remove duplication",
-    "delete historical branches before ancestry and unique-history classification"
+    "refactor accepted experiment runtimes into a generic FabricRuntime merely to make Workbench composition convenient"
   ],
   "takeoverVerification": [
-    "resolve live main and compare it with the closure/final checkpoint claimed here",
-    "verify material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 is an ancestor of live main",
-    "verify ANVIL-10 evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 exists at or after the material merge",
-    "resolve activeWork PR/branch when non-null and inspect its exact delta before writing",
-    "read docs/ANVIL_EPOCH_I_CLOSURE.md while closure is active",
-    "after closure completes, confirm no canonical pointer tells a new agent to start TORQUE-PATCH-REPRESENTATION or ANVIL-11 by inheritance",
-    "do not implement Physical Fabric Workbench until the final Epoch I closure handoff is verified"
+    "resolve live main; this state does not embed a self-authoritative live-main SHA",
+    "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 are ancestors of live main",
+    "verify the Epoch I executable baseline was qualified at tree 870a5b416c262eefbee13b817636a9246afb0378 by run 32372701068 before final docs/meta grounding",
+    "confirm activeWork is null against live open PRs; if a newer PR exists, inspect it before continuing",
+    "read docs/CURRENT_HANDOFF.md and docs/ANVIL_EPOCH_I_CLOSURE.md",
+    "confirm no canonical pointer starts TORQUE-PATCH-REPRESENTATION or ANVIL-11 by inheritance",
+    "begin only the Physical Fabric Workbench W0 Design Gate after the fingerprint matches"
   ]
 }
