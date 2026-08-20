@@ -5,7 +5,9 @@ on:
     branches:
       - main
     paths-ignore:
+      - ".anvil/**"
       - "docs/**"
+      - "AGENTS.md"
       - "AI_PROJECT_MEMORY.md"
       - "README.md"
   pull_request:
@@ -85,10 +87,10 @@ jobs:
         shell: pwsh
         run: ./dist/serve-anvil.ps1 -SelfTest
 
-      - name: Install Chromium for runtime evidence
+      - name: Install Chromium for browser regression
         run: npx playwright install --with-deps chromium
 
-      - name: Run real browser evidence gate
+      - name: Run real browser regression gate
         run: npm run test:browser
 
       - name: Upload owner-candidate browser artifact
