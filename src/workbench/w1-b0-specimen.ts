@@ -1,6 +1,8 @@
 import type { RigidBodyPlan } from "../model.js";
 import {
   addVec3,
+  magnitudeVec3,
+  subtractVec3,
   type RigidMotion,
 } from "../foundation/spatial.js";
 import {
@@ -24,6 +26,7 @@ import { WorkbenchB0Controller, type WorkbenchB0State } from "./w1-b0-controller
 const ACTIVE_EFFORT_NM = 100;
 const CUT = ["a:0", "a:2"] as const;
 const PRE_CUT_STEPS = 31;
+const POST_CUT_STEPS = 30;
 
 const OMEGA_A = Object.freeze({ x: 0, y: 0, z: -0.65 });
 const OMEGA_B = Object.freeze({ x: 0, y: 0, z: 0.95 });
@@ -61,10 +64,30 @@ export interface WorkbenchB0TransitionReceipt {
   readonly freshActivation: "OFF";
 }
 
+export interface WorkbenchB0ObservationReceipt {
+  readonly observationSteps: number;
+  readonly activeActivation: "ON";
+  readonly controlActivation: "OFF";
+  readonly activeRelativeAngularSpeedRadps: number;
+  readonly controlRelativeAngularSpeedRadps: number;
+  readonly activeSpeedAdvantageRadps: number;
+  readonly activeBearingGapM: number;
+  readonly controlBearingGapM: number;
+  readonly staleSiblingBodyId: string;
+  readonly staleSiblingAngularDeltaRadps: number;
+  readonly staleSiblingLinearDeltaMps: number;
+}
+
 function bodyById(bodies: readonly RigidBodyPlan[], id: string): RigidBodyPlan {
   const body = bodies.find((candidate) => candidate.id === id);
   if (body === undefined) throw new Error(`W1 B0 missing accepted body ${id}`);
   return body;
+}
+
+function snapshotById(snapshots: readonly BearingRuntimeSnapshot[], id: string): BearingRuntimeSnapshot {
+  const snapshot = snapshots.find((candidate) => candidate.planBodyId === id);
+  if (snapshot === undefined) throw new Error(`W1 B0 missing runtime snapshot ${id}`);
+  return snapshot;
 }
 
 function createInitialMotion(rebind: RebindCompilation): Readonly<Record<string, RigidMotion>> {
@@ -119,9 +142,11 @@ export class WorkbenchB0Specimen {
   readonly #controller = new WorkbenchB0Controller();
   #preRuntime: RebindPhysics | null;
   #postRuntime: TorquePatchRebindPhysics | null = null;
+  #controlRuntime: TorquePatchRebindPhysics | null = null;
   #cutReadySnapshots: readonly BearingRuntimeSnapshot[] | null = null;
   #cutReadyReceipt: WorkbenchB0CutReadyReceipt | null = null;
   #transitionReceipt: WorkbenchB0TransitionReceipt | null = null;
+  #observationReceipt: WorkbenchB0ObservationReceipt | null = null;
   #disposed = false;
 
   private constructor(
@@ -168,6 +193,11 @@ export class WorkbenchB0Specimen {
     return this.#transitionReceipt;
   }
 
+  get observationReceipt(): WorkbenchB0ObservationReceipt | null {
+    this.#assertUsable();
+    return this.#observationReceipt;
+  }
+
   continueToCutReady(): WorkbenchB0CutReadyReceipt {
     this.#assertUsable();
     if (this.#controller.state.phase !== "INITIAL") {
@@ -202,24 +232,31 @@ export class WorkbenchB0Specimen {
 
     const beforeRelation = this.#rebind.before.relation;
     const afterRelation = this.#rebind.after.relation;
-    const transferredMotion = transferRebindMotion(this.#rebind, preSnapshots);
 
     // W0 requires replacement, not mutation/migration of the old runtime.
     preRuntime.dispose();
     this.#preRuntime = null;
 
     try {
+      const transferredMotion = transferRebindMotion(this.#rebind, preSnapshots);
       const freshCompilation = relowerTorquePatchToBearing(this.#authored.patch, this.#rebind.after);
       const postRuntime = await TorquePatchRebindPhysics.create(
         freshCompilation,
         this.#authored.bearing.matter.materials,
         transferredMotion,
       );
-      if (postRuntime.activation !== "OFF") {
+      const controlRuntime = await TorquePatchRebindPhysics.create(
+        freshCompilation,
+        this.#authored.bearing.matter.materials,
+        transferredMotion,
+      );
+      if (postRuntime.activation !== "OFF" || controlRuntime.activation !== "OFF") {
         postRuntime.dispose();
-        throw new Error("W1 B0 fresh post-CUT runtime did not start OFF");
+        controlRuntime.dispose();
+        throw new Error("W1 B0 fresh post-CUT runtime/control did not start OFF");
       }
       this.#postRuntime = postRuntime;
+      this.#controlRuntime = controlRuntime;
 
       const afterBodyIds = this.#rebind.after.physicalPlan.bodies.map((body) => body.id);
       const receipt: WorkbenchB0TransitionReceipt = {
@@ -242,21 +279,72 @@ export class WorkbenchB0Specimen {
       return receipt;
     } catch (error: unknown) {
       this.#postRuntime?.dispose();
+      this.#controlRuntime?.dispose();
       this.#postRuntime = null;
+      this.#controlRuntime = null;
       this.#disposed = true;
       throw error;
     }
+  }
+
+  activateAndObserve(): WorkbenchB0ObservationReceipt {
+    this.#assertUsable();
+    if (this.#controller.state.phase !== "POST_CUT_OFF") {
+      throw new Error(`W1 B0 cannot activate bounded observation from ${this.#controller.state.phase}`);
+    }
+    const active = this.#postRuntime;
+    const control = this.#controlRuntime;
+    const transition = this.#transitionReceipt;
+    if (active === null || control === null || transition === null) {
+      throw new Error("W1 B0 post-CUT runtime/control invariant is broken");
+    }
+
+    this.#controller.activateTorque();
+    active.setActivation("ON");
+    active.step(POST_CUT_STEPS);
+    control.step(POST_CUT_STEPS);
+
+    const activeFinal = active.snapshots();
+    const controlFinal = control.snapshots();
+    const activeSibling = snapshotById(activeFinal, transition.beforeEndpointBodyId);
+    const controlSibling = snapshotById(controlFinal, transition.beforeEndpointBodyId);
+    const activeSpeed = active.relativeAngularSpeedRadps();
+    const controlSpeed = control.relativeAngularSpeedRadps();
+
+    const receipt: WorkbenchB0ObservationReceipt = {
+      observationSteps: POST_CUT_STEPS,
+      activeActivation: active.activation,
+      controlActivation: control.activation,
+      activeRelativeAngularSpeedRadps: activeSpeed,
+      controlRelativeAngularSpeedRadps: controlSpeed,
+      activeSpeedAdvantageRadps: activeSpeed - controlSpeed,
+      activeBearingGapM: active.bearingKinematics().anchorGapM,
+      controlBearingGapM: control.bearingKinematics().anchorGapM,
+      staleSiblingBodyId: transition.beforeEndpointBodyId,
+      staleSiblingAngularDeltaRadps: magnitudeVec3(
+        subtractVec3(activeSibling.angularVelocity, controlSibling.angularVelocity),
+      ),
+      staleSiblingLinearDeltaMps: magnitudeVec3(
+        subtractVec3(activeSibling.linearVelocity, controlSibling.linearVelocity),
+      ),
+    };
+    this.#observationReceipt = receipt;
+    this.#controller.finishObservation();
+    return receipt;
   }
 
   async reset(): Promise<WorkbenchB0State> {
     this.#assertUsable();
     this.#preRuntime?.dispose();
     this.#postRuntime?.dispose();
+    this.#controlRuntime?.dispose();
     this.#preRuntime = await createPreCutRuntime(this.#authored, this.#rebind);
     this.#postRuntime = null;
+    this.#controlRuntime = null;
     this.#cutReadySnapshots = null;
     this.#cutReadyReceipt = null;
     this.#transitionReceipt = null;
+    this.#observationReceipt = null;
     return this.#controller.reset();
   }
 
@@ -264,8 +352,10 @@ export class WorkbenchB0Specimen {
     if (this.#disposed) return;
     this.#preRuntime?.dispose();
     this.#postRuntime?.dispose();
+    this.#controlRuntime?.dispose();
     this.#preRuntime = null;
     this.#postRuntime = null;
+    this.#controlRuntime = null;
     this.#disposed = true;
   }
 
