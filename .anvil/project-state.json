@@ -9,19 +9,7 @@
     "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
     "verdictBoundary": "SUPPORTED FOR FROZEN FIXTURE; no generic FUNCTION, Control, Surface, representation-independence or Machine Matter ontology is earned"
   },
-  "activeWork": {
-    "type": "integration-design",
-    "name": "Physical Fabric Workbench v0 — W0 Design Gate",
-    "pr": 20,
-    "branch": "integration/workbench-v0-w0-design",
-    "phase": "W0-final-grounding-and-merge",
-    "scientificExperiment": null,
-    "scientificClaim": null,
-    "implementationAuthorized": false,
-    "selectedCandidate": "B0 / post-rebind activation specimen",
-    "finalScope": "docs/workbench/W0-FINAL-SCOPE.md",
-    "verdict": "docs/workbench/W0-VERDICT.md"
-  },
+  "activeWork": null,
   "anvil10": {
     "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
     "status": "promoted",
@@ -86,23 +74,23 @@
     ]
   },
   "workbenchW0": {
-    "status": "accepted-design-pending-merge",
-    "pr": 20,
+    "status": "complete",
+    "designPr": 20,
     "initialDesign": "docs/workbench/W0-DESIGN-GATE.md",
     "adversarialReview": "docs/workbench/W0-ADVERSARIAL-REVIEW.md",
     "finalScope": "docs/workbench/W0-FINAL-SCOPE.md",
     "verdict": "docs/workbench/W0-VERDICT.md",
     "selectedSpecimen": "B0 / post-rebind activation specimen",
     "rejectedOriginalFreedom": "pre-CUT torque and arbitrary CUT timing/state were removed because they exceed the frozen ANVIL-10 dynamic path",
-    "implementationBoundary": "W1 becomes authorized only after the exact W0 docs/meta PR is merged to main and live Git is rechecked"
+    "scientificMeaning": "integration design only; W0 earns no new ANVIL scientific claim"
   },
   "nextStage": {
     "name": "Physical Fabric Workbench v0 — W1 B0 Implementation",
     "type": "integration-implementation-owner-reality-gate",
-    "status": "selected-pending-W0-merge",
+    "status": "selected-not-active",
     "purpose": "implement the exact B0 post-rebind activation specimen frozen by W0 without adding new scientific semantics or generic ontology",
     "scientificBoundary": "Workbench integration and owner judgement do not by themselves earn a new ANVIL-NN capability or generic ontology",
-    "firstActionAfterW0Merge": "cold-verify the merged W0 contract, create a separate W1 integration branch/PR, and implement only docs/workbench/W0-FINAL-SCOPE.md under its stop rules",
+    "firstAction": "cold-verify that W0 PR 20 is merged into live main, then create a separate W1 integration branch/PR and implement only docs/workbench/W0-FINAL-SCOPE.md under its stop rules",
     "implementationContract": "docs/workbench/W0-FINAL-SCOPE.md"
   },
   "researchHorizon": {
@@ -113,7 +101,7 @@
     "possibleLaterDirection": "representation-independent locality/interface identity may become a stronger falsifier after Workbench feedback, but it is not frozen or active"
   },
   "doNotDoNow": [
-    "implement Workbench executable behavior inside W0 PR 20",
+    "implement W1 while W0 PR 20 is still open or unverified on main",
     "create or activate ANVIL-11 by inheritance",
     "add pre-CUT torque activation or arbitrary CUT timing to B0",
     "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
@@ -124,11 +112,11 @@
     "refactor accepted experiment runtimes into a generic FabricRuntime merely to make Workbench composition convenient"
   ],
   "takeoverVerification": [
-    "resolve live main and open PRs; this state does not embed a self-authoritative live-main SHA",
-    "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6dae38c86c95b587e935e30 are not inferred; use the exact accepted evidenceGrounding field above and verify ancestry from live Git",
-    "confirm PR 20 / integration/workbench-v0-w0-design is the only active W0 transaction while this state is unmerged",
-    "read docs/workbench/W0-ADVERSARIAL-REVIEW.md, W0-FINAL-SCOPE.md and W0-VERDICT.md; later files supersede conflicting freedoms in the initial W0-DESIGN-GATE.md",
-    "confirm PR 20 remains docs/meta-only with no executable Workbench code or scientific source/evidence changes",
-    "after W0 merge, do not implement from conversation memory; implement only the merged W0-FINAL-SCOPE contract on a new W1 branch"
+    "resolve live main and open PRs; this state is intended as the post-W0-merge durable checkpoint and live Git overrides it while PR 20 remains open",
+    "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 are ancestors of live main",
+    "verify W0 PR 20 is merged before treating workbenchW0.status complete as live fact",
+    "read docs/workbench/W0-FINAL-SCOPE.md, W0-ADVERSARIAL-REVIEW.md and W0-VERDICT.md; later files supersede conflicting freedoms in the initial W0-DESIGN-GATE.md",
+    "confirm no executable Workbench implementation or ANVIL-11 was added inside W0",
+    "begin W1 only on a new integration branch/PR and implement only the merged W0-FINAL-SCOPE contract"
   ]
 }
