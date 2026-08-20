@@ -9,7 +9,18 @@
     "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
     "verdictBoundary": "SUPPORTED FOR FROZEN FIXTURE; no generic FUNCTION, Control, Surface, representation-independence or Machine Matter ontology is earned"
   },
-  "activeWork": null,
+  "activeWork": {
+    "type": "integration-design",
+    "name": "Physical Fabric Workbench v0 — W0 Design Gate",
+    "pr": 20,
+    "branch": "integration/workbench-v0-w0-design",
+    "phase": "W0-adversarial-design-review",
+    "scientificExperiment": null,
+    "scientificClaim": null,
+    "implementationAuthorized": false,
+    "designDocument": "docs/workbench/W0-DESIGN-GATE.md",
+    "provisionalCandidate": "B / active topology re-lowering specimen"
+  },
   "anvil10": {
     "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
     "status": "promoted",
@@ -43,7 +54,7 @@
       "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
       "C2 infrastructure hygiene — merged as 4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0",
       "C3 repository hygiene — merged as 5aaa5eca256bf64f83fa7949f05d29db25b894e8",
-      "C4 final qualification and cold-handoff grounding — complete when this docs/meta-only grounding reaches main"
+      "C4 final qualification and cold-handoff grounding — merged as 56993324c636e55607b18059ada4e33153d263be"
     ],
     "finalQualification": {
       "source": "275c872c8efbf53c396d8d0ed9873b7c023f3b93",
@@ -76,12 +87,12 @@
   "nextStage": {
     "name": "Physical Fabric Workbench v0 — W0 Design Gate",
     "type": "integration-design-owner-reality-gate",
-    "status": "selected-not-active",
+    "status": "active-design",
     "purpose": "design the smallest honest owner-facing composition of already accepted ANVIL capabilities that can reveal whether the current stack begins to express useful Machine Matter / Physical Fabric behavior",
     "scientificBoundary": "Workbench integration and owner judgement do not by themselves earn a new ANVIL-NN capability or generic ontology",
-    "firstAction": "in a new conversation, cold-takeover this final Epoch I baseline, compare at least two minimal specimen designs, adversarially reject any design that requires new physical semantics or generic architecture, and freeze a bounded W0 integration scope before implementation",
-    "implementationBoundary": "do not implement Workbench behavior until W0 design has separated accepted reuse from any new scientific uncertainty",
-    "designLead": "Matter -> BEARING -> TORQUE-PATCH/ACTIVATE -> CUT -> REBIND -> fresh re-lowered action is a promising composition lead, not frozen scope"
+    "currentResult": "Candidate B / active topology re-lowering specimen provisionally survives the capability-ledger and semantic-gap attack; implementation remains unauthorized until W0 adversarial review and exact scope freeze complete",
+    "implementationBoundary": "do not implement Workbench behavior until W0 is accepted and the exact W1 contract is frozen",
+    "designDocument": "docs/workbench/W0-DESIGN-GATE.md"
   },
   "researchHorizon": {
     "status": "deferred-until-owner-reality-gate",
@@ -91,8 +102,8 @@
     "possibleLaterDirection": "representation-independent locality/interface identity may become a stronger falsifier after Workbench feedback, but it is not frozen or active"
   },
   "doNotDoNow": [
+    "implement Workbench executable behavior before W0 is accepted",
     "create or activate ANVIL-11 by inheritance",
-    "implement Physical Fabric Workbench before completing the W0 Design Gate",
     "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
     "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
     "promote TORQUE-PATCH, BEARING, ACTIVATE, REBIND, generic FUNCTION, Control, Surface or generic invalidation into src/foundation without new evidence",
@@ -101,12 +112,11 @@
     "refactor accepted experiment runtimes into a generic FabricRuntime merely to make Workbench composition convenient"
   ],
   "takeoverVerification": [
-    "resolve live main; this state does not embed a self-authoritative live-main SHA",
+    "resolve live main and open PRs; this state does not embed a self-authoritative live-main SHA",
     "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 are ancestors of live main",
-    "verify the Epoch I executable baseline was qualified at tree 870a5b416c262eefbee13b817636a9246afb0378 by run 32372701068 before final docs/meta grounding",
-    "confirm activeWork is null against live open PRs; if a newer PR exists, inspect it before continuing",
-    "read docs/CURRENT_HANDOFF.md and docs/ANVIL_EPOCH_I_CLOSURE.md",
-    "confirm no canonical pointer starts TORQUE-PATCH-REPRESENTATION or ANVIL-11 by inheritance",
-    "begin only the Physical Fabric Workbench W0 Design Gate after the fingerprint matches"
+    "confirm PR 20 / integration/workbench-v0-w0-design is the only active material design transaction before continuing W0",
+    "read docs/workbench/W0-DESIGN-GATE.md and adversarially verify the capability ledger against accepted source/evidence",
+    "confirm no executable Workbench implementation or ANVIL-11 has been added to W0",
+    "do not authorize W1 until Candidate B survives final adversarial review and exact W0 scope freeze"
   ]
 }
