@@ -12,7 +12,7 @@
   "activeWork": {
     "type": "maintenance",
     "name": "ANVIL Epoch I Closure",
-    "pr": null,
+    "pr": 17,
     "branch": "maintenance/epoch-i-infrastructure-hygiene",
     "phase": "C2-infrastructure-hygiene",
     "scientificExperiment": null,
@@ -51,7 +51,7 @@
     "checkpoints": [
       "C0 baseline freeze — complete",
       "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
-      "C2 infrastructure hygiene — active",
+      "C2 infrastructure hygiene — active on PR 17",
       "C3 repository hygiene — pending",
       "C4 Epoch I qualification and final freeze — pending"
     ]
