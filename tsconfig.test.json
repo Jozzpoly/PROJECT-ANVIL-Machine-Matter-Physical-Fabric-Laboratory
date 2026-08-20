@@ -15,6 +15,7 @@
     "src/physics.ts",
     "src/foundation/**/*.ts",
     "src/experiments/**/*.ts",
-    "src/workbench/**/*.ts"
+    "src/workbench/w1-b0-controller.ts",
+    "src/workbench/w1-b0-specimen.ts"
   ]
 }
