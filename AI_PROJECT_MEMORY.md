@@ -4,7 +4,7 @@ Last strategic grounding: 2026-08-20.
 
 Accepted scientific truth is through **ANVIL-10 / TORQUE-PATCH-REBIND**. **Epoch I (ANVIL-00…10) is closed.** No ANVIL-11 is active.
 
-Active work is **Physical Fabric Workbench v0 — W0 Design Gate**, Draft PR **#20**, branch `integration/workbench-v0-w0-design`. This is **integration design only**. Workbench executable implementation is not yet authorized.
+Active transaction is **Physical Fabric Workbench v0 — W0 Design Gate**, Draft PR **#20**, branch `integration/workbench-v0-w0-design`. W0 has adversarially selected **B0 / post-rebind activation specimen**. Workbench executable implementation is still forbidden inside PR #20; W1 becomes authorized only after exact W0 merge + live verification.
 
 ## Authority
 
@@ -36,8 +36,6 @@ Exact scientific claims, gates, negative evidence and promotion identities live 
 
 ## ANVIL-10 accepted boundary
 
-Promotion identity:
-
 ```text
 frozen preflight        d89f001705a8b80da822792ecef24e30af31ac89
 A/B source/run          4be76be143a93acc13c45842218d5efa4e1dfe4a / 32199521910
@@ -49,15 +47,13 @@ material merge           ffde8c0babdd473454b3e769cb10fd31537a0c70
 evidence grounding       ba7ce2dc67c6f7aa936e20a0294d9cc12208a549
 ```
 
-Key frozen discriminator remained strong: ACTIVE-vs-OFF final relative-speed advantage `5.955601841211319 rad/s` versus frozen minimum `0.25 rad/s`; stale sibling angular and linear deltas were both zero.
+Key frozen discriminator: ACTIVE-vs-OFF final relative-speed advantage `5.955601841211319 rad/s` versus frozen minimum `0.25 rad/s`; stale sibling angular and linear deltas were both zero.
 
 Supported interpretation: **persistent semantic re-lowering across changed disposable representation**, not persistence/migration of `TorqueActionPlan` or solver state.
 
 ANVIL-10 does not earn generic FUNCTION, Control, Signal, routing, Surface, action-cache invalidation, command migration, representation independence or foundation promotion.
 
 ## Epoch I closure — complete
-
-Closure stopped primitive accumulation before the first owner-facing composition checkpoint. It did not reopen or broaden ANVIL-00…10 science.
 
 ```text
 C0 pre-closure main       e24a0b940f111a14eaefc5efe51fb0975e30e888
@@ -69,106 +65,120 @@ Q0 / C3 tree              870a5b416c262eefbee13b817636a9246afb0378
 Q0 run                    32372701068
 ```
 
-Q0 final executable regression: 29 automatically discovered Node test files, 53/53 Node + real-Box3D tests PASS, production build PASS, neutral launcher PASS and 19/19 Chromium PASS. This is whole-project regression/transport evidence, not new science.
+Q0: 29 automatically discovered Node files, 53/53 Node + real-Box3D PASS, production build PASS, neutral launcher PASS, 19/19 Chromium PASS. Whole-project regression/transport evidence only.
 
-Residual non-blocking debt:
+Residual non-blocking debt: no server-side `main` protection; deletion-safe historical refs remain. Expected-head/path audits are mandatory.
 
-- server-side `main` protection remains absent; expected-head and changed-path audits are mandatory;
-- safe-to-delete historical refs remain until a supported direct delete operation is available and ancestry is rechecked.
+## Workbench W0 authority
 
-## Active stage — Workbench W0 Design Gate
+Read Workbench design in this order:
 
-Canonical design document: `docs/workbench/W0-DESIGN-GATE.md`.
+1. `docs/workbench/W0-FINAL-SCOPE.md` — exact W1 contract;
+2. `docs/workbench/W0-ADVERSARIAL-REVIEW.md` — narrowing evidence;
+3. `docs/workbench/W0-VERDICT.md` — acceptance logic;
+4. `docs/workbench/W0-DESIGN-GATE.md` — initial provisional design/history only when not contradicted by later files.
 
-Primary W0 question:
+## W0 result
 
-> What is the smallest transparent owner-facing specimen that composes already accepted ANVIL behavior, lets the owner judge whether the current stack begins to express useful Machine Matter / Physical Fabric, and does not require us to invent new physical semantics or generic ontology merely to make the composition convenient?
+Candidates:
 
-W0 compares:
+- A / passive topology — safe but too close to existing ANVIL-03 owner gate; fallback only.
+- B / original active topology — **rejected as proposed** because pre-CUT torque + arbitrary owner-selected CUT timing could feed unqualified dynamic states into the topology transaction.
+- **B0 / post-rebind activation — accepted design.**
+- C / compliance-resolution — deferred as a separate possible later specimen.
 
-- **Candidate A — passive topology / REBIND**;
-- **Candidate B — active topology / re-lowering**;
-- **Candidate C — compliance / resolution**.
+This correction was substantive: W0 did not merely confirm its first idea.
 
-Current provisional ranking: **B > C > A** for first-specimen owner information gain/composition value, with A lowest semantic risk.
-
-Candidate B sequence:
+## B0 exact concept
 
 ```text
-Matter + BEARING + local TORQUE-PATCH
-  → runtime OFF
-  → ON / visible torque
-  → OFF
-  → one frozen nearby CUT
-  → old runtime discarded
-  → changed body decomposition
-  → same BEARING reconstructed
-  → same persistent TORQUE-PATCH re-lowered
-  → fresh runtime OFF
-  → owner turns ON again
-  → torque acts through rebound endpoint
+AUTHORED:
+Matter + one BEARING + one local TORQUE-PATCH
+
+PRE-CUT:
+known moving passive state
+→ deterministic progression to CUT READY
+→ no pre-CUT torque activation
+
+OWNER:
+execute one accepted nearby CUT
+
+TRANSACTION:
+old runtime discarded
+motion transferred
+2 bodies → 3 bodies
+same persistent BEARING reconstructed
+same persistent TORQUE-PATCH re-lowered
+fresh post-CUT runtime/action starts OFF
+
+OWNER:
+activate torque
+
+OBSERVATION:
+bounded active window
+causal torque through rebound endpoint
+stale sibling is not part of fresh action binding
 ```
 
-The central physical transaction already exists across accepted ANVIL-03/09/10 test/runtime paths. W0 therefore treats the first Workbench as explicit orchestration/presentation of accepted behavior, not as a new runtime architecture.
+Important: B0 does **not** demonstrate “active behavior survived through CUT.” It demonstrates that persistent source meaning survives/rebinds and a **fresh** compiled action derived after the transaction can act correctly.
 
-## W0 hard boundaries
+## Frozen W1 scope after W0 merge
 
-No implementation before W0 acceptance/freeze.
-
-First specimen must not add:
-
-- arbitrary CUT locations;
-- active torque during CUT;
-- activation-state migration through reconstruction;
-- torque magnitude/scaling editor semantics;
-- gravity/contact/load/compliance composition;
-- generic `FabricRuntime`;
-- generic Relation/Entity/Component/FUNCTION/Control/Signal/Surface/Power architecture;
-- new authored references to runtime IDs;
-- foundation promotion of BEARING/TORQUE-PATCH/ACTIVATE/REBIND;
-- representation-independent claims for `cellId@face`.
-
-If implementation needs one of these to function, stop integration and formulate the missing uncertainty separately.
-
-## Provisional v0 scope
-
-If W0 is accepted, W1 may implement only:
+W1 may implement only:
 
 - one frozen authored fixture;
 - one persistent BEARING;
-- one persistent local TORQUE-PATCH with frozen effort;
-- AUTHORED / PHYSICAL / BOTH view modes;
-- run/pause/reset;
-- binary OFF/ON;
-- one marked accepted CUT, enabled only while OFF;
-- explicit 2-body → 3-body runtime decomposition;
-- explicit BEARING reconstruction and TORQUE-PATCH re-lowering;
-- fresh post-CUT runtime starting OFF;
-- owner turning torque ON again;
-- optional technical/provenance details.
+- one persistent TORQUE-PATCH with frozen effort;
+- **AUTHORED MATTER / RUNTIME INTERPRETATION / BOTH** views;
+- deterministic progression to CUT READY;
+- one marked accepted CUT;
+- explicit 2 → 3 runtime body decomposition;
+- BEARING reconstruction;
+- same source TORQUE-PATCH re-lowering;
+- fresh post-CUT activation OFF;
+- one bounded post-CUT activation/observation window;
+- optional background OFF control / technical provenance reveal;
+- reset;
+- Workbench-specific bounded controller/rendering/glue/tests only.
 
-W1 should use an explicit Workbench-specific phase controller and experiment-local APIs. Elegance/DRY is subordinate to preserving epistemic boundaries.
+W1 must not add:
 
-## Owner reality gate
+- pre-CUT torque activation;
+- arbitrary pre-CUT time/CUT timing/location;
+- active-during-CUT;
+- activation/action/solver-state migration;
+- torque magnitude/scaling editor semantics;
+- indefinite owner control presented as accepted behavior;
+- gravity/contact/load/compliance composition;
+- generic `FabricRuntime`;
+- generic Relation/Entity/Component/FUNCTION/Control/Signal/Surface/Power architecture;
+- foundation promotion for integration convenience;
+- changes to accepted ANVIL-00…10 semantics or thresholds.
 
-Future owner verdict categories:
+Any required forbidden item is a STOP/reclassification point.
 
-- **VALUE SIGNAL** — composition begins to feel like useful Physical Fabric rather than renamed mechanism;
-- **LEGIBLE BUT SCRIPTED** — idea is understandable but still feels like a prepared machine; investigate authorship/locality/editing/emergence before adding more physics;
-- **NO VALUE SIGNAL** — composition does not yet make the abstraction useful; reopen the macro hypothesis rather than deepen the same stack automatically.
+## Owner Reality Gate
 
-Owner judgement is integration evidence only and does not broaden science.
+First-pass observation must occur before detailed technical explanation. Ask what remained the same, what changed, where torque meaning appears to live, and what the owner expects after activation.
 
-## Immediate orchestration task
+Then technical reveal may show source IDs, body decomposition, rebound bearing provenance, fresh action binding, stale runtime body and optional control diagnostics.
 
-PR #20 remains design-only. Before W1 can be authorized:
+Verdicts:
 
-1. verify exact live `main`, PR #20 head and changed paths;
-2. adversarially attack Candidate B and try to find a required new physical/semantic rule;
-3. verify the capability ledger against accepted source/evidence;
-4. verify the proposed phase controller is bounded orchestration, not disguised generic runtime architecture;
-5. verify owner questions can produce a meaningful negative result;
-6. freeze exact v0 scope, non-claims and stop rules;
-7. merge only docs/meta W0 design state.
+- **VALUE SIGNAL**;
+- **LEGIBLE BUT SCRIPTED**;
+- **NO VALUE SIGNAL**.
 
-No executable Workbench code belongs in W0.
+All are integration evidence only. `LEGIBLE BUT SCRIPTED` should point toward authorship/locality/editing/emergence investigation rather than automatic primitive accumulation.
+
+## Immediate orchestration state
+
+PR #20 remains **docs/meta-only W0**. Before merge:
+
+1. verify exact head/base and all changed paths;
+2. verify state/handoff/memory point to B0 + final scope;
+3. verify no executable/scientific source/evidence delta;
+4. run required sanity gate;
+5. merge with expected-head discipline.
+
+After W0 merge, create a **new W1 integration branch/PR** and cold-read the merged final scope. Do not implement W1 inside PR #20 and do not resurrect superseded Candidate B freedoms from conversation memory.
