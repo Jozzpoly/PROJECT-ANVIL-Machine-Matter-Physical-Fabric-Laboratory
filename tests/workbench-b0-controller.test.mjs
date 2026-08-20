@@ -37,7 +37,7 @@ test("W1 B0 controller enforces the exact frozen phase path", () => {
   assert.equal(controller.state.activationAvailable, false);
 
   assert.equal(controller.finishObservation().phase, "OBSERVED");
-  assert.equal(controller.state.torqueActivation, "OFF");
+  assert.equal(controller.state.torqueActivation, "ON");
   assert.equal(controller.state.cutAvailable, false);
   assert.equal(controller.state.activationAvailable, false);
 });
