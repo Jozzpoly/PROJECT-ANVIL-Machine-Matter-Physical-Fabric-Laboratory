@@ -1,8 +1,9 @@
-import type { RigidBodyPlan } from "../model.js";
+import type { GridPosition, RigidBodyPlan, Vec3 } from "../model.js";
 import {
   addVec3,
   magnitudeVec3,
   subtractVec3,
+  type Quat,
   type RigidMotion,
 } from "../foundation/spatial.js";
 import {
@@ -76,6 +77,40 @@ export interface WorkbenchB0ObservationReceipt {
   readonly staleSiblingBodyId: string;
   readonly staleSiblingAngularDeltaRadps: number;
   readonly staleSiblingLinearDeltaMps: number;
+}
+
+export interface WorkbenchB0VisualCell {
+  readonly id: string;
+  readonly grid: GridPosition;
+  readonly displayColor: string;
+}
+
+export interface WorkbenchB0VisualBody {
+  readonly id: string;
+  readonly sourceCellIds: readonly string[];
+  readonly sourceCenterOfMassWorld: Vec3;
+  readonly position: Vec3;
+  readonly rotation: Quat;
+}
+
+export interface WorkbenchB0VisualSnapshot {
+  readonly phase: WorkbenchB0State["phase"];
+  readonly cellSizeM: number;
+  readonly cells: readonly WorkbenchB0VisualCell[];
+  readonly bodies: readonly WorkbenchB0VisualBody[];
+  readonly bearing: Readonly<{
+    sourceBearingId: string;
+    bodyAId: string;
+    bodyBId: string;
+    anchorAWorld: Vec3;
+    anchorBWorld: Vec3;
+    anchorGapM: number;
+  }>;
+  readonly patch: Readonly<{
+    sourcePatchId: string;
+    target: Readonly<{ cellId: string; face: string }>;
+    currentBodyId: string;
+  }>;
 }
 
 function bodyById(bodies: readonly RigidBodyPlan[], id: string): RigidBodyPlan {
@@ -196,6 +231,56 @@ export class WorkbenchB0Specimen {
   get observationReceipt(): WorkbenchB0ObservationReceipt | null {
     this.#assertUsable();
     return this.#observationReceipt;
+  }
+
+  visualSnapshot(): WorkbenchB0VisualSnapshot {
+    this.#assertUsable();
+    const phase = this.#controller.state.phase;
+    const preCut = phase === "INITIAL" || phase === "PRE_CUT" || phase === "CUT_READY";
+    const compilation = preCut ? this.#rebind.before : this.#rebind.after;
+    const runtime = preCut ? this.#preRuntime : this.#postRuntime;
+    if (runtime === null) throw new Error(`W1 B0 visual runtime unavailable in ${phase}`);
+
+    const snapshots = runtime.snapshots();
+    const kinematics = runtime.bearingKinematics();
+    const materialById = new Map(
+      this.#authored.bearing.matter.materials.map((material) => [material.id, material] as const),
+    );
+    const currentBodyId = compilation.physicalPlan.cellToBody[this.#authored.patch.target.cellId];
+    if (currentBodyId === undefined) throw new Error("W1 B0 visual patch target has no current body");
+
+    return {
+      phase,
+      cellSizeM: this.#authored.bearing.matter.cellSizeM,
+      cells: this.#authored.bearing.matter.cells.map((cell) => ({
+        id: cell.id,
+        grid: { ...cell.grid },
+        displayColor: materialById.get(cell.materialId)?.displayColor ?? "#d8e2f0",
+      })),
+      bodies: compilation.physicalPlan.bodies.map((body) => {
+        const snapshot = snapshotById(snapshots, body.id);
+        return {
+          id: body.id,
+          sourceCellIds: [...body.sourceCellIds],
+          sourceCenterOfMassWorld: { ...body.centerOfMassWorld },
+          position: { ...snapshot.position },
+          rotation: { ...snapshot.rotation },
+        };
+      }),
+      bearing: {
+        sourceBearingId: compilation.relation.sourceBearingId,
+        bodyAId: compilation.relation.bodyAId,
+        bodyBId: compilation.relation.bodyBId,
+        anchorAWorld: { ...kinematics.anchorAWorld },
+        anchorBWorld: { ...kinematics.anchorBWorld },
+        anchorGapM: kinematics.anchorGapM,
+      },
+      patch: {
+        sourcePatchId: this.#authored.patch.id,
+        target: { ...this.#authored.patch.target },
+        currentBodyId,
+      },
+    };
   }
 
   continueToCutReady(): WorkbenchB0CutReadyReceipt {
