@@ -1,45 +1,54 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / P06 PRODUCT DESIGN ACCEPTED / C6 IMPLEMENTATION READY**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / P06 PRODUCT DESIGN ACCEPTED / C6 IMPLEMENTATION READY / NO ACTIVE MATERIAL WORK / I1 NEXT**
 
 Live Git/code + executable evidence override this checkpoint if they differ.
 
-## Cold takeover
+## 1. First action in the new implementation conversation
 
-Before any implementation:
+Do not implement from this file alone.
 
-1. resolve live `main` and open PRs;
-2. read `.anvil/project-state.json`;
-3. read this handoff;
-4. read `docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md` as final Product Design authority;
-5. read **`docs/studio/C6-IMPLEMENTATION-READY.md`** as implementation authority;
-6. consult C5A/C5B/P06.7A/P06.7B only when one specific Product Contract detail needs depth;
-7. inspect live `package.json`, `tsconfig.json`, `src/bootstrap.ts`, CI and accepted experiment APIs before writing.
+1. Resolve live repository, `main` and open PRs.
+2. Expected sealed condition:
+   - final pre-implementation seal PR #33 is merged;
+   - no material PR is open;
+   - no I1 branch/PR has already been started by another orchestrator.
+3. Read `.anvil/project-state.json` as a checkpoint claim.
+4. Read this handoff.
+5. Read `docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md` — Product Design authority.
+6. Read `docs/studio/C6-IMPLEMENTATION-READY.md` — implementation authority.
+7. Read `docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md` only to validate why the seal is trustworthy or when reconciliation is needed.
+8. Inspect live `package.json`, `tsconfig.json`, `src/bootstrap.ts`, `.github/workflows/ci.yml` and only the accepted experiment APIs required by I1.0/I1.
+9. If the fingerprint reconciles, **do not reconstruct or redesign P01–P06 and do not re-audit ANVIL-00…10 before ordinary continuation.**
 
-Do not reconstruct P01–P06 from conversation history when these live records are coherent.
+Historical branch names are not active-work authority. Old experiment/foundation/workbench/design/spike branches remain as evidence/donor refs. Active work requires a live open PR or explicit current state/handoff that reconciles with Git.
 
-## Scientific / evidence boundary
+## 2. Accepted scientific truth
 
-Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. Epoch I is closed. No ANVIL-11 is active or implied by Studio implementation.
+Accepted science remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. Epoch I is closed. No ANVIL-11 is active or implied by Studio implementation.
 
-Historical evidence:
+Accepted bounded chain:
 
-- W1 / PR #22 — CLOSED UNMERGED, Owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**. Dashboard/gate form is negative product evidence.
-- P04 / PR #23 — closed-unmerged boundary proof PASS for first active-bearing Studio envelope.
-- P05 / PR #24 — closed-unmerged technology proof PASS: Vite + TypeScript, React sparse editor shell, imperative Three.js/WebGL2 presentation, existing Box3D/ANVIL runtime.
-- P06 attempt #1 / PR #26 — INVALID / INTERRUPTED / CLOSED UNMERGED; generated mockup rejected.
+`COLLAPSE → CUT → BEARING → REBIND → LOAD-REBIND → TORQUE → TORQUE-PATCH → ELASTIC-SEAM → COMPLIANCE-RESOLUTION → ACTIVATE → TORQUE-PATCH-REBIND`
 
-## Project self-model
+Do not generalize this into generic FUNCTION, Control, Surface, Relation, final material ontology or representation independence.
 
-Operational metaphor only:
+The final pre-implementation audit independently confirmed that from fully qualified executable merge `5aaa5eca256bf64f83fa7949f05d29db25b894e8` through C6 base `a9b5381d5535e55fc0f91b37599d05c5be4f6d28`, all main changes were docs/meta only. The underlying executable baseline had already passed full run `32372701068`: **53/53 Node tests, build, launcher self-test and 19/19 Chromium tests**.
 
-- **Owner** — purpose, values, subjective acceptance, explicit vision changes;
-- **Orchestrator** — investigation, falsification, planning, implementation, continuity;
-- **Project self-model** — accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next question.
+The final seal PR #33 must itself pass a fresh exact-head full candidate gate before merge. That run is repository/workflow/handoff smoke evidence, not a new physics claim.
 
-Contradictions against accepted truth/boundaries must be surfaced and consciously reclassified, never silently executed.
+## 3. Product-history boundary
 
-## Product authority
+Keep these outcomes distinct:
+
+- **W1 / PR #22 — CLOSED UNMERGED.** Owner verdict: **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**. Its dashboard/gate presentation is negative product evidence, not Studio direction.
+- **P04 / PR #23 — CLOSED UNMERGED PASS.** Boundary/integration donor evidence only.
+- **P05 / PR #24 — CLOSED UNMERGED PASS.** Three/React technology-boundary donor evidence only.
+- **P06 attempt #1 / PR #26 — CLOSED UNMERGED INVALID / INTERRUPTED.** Generated dashboard-heavy concept is rejected and is not a design reference.
+- **P06 recovered Product Design — ACCEPTED.** Canonical live records only under `docs/studio/`.
+- **C6 — IMPLEMENTATION READY.** No Studio product code has been accepted yet.
+
+## 4. Product authority
 
 **ANVIL Studio is one long-lived, world-first interactive 3D laboratory for Physical Fabric.**
 
@@ -47,105 +56,198 @@ Grounded loop:
 
 `BUILD → GIVE LOCAL MEANING → RUN → OBSERVE → PAUSE / TRACE → STOP → MODIFY → RUN AGAIN`
 
-Final first-envelope Product Design:
-
-- `docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md`;
-- `docs/studio/P06-C5B-PRODUCT-INTERACTION.md`;
-- `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`;
-- `docs/studio/P06-7B-VISUAL-LANGUAGE.md`;
-- **`docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md`**.
-
-P06.8 verdict: **PASS — PRODUCT DESIGN ACCEPTED FOR IMPLEMENTATION PREPARATION.**
-
-This is not Owner Value proof.
-
-### Locks relevant to implementation
+Core implementation locks:
 
 - `authored != compiled != runtime != render`;
-- runtime disposable;
+- runtime is disposable;
+- BUILD edits what persists;
+- RUN creates a fresh physical realization;
+- PAUSE keeps the same runtime session for STEP/TRACE;
+- STOP disposes runtime, not construction;
+- runtime manifestations are not authored source itself;
 - `UNSUPPORTED != INVALID`;
-- BUILD mutates persistent source; RUN creates fresh runtime; STOP disposes runtime, not construction;
-- runtime manifestations must not be presented as authored source itself;
-- React does not own/mirror 60 Hz runtime state;
-- Three scene objects are presentation-only;
-- `cellId@face` is current dialect, not final ontology;
-- direct manipulation is **relative/no-jump**;
-- accepted mouse contract is LMB interaction, MMB orbit, Shift+MMB pan, wheel zoom;
-- selected surface is **WORLD CANVAS + PERIPHERAL ISLANDS**;
-- selected visual language is **QUIET PHYSICAL WORKSHOP**;
+- ordinary incomplete construction is not an error;
+- unsupported authored intent survives;
+- `cellId@face` is current laboratory dialect, not final ontology;
+- React never owns/mirrors hot runtime-frame transforms;
+- Three objects are presentation-only;
+- world/matter is primary; normal work is not a dashboard;
+- direct manipulation is relative/no-jump;
+- accepted desktop input starts with LMB interaction, MMB orbit, Shift+MMB pan, wheel zoom;
+- product surface is **WORLD CANVAS + PERIPHERAL ISLANDS**;
+- visual direction is **QUIET PHYSICAL WORKSHOP**;
 - no permanent full-height inspector/dashboard/hierarchy/timeline is earned for v0.
 
-## C6 — IMPLEMENTATION READY
+Product Design acceptance is **not** Owner Value proof.
 
-Canonical implementation record:
+## 5. Implementation authority — C6
 
-> **`docs/studio/C6-IMPLEMENTATION-READY.md`**
+Canonical record:
+
+`docs/studio/C6-IMPLEMENTATION-READY.md`
 
 C6 verdict:
 
-> **PASS — IMPLEMENTATION READY**
+**PASS — IMPLEMENTATION READY**
 
-Important implementation decisions:
+First-envelope implementation decisions:
 
-- Studio enters as `/?studio=1`, not `?experiment=studio`;
-- preserve historical root/routes through first Owner gate;
-- first production dependency transaction pins P05-qualified Three/React/ReactDOM versions;
-- route-scope historical CSS before Studio so old laboratory styles cannot bleed into product UI;
-- implement one app-owned `src/studio/` integration vertical, not a new Foundation/platform;
-- persistent `StudioSource` owns Matter + Bearing marks + TorquePatch marks;
-- app-level `sourceGeneration` increments on every authored commit; Matter revision alone is insufficient;
-- compiled refs are generation-scoped; runtime refs are runtime-session-scoped;
-- product classifier separates authored validity, composition support and run readiness;
-- ordinary incomplete construction is not INVALID/UNSUPPORTED;
-- first executable Studio runtime remains the P04/P05 active-bearing envelope: exactly one valid Bearing + one valid TorquePatch → existing `ActivatePhysics`;
-- no GenericRuntime is introduced;
-- P05 viewport/controller code is donor evidence only; default OrbitControls/TransformControls behavior must not override accepted Studio input semantics.
+- Studio initially enters at `/?studio=1`, not `?experiment=studio`;
+- preserve historical root/experiment routes through the first Owner reality gate;
+- I1.0 performs the production React/ReactDOM/Three dependency transaction using the P05-qualified versions;
+- historical CSS must become route-scoped before Studio to prevent bleed;
+- use one app-owned `src/studio/` integration vertical, not a generic platform/Foundation;
+- persistent Studio source contains Matter + Bearing marks + TorquePatch marks;
+- Studio owns an in-memory `sourceGeneration` for every authored commit;
+- compiled refs are generation-scoped;
+- runtime refs are fresh-session-scoped;
+- render IDs are presentation-only;
+- internal classification separates authored validity, composition support and run readiness;
+- first executable runtime is deliberately limited to exactly one valid Bearing + one valid TorquePatch through the accepted `ActivatePhysics` path;
+- no GenericRuntime is required or earned;
+- P05 renderer/controller code is donor evidence; default OrbitControls/TransformControls behavior has no authority to change the P06.8 input contract.
 
-## Exact next executable action — I1 / FIRST PHYSICAL LOOP
+## 6. Current work state
 
-From exact live C6 `main`:
+**Active material work: NONE.**
 
-1. create branch `integration/studio-v0-i1-first-loop`;
-2. open Draft PR early;
-3. execute **I1.0 / Studio substrate** first;
-4. continue only through coherent validated checkpoints:
-   - I1.0 Studio substrate;
-   - I1.1 Authored Matter Workshop;
-   - I1.2 Local Meaning + classifier;
-   - meso audit;
-   - I1.3 First Physical Realization;
-5. mark Ready only after I1.3 deserves exact Chromium/owner candidate;
-6. hand exact artifact to Owner for **O1 / FIRST LOOP REALITY GATE**;
-7. do not merge product direction merely because CI passes.
+There should be no open implementation PR at the sealed handoff.
 
-I1 owner loop:
+Selected next stage:
 
-`Editable Starter → modify matter → author/edit Bearing/TorquePatch → RUN → ACTIVATE → observe → STOP → modify → RUN again`
+**I1 / FIRST PHYSICAL LOOP**
 
-If O1 is positive, merge the exact owner-tested I1 head. If negative/inconclusive, preserve branch as evidence/donor and correct the lowest implicated contract before deeper implementation.
+Planned branch:
 
-Only after positive O1 starts `I2 / LABORATORY DEPTH` for Inspect/Trace, failure/recovery depth, workspace hardening and final fidelity/Owner Value gate.
+`integration/studio-v0-i1-first-loop`
 
-## Build Web Apps
+The fresh implementation orchestrator creates it from the exact sealed live `main` only after cold takeover reconciliation.
 
-It may now be used as implementation/fidelity discipline only.
+## 7. Exact I1 sequence
 
-The user explicitly opts out of ImageGen-led product redesign. Do not generate a new product concept before coding, do not rearrange P06 surfaces by template convention, and do not invent capabilities/metrics/dashboard objects. P06 + C6 are authoritative.
+Open the I1 PR **Draft** early and keep one coherent vertical through the first physical loop:
 
-## Stop rules
+### I1.0 — Studio substrate
 
-Stop and escalate rather than patch through if implementation:
+- production React/ReactDOM/Three + TSX transaction;
+- `/?studio=1` route;
+- route-scoped historical CSS;
+- full-window World Canvas;
+- sparse React shell + imperative Three controller;
+- accepted input channels, not library-default product behavior.
 
-- needs multi-bearing/multi-action runtime semantics;
+### I1.1 — Authored Matter Workshop
+
+- Studio source + generation scope;
+- Empty / Editable Starter;
+- authored Matter rendering;
+- exact cell/face picking;
+- Add/Remove/Material preview→commit;
+- selection/focus;
+- authored Undo/Redo + dirty;
+- basic explicit Save/Open source-only roundtrip.
+
+### I1.2 — Local Meaning + classifier
+
+- Bearing seam + legal tangent-axis authoring;
+- TorquePatch eligible-face authoring;
+- relative/no-jump effort editing + exact numeric fallback;
+- INVALID / UNSUPPORTED / READY behavior;
+- multiple individually valid meanings remain authored while unsupported composition blocks execution.
+
+Then run the required **meso audit** before runtime integration.
+
+### I1.3 — First Physical Realization
+
+- fresh runtime session;
+- accepted active-bearing path;
+- runtime starts OFF;
+- Activate/Deactivate;
+- Pause/Step;
+- Stop/Restart;
+- runtime transforms direct to Three;
+- authored/runtime manifestation distinction;
+- runtime refs invalidated on Stop/new session;
+- brief presentation-only STOP ghost, no reverse physics;
+- React hot-loop invariant;
+- owner artifact opens directly in Studio.
+
+Only then mark Ready for the existing candidate gate.
+
+## 8. O1 — mandatory first product reality gate
+
+The exact candidate artifact must require **no Owner terminal/build/debug/tooling work**.
+
+Owner use should be approximately:
+
+`Starter → modify matter → author/edit local meaning → RUN → ACTIVATE → observe → STOP → modify → RUN again`
+
+The relevant Owner evidence is direct product experience:
+
+- targeting/selection clarity;
+- spatial authoring rather than IDs/forms;
+- stable no-jump Torque manipulation;
+- clear causal response after ACTIVATE;
+- quiet UI during RUN;
+- STOP reads as disposing realization, not rewind;
+- real desire/creative pull to try another construction/change.
+
+Technical PASS alone does not authorize product-direction merge. If O1 is negative/inconclusive, preserve I1 as evidence/donor and correct the lowest implicated contract rather than automatically proceeding to I2.
+
+## 9. Only after positive O1
+
+Start a new I2 integration PR for **LABORATORY DEPTH**:
+
+- Inspect/Trace and source↔compiled↔runtime cross-highlighting;
+- INVALID/UNSUPPORTED/REQUIRES BUILD/RUNTIME FAULT depth;
+- persistence/recovery hardening;
+- 1440×900 and 1024×640 fidelity;
+- difficult angle/zoom/material-color legibility;
+- keyboard focus/accessibility;
+- final Studio Owner Value gate.
+
+Do not pull I2 scope into I1 merely because the future plan is known.
+
+## 10. Stop rules
+
+Stop ordinary implementation and run at least a meso audit if work:
+
+- needs multi-bearing/multi-action runtime semantics or generic CUT;
 - invents new physical/local meaning;
-- introduces generic runtime/entity/capability architecture mainly for integration convenience;
-- makes React a runtime-frame owner;
-- uses renderer IDs as authored identity;
-- serializes runtime as source;
-- changes P06 input/surface behavior to fit a library/framework;
-- changes accepted experiment/compiler/runtime semantics merely to make Studio easier;
-- deletes/re-writes UNSUPPORTED intent automatically;
-- solves product problems with dashboard/log walls;
-- requires Owner terminal/build/debug work to judge the artifact.
+- introduces GenericRuntime/GenericEntity/GenericCapability mainly for integration convenience;
+- makes React a per-frame runtime owner;
+- turns renderer/runtime IDs into authored identity;
+- serializes runtime/compiled state as canonical source;
+- changes accepted input/surface/visual behavior because a library/framework/template makes another behavior easier;
+- changes accepted experiment/compiler/runtime semantics merely to fit Studio;
+- silently deletes/re-writes unsupported authored intent;
+- solves product legibility by returning to dashboards/log walls;
+- requires Owner developer-tool work before product judgement.
 
-Run a meso audit on any such trigger.
+## 11. Build Web Apps role
+
+Build Web Apps may be used after takeover **only for implementation/testing/fidelity discipline**.
+
+The Product Design is already accepted. The Owner explicitly opts out of ImageGen-led product redesign. Do not generate a replacement concept before implementation, rearrange permanent surfaces by frontend convention, or invent capabilities/metrics/domain objects.
+
+If framework convenience conflicts with P06/C6, preserve P06/C6 or surface a genuine contradiction.
+
+## 12. Final handoff seal
+
+One-time audit record:
+
+`docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md`
+
+Seal PR:
+
+**#33 — Pre-implementation handoff seal**
+
+Treat the seal as final only after live Git confirms:
+
+- PR #33 was merged from its exact candidate head;
+- its full core/candidate workflow completed successfully;
+- no later contradictory material work exists.
+
+If those conditions hold, the project is intentionally at a clean boundary:
+
+> **planning/preparation is closed; implementation is ready; no material work is active; I1.0 is the exact next bounded action.**

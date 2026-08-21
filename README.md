@@ -28,21 +28,39 @@ The first bounded research epoch is closed with accepted science through:
 
 Each result is deliberately narrower than a universal material, relation, FUNCTION, power, control, Surface or representation-independent architecture. Exact claims and non-claims belong to the corresponding evidence records under `docs/experiments/`.
 
-## After Epoch I
+## After Epoch I — ANVIL Studio
 
 ANVIL-00…10 form the first bounded research epoch, now **closed**. No ANVIL-11 is active by inheritance.
 
-The selected next stage is **Physical Fabric Workbench v0**, beginning with a **W0 Design Gate before implementation**.
+The first post-Epoch-I Workbench integration proved an important negative product result: a technically qualified composition can still fail to provide useful owner-facing value when the presentation is gate/dashboard-heavy, raw or workflow-driven. W1 / PR #22 was therefore closed unmerged with Owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**.
 
-The Workbench is intended as an owner-facing integration/reality gate: compose already accepted capabilities into the smallest honest interactive specimen that lets the owner directly judge whether the current stack begins to express useful Machine Matter / Physical Fabric behavior.
+That result led to a separate Studio preparation sequence rather than more gate-style applications:
 
-Workbench success is not automatically a new scientific capability claim. If integration reveals a new physical or semantic uncertainty, that uncertainty should become a separate falsifiable experiment rather than being solved implicitly inside the Workbench.
+- P04 — first-envelope integration/boundary proof, closed-unmerged PASS;
+- P05 — renderer/editor-shell technology proof, closed-unmerged PASS;
+- P06 — Product Design, accepted;
+- C6 — implementation preparation, **IMPLEMENTATION READY**.
 
-For the **current live work and takeover state**, do not use this README as a roadmap. Start with:
+The selected product direction is now:
+
+> **ANVIL Studio — one long-lived, world-first interactive 3D laboratory for Physical Fabric.**
+
+Its grounded loop is:
+
+`BUILD → GIVE LOCAL MEANING → RUN → OBSERVE → PAUSE / TRACE → STOP → MODIFY → RUN AGAIN`
+
+The first implementation stage is **I1 / FIRST PHYSICAL LOOP**. It must begin only after cold takeover from the sealed live `main`; it is not an ANVIL-11 scientific experiment.
+
+Product and implementation authorities:
+
+- [`docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md`](docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md) — accepted first-envelope Product Design;
+- [`docs/studio/C6-IMPLEMENTATION-READY.md`](docs/studio/C6-IMPLEMENTATION-READY.md) — implementation ownership, vertical slices, evidence/Owner gates and stop rules;
+- [`docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md`](docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md) — one-time audit of repository/evidence/workflow readiness before implementation handoff.
+
+For the **current live work and takeover state**, do not use this README as the operational roadmap. Start with:
 
 - [`.anvil/project-state.json`](.anvil/project-state.json) — compact machine-readable checkpoint claim;
-- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — cold-takeover instructions and exact next bounded action;
-- [`docs/ANVIL_EPOCH_I_CLOSURE.md`](docs/ANVIL_EPOCH_I_CLOSURE.md) — historical record of the completed Epoch I closure and its final executable qualification.
+- [`docs/CURRENT_HANDOFF.md`](docs/CURRENT_HANDOFF.md) — cold-takeover instructions and exact next bounded action.
 
 Verify current-state documents against live Git before material work.
 
@@ -86,7 +104,8 @@ This distinction prevents product/integration work from silently becoming eviden
 - [`docs/FOUNDATION.md`](docs/FOUNDATION.md) — reusable boundaries already earned by evidence;
 - [`AI_PROJECT_MEMORY.md`](AI_PROJECT_MEMORY.md) — concise accepted-state and architectural index;
 - [`docs/DONOR_MAP.md`](docs/DONOR_MAP.md) — donor capabilities and project boundaries;
-- [`docs/experiments/`](docs/experiments/) — canonical preflights and experiment evidence.
+- [`docs/experiments/`](docs/experiments/) — canonical preflights and experiment evidence;
+- [`docs/studio/`](docs/studio/) — accepted Studio Product Design, implementation-readiness and handoff records.
 
 ## Research rule
 

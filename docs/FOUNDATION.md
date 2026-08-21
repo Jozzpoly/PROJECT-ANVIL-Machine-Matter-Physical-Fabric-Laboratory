@@ -124,9 +124,13 @@ Evidence supports these bounded capabilities, but they are **not** generic found
 - LOAD-REBIND laboratory load fixture;
 - TORQUE authored mark / compiled torque action;
 - TORQUE-PATCH local source-face targeting and bearing resolution;
+- ELASTIC-SEAM local normal-compliance experiment and its experiment-local lowering;
+- COMPLIANCE-RESOLUTION bounded area-normalized 1D refinement result and aggregate lowering;
+- ACTIVATE runtime-only OFF/ON state and active-torque application path;
+- TORQUE-PATCH-REBIND experiment-local re-lowering/current-binding guard after bounded topology change;
 - Forge owner-gate presentation/transport details.
 
-Their accepted evidence may inform future abstractions, but one or two successful slices are not enough to freeze a universal schema.
+Their accepted evidence may inform future abstractions, but repeated use or successful integration is not enough to freeze a universal schema. Promotion requires a separate evidence-backed Foundation decision.
 
 ## Deliberately not foundation
 
