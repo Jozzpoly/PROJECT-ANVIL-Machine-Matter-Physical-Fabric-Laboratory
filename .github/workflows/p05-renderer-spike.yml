@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - spike/studio-p05-renderer-proof-2026-08-21
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 concurrency:
-  group: anvil-p05-renderer-proof
+  group: anvil-p05-renderer-proof-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -14,6 +19,7 @@ permissions:
 
 jobs:
   renderer-proof:
+    if: github.event_name == 'push' || github.head_ref == 'spike/studio-p05-renderer-proof-2026-08-21'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
