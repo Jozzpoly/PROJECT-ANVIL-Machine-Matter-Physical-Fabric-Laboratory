@@ -1,223 +1,151 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / STUDIO P06 PRODUCT DESIGN ACCEPTED / C6 NEXT**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / P06 PRODUCT DESIGN ACCEPTED / C6 IMPLEMENTATION READY**
 
 Live Git/code + executable evidence override this checkpoint if they differ.
 
-## 1. Cold-start order
+## Cold takeover
 
-Before writing:
+Before any implementation:
 
 1. resolve live `main` and open PRs;
 2. read `.anvil/project-state.json`;
 3. read this handoff;
-4. for Product Design authority read, in order:
-   - `docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md`;
-   - `docs/studio/P06-C5B-PRODUCT-INTERACTION.md`;
-   - `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`;
-   - `docs/studio/P06-7B-VISUAL-LANGUAGE.md`;
-   - **`docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md`** — final first-envelope product contract and P06 verdict.
+4. read `docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md` as final Product Design authority;
+5. read **`docs/studio/C6-IMPLEMENTATION-READY.md`** as implementation authority;
+6. consult C5A/C5B/P06.7A/P06.7B only when one specific Product Contract detail needs depth;
+7. inspect live `package.json`, `tsconfig.json`, `src/bootstrap.ts`, CI and accepted experiment APIs before writing.
 
-Do not reconstruct P06 from conversation history if these live records are coherent.
+Do not reconstruct P01–P06 from conversation history when these live records are coherent.
 
-## 2. Scientific / evidence boundary
+## Scientific / evidence boundary
 
-Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. Epoch I is closed. No ANVIL-11 is active or implied by Studio work.
+Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. Epoch I is closed. No ANVIL-11 is active or implied by Studio implementation.
 
-Historical product/engineering evidence:
+Historical evidence:
 
-- W1 / PR #22 — **CLOSED UNMERGED**, Owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**; dashboard/gate form is negative product evidence, donor implementation only.
-- P04 / PR #23 — closed-unmerged boundary proof PASS for the first active-bearing Studio envelope.
-- P05 / PR #24 — closed-unmerged technology proof PASS: existing Vite + TypeScript, React sparse editor shell, imperative Three.js/WebGL2 presentation, existing Box3D/ANVIL runtime.
-- P06 attempt #1 / PR #26 — **INVALID / INTERRUPTED / CLOSED UNMERGED**; generated dashboard-heavy mockup is rejected and is not a design reference.
+- W1 / PR #22 — CLOSED UNMERGED, Owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**. Dashboard/gate form is negative product evidence.
+- P04 / PR #23 — closed-unmerged boundary proof PASS for first active-bearing Studio envelope.
+- P05 / PR #24 — closed-unmerged technology proof PASS: Vite + TypeScript, React sparse editor shell, imperative Three.js/WebGL2 presentation, existing Box3D/ANVIL runtime.
+- P06 attempt #1 / PR #26 — INVALID / INTERRUPTED / CLOSED UNMERGED; generated mockup rejected.
 
-## 3. Operational project self-model
+## Project self-model
 
-ANVIL may be treated as a third governance actor alongside Owner and Orchestrator. This is an operational metaphor, not literal consciousness.
+Operational metaphor only:
 
-- **Owner** — purpose, values, subjective product acceptance, explicit vision changes.
-- **Orchestrator** — investigation, falsification, planning, implementation, continuity.
-- **Project self-model** — accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next unresolved question.
+- **Owner** — purpose, values, subjective acceptance, explicit vision changes;
+- **Orchestrator** — investigation, falsification, planning, implementation, continuity;
+- **Project self-model** — accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next question.
 
-Contradictions with accepted evidence/boundaries must be surfaced and consciously reclassified, never silently executed.
+Contradictions against accepted truth/boundaries must be surfaced and consciously reclassified, never silently executed.
 
-## 4. Studio north star
+## Product authority
 
 **ANVIL Studio is one long-lived, world-first interactive 3D laboratory for Physical Fabric.**
-
-`CREATE MATTER → GIVE IT LOCAL MEANING → COMPOSE → SIMULATE → OBSERVE → MODIFY → DISCOVER`
 
 Grounded loop:
 
 `BUILD → GIVE LOCAL MEANING → RUN → OBSERVE → PAUSE / TRACE → STOP → MODIFY → RUN AGAIN`
 
-Shortest mental model:
+Final first-envelope Product Design:
 
-> **I build persistent matter. I give physical meaning to places on it. Studio continuously determines whether that authored composition can currently be realized. RUN creates a fresh disposable physical realization. I observe it, pause it and trace why it behaved that way. STOP discards the realization, not my construction. If I exceed ANVIL's earned capability, my authored intent survives and Studio tells me honestly that the composition is not yet supported.**
+- `docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md`;
+- `docs/studio/P06-C5B-PRODUCT-INTERACTION.md`;
+- `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`;
+- `docs/studio/P06-7B-VISUAL-LANGUAGE.md`;
+- **`docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md`**.
 
-## 5. P06 accepted product contract
+P06.8 verdict: **PASS — PRODUCT DESIGN ACCEPTED FOR IMPLEMENTATION PREPARATION.**
 
-### Identity / lifetime
+This is not Owner Value proof.
 
-Do not renegotiate without real contradiction:
+### Locks relevant to implementation
 
 - `authored != compiled != runtime != render`;
-- runtime is disposable;
-- BUILD mutates persistent construction;
-- RUN creates fresh runtime;
-- PAUSE preserves current runtime for STEP/TRACE, not arbitrary source editing;
-- STOP disposes runtime, not construction;
-- runtime manifestations must never be presented as if authored source itself moved;
-- `cellId@face` is current laboratory dialect, not final ontology;
-- generic source edits may rebuild/reset runtime unless continuity is separately qualified;
-- `UNSUPPORTED != INVALID`.
+- runtime disposable;
+- `UNSUPPORTED != INVALID`;
+- BUILD mutates persistent source; RUN creates fresh runtime; STOP disposes runtime, not construction;
+- runtime manifestations must not be presented as authored source itself;
+- React does not own/mirror 60 Hz runtime state;
+- Three scene objects are presentation-only;
+- `cellId@face` is current dialect, not final ontology;
+- direct manipulation is **relative/no-jump**;
+- accepted mouse contract is LMB interaction, MMB orbit, Shift+MMB pan, wheel zoom;
+- selected surface is **WORLD CANVAS + PERIPHERAL ISLANDS**;
+- selected visual language is **QUIET PHYSICAL WORKSHOP**;
+- no permanent full-height inspector/dashboard/hierarchy/timeline is earned for v0.
 
-### Product truth states
+## C6 — IMPLEMENTATION READY
 
-Keep distinct:
+Canonical implementation record:
 
-`READY / INVALID / UNSUPPORTED / REQUIRES BUILD / RUNTIME FAULT`.
+> **`docs/studio/C6-IMPLEMENTATION-READY.md`**
 
-Unsupported authored intent normally survives. READY is quiet.
+C6 verdict:
 
-### Interaction
+> **PASS — IMPLEMENTATION READY**
 
-Persistent authoring follows:
+Important implementation decisions:
 
-`TARGET → PREVIEW / DRAFT → COMMIT → RECOMPILE / RECLASSIFY → SPATIAL FEEDBACK`
+- Studio enters as `/?studio=1`, not `?experiment=studio`;
+- preserve historical root/routes through first Owner gate;
+- first production dependency transaction pins P05-qualified Three/React/ReactDOM versions;
+- route-scope historical CSS before Studio so old laboratory styles cannot bleed into product UI;
+- implement one app-owned `src/studio/` integration vertical, not a new Foundation/platform;
+- persistent `StudioSource` owns Matter + Bearing marks + TorquePatch marks;
+- app-level `sourceGeneration` increments on every authored commit; Matter revision alone is insufficient;
+- compiled refs are generation-scoped; runtime refs are runtime-session-scoped;
+- product classifier separates authored validity, composition support and run readiness;
+- ordinary incomplete construction is not INVALID/UNSUPPORTED;
+- first executable Studio runtime remains the P04/P05 active-bearing envelope: exactly one valid Bearing + one valid TorquePatch → existing `ActivatePhysics`;
+- no GenericRuntime is introduced;
+- P05 viewport/controller code is donor evidence only; default OrbitControls/TransformControls behavior must not override accepted Studio input semantics.
 
-Final direct-input contract from P06.8A:
+## Exact next executable action — I1 / FIRST PHYSICAL LOOP
 
-- LMB = target/select/direct interaction;
-- MMB drag = orbit;
-- Shift+MMB = pan;
-- wheel = zoom;
-- F = focus selection;
-- Esc = cancel current transient draft;
-- Enter = commit current parameterized draft;
-- Ctrl+Z / Ctrl+Shift+Z = authored history;
-- Ctrl+S = Save authored workspace.
+From exact live C6 `main`:
 
-**Continuous manipulation is relative/no-jump:** pointer-down captures the current draft value, then drag applies a delta. Exact sensitivity is tuned in browser fidelity, not promoted into domain semantics.
+1. create branch `integration/studio-v0-i1-first-loop`;
+2. open Draft PR early;
+3. execute **I1.0 / Studio substrate** first;
+4. continue only through coherent validated checkpoints:
+   - I1.0 Studio substrate;
+   - I1.1 Authored Matter Workshop;
+   - I1.2 Local Meaning + classifier;
+   - meso audit;
+   - I1.3 First Physical Realization;
+5. mark Ready only after I1.3 deserves exact Chromium/owner candidate;
+6. hand exact artifact to Owner for **O1 / FIRST LOOP REALITY GATE**;
+7. do not merge product direction merely because CI passes.
 
-First-envelope direct authoring:
+I1 owner loop:
 
-- Add/Remove one matter cell at a time with spatial preview;
-- assign existing authored material;
-- Bearing: target shared seam, choose one of the two legal tangent axes spatially, Commit;
-- TorquePatch: target eligible Bearing endpoint face, local patch/arrow, relative no-jump signed effort edit + exact numeric fallback, Commit;
-- ACTIVATE is transient `OFF | ON` only.
+`Editable Starter → modify matter → author/edit Bearing/TorquePatch → RUN → ACTIVATE → observe → STOP → modify → RUN again`
 
-Generic Move/Copy/Duplicate/Multi-select are outside v0.
+If O1 is positive, merge the exact owner-tested I1 head. If negative/inconclusive, preserve branch as evidence/donor and correct the lowest implicated contract before deeper implementation.
 
-### Attention / surfaces
+Only after positive O1 starts `I2 / LABORATORY DEPTH` for Inspect/Trace, failure/recovery depth, workspace hardening and final fidelity/Owner Value gate.
 
-> **Matter first. Context second. Explanation on demand. Engineering internals last.**
+## Build Web Apps
 
-> **Local truth close to matter; global state at workspace boundary; investigation only on request.**
+It may now be used as implementation/fidelity discipline only.
 
-Selected surface architecture:
+The user explicitly opts out of ImageGen-led product redesign. Do not generate a new product concept before coding, do not rearrange P06 surfaces by template convention, and do not invent capabilities/metrics/dashboard objects. P06 + C6 are authoritative.
 
-> **WORLD CANVAS + PERIPHERAL ISLANDS**
+## Stop rules
 
-- full-window World Canvas;
-- upper-left Workspace Dock;
-- left-edge `Select / Matter / Meaning / Inspect` Intent Rail;
-- lower-center Simulation Dock;
-- local Context/Draft Pod;
-- conditional right-edge Investigation Drawer.
+Stop and escalate rather than patch through if implementation:
 
-No permanent full-height inspector/hierarchy/timeline/dashboard/property wall is earned for first envelope.
+- needs multi-bearing/multi-action runtime semantics;
+- invents new physical/local meaning;
+- introduces generic runtime/entity/capability architecture mainly for integration convenience;
+- makes React a runtime-frame owner;
+- uses renderer IDs as authored identity;
+- serializes runtime as source;
+- changes P06 input/surface behavior to fit a library/framework;
+- changes accepted experiment/compiler/runtime semantics merely to make Studio easier;
+- deletes/re-writes UNSUPPORTED intent automatically;
+- solves product problems with dashboard/log walls;
+- requires Owner terminal/build/debug work to judge the artifact.
 
-Reference desktop `1440×900`; minimum first-envelope product target `1024×640 CSS px`, still requiring empirical browser validation.
-
-### First run
-
-Same World Canvas; small `Empty / Editable Starter` choice only.
-
-- Empty: no cells, but at least one usable authored material seed.
-- Editable Starter: ordinary editable workspace using only qualified first-envelope semantics — small Matter, exactly one Bearing, exactly one TorquePatch, compatible active-bearing profile, runtime starts OFF and ACTIVATE produces visible motion.
-
-No dashboard/home/tutorial route.
-
-### Visual language
-
-Selected:
-
-> **QUIET PHYSICAL WORKSHOP**
-
-Matter tangible; meaning deliberately authored onto places; runtime becomes visually alive only when physics is alive; chrome is a quiet precision instrument; deeper truth is temporary explanation.
-
-Canonical tokens/details live in `docs/studio/P06-7B-VISUAL-LANGUAGE.md`.
-
-Do not regress to black-void neon HUD, glass/holographic panes, permanent rainbow overlays, generic dark SaaS cards or visual structure invented by styling.
-
-## 6. P06.8 adversarial result
-
-Final complete-product review attacked:
-
-- W1 dashboard regression;
-- corrupted-P06 generative-design regression;
-- generic CAD/game-editor drift;
-- source/runtime identity confusion;
-- hidden-only interaction;
-- instrumentation clutter;
-- React hot-loop leakage;
-- ontology overclaim;
-- silent destructive convenience;
-- manipulation-feel ambiguity.
-
-The direct-manipulation gap initially failed and was corrected through P06.8A. No blocker remains before implementation preparation.
-
-**P06.8 verdict: PASS — PRODUCT DESIGN ACCEPTED FOR IMPLEMENTATION PREPARATION.**
-
-This is not Owner Value proof. The running Studio must still earn real feel/visual/usefulness acceptance.
-
-## 7. Remaining issue classes
-
-### Implementation / fidelity, not product invention
-
-- storage/file mechanism preserving Save/Open semantics;
-- compile scheduling/caching;
-- exact hit-test implementation preserving semantic priority;
-- Torque drag sensitivity;
-- Context/Draft Pod DOM anchoring;
-- outline/ghost implementation;
-- fonts/icons/browser focus;
-- actual `1024×640` density and extreme-view legibility.
-
-### Research boundaries
-
-- multi-bearing runtime composition;
-- multiple TorquePatch composition beyond accepted evidence;
-- generic CUT/free-runtime editing;
-- arbitrary continuity/state transfer;
-- final representation-independent locality ontology.
-
-### Future product problems outside first envelope
-
-- generic Move/Copy/Duplicate/Multi-select;
-- large-world navigator/outliner;
-- material-definition authoring;
-- richer environment/profile authoring;
-- touch/mobile;
-- input remapping.
-
-## 8. Next stage — C6 / IMPLEMENTATION READY
-
-**Do not start Studio product code yet.**
-
-C6 must translate the frozen product into:
-
-- concrete app/module boundaries;
-- ordered vertical implementation slices;
-- source/adaptor/presentation ownership map;
-- exact first-envelope feature inventory;
-- test/evidence/fidelity gates per slice;
-- owner-facing browser delivery path;
-- implementation stop rules;
-- cold-takeover instructions for the implementation conversation.
-
-C6 may choose engineering mechanisms. It may not silently reopen P06 product behavior, surface structure or visual language to fit a framework/template.
-
-After C6 PASS, Build Web Apps may return strictly as implementation/fidelity discipline working from the accepted contract. It has no redesign authority by inertia.
+Run a meso audit on any such trigger.
