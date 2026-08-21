@@ -1,258 +1,223 @@
 # PROJECT ANVIL — Current Handoff
 
-Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / STUDIO P06.7B VISUAL LANGUAGE PASS**
+Status: **ANVIL-10 ACCEPTED / EPOCH I CLOSED / STUDIO P06 PRODUCT DESIGN ACCEPTED / C6 NEXT**
 
-Live Git and executable evidence override this checkpoint if they differ.
+Live Git/code + executable evidence override this checkpoint if they differ.
 
-## Start here
+## 1. Cold-start order
 
-1. Resolve live `main` and open PRs before writing.
-2. Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. No ANVIL-11 is active or implied by Studio work.
-3. W1 / PR #22 is **CLOSED UNMERGED** after owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**. Its dashboard/gate presentation is negative product evidence, not a direction to revive.
-4. P04 / PR #23 is closed-unmerged boundary-proof evidence for the first active-bearing Studio envelope.
-5. P05 / PR #24 is closed-unmerged technology-proof evidence selecting existing Vite + TypeScript, React sparse editor shell, imperative Three.js/WebGL2 presentation and existing Box3D/ANVIL runtime.
-6. P06 attempt #1 / PR #26 is **INVALID / INTERRUPTED / CLOSED UNMERGED**. Its generated mockup is rejected and is not a design reference.
-7. P06 restart has earned:
-   - **C5A / PRODUCT BEHAVIOR** — `docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md`;
-   - **C5B / PRODUCT INTERACTION** — `docs/studio/P06-C5B-PRODUCT-INTERACTION.md`;
-   - **P06.7A / PRODUCT SURFACE ARCHITECTURE** — `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`;
-   - **P06.7B / VISUAL LANGUAGE** — `docs/studio/P06-7B-VISUAL-LANGUAGE.md`.
-8. The next unresolved product question is **P06.8 / Complete Product Contract + adversarial red-team**. Do not implement Studio before that review earns Product Design acceptance.
+Before writing:
 
-## Operational project self-model
+1. resolve live `main` and open PRs;
+2. read `.anvil/project-state.json`;
+3. read this handoff;
+4. for Product Design authority read, in order:
+   - `docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md`;
+   - `docs/studio/P06-C5B-PRODUCT-INTERACTION.md`;
+   - `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`;
+   - `docs/studio/P06-7B-VISUAL-LANGUAGE.md`;
+   - **`docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md`** — final first-envelope product contract and P06 verdict.
+
+Do not reconstruct P06 from conversation history if these live records are coherent.
+
+## 2. Scientific / evidence boundary
+
+Accepted scientific truth remains through **ANVIL-10 / TORQUE-PATCH-REBIND** only. Epoch I is closed. No ANVIL-11 is active or implied by Studio work.
+
+Historical product/engineering evidence:
+
+- W1 / PR #22 — **CLOSED UNMERGED**, Owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**; dashboard/gate form is negative product evidence, donor implementation only.
+- P04 / PR #23 — closed-unmerged boundary proof PASS for the first active-bearing Studio envelope.
+- P05 / PR #24 — closed-unmerged technology proof PASS: existing Vite + TypeScript, React sparse editor shell, imperative Three.js/WebGL2 presentation, existing Box3D/ANVIL runtime.
+- P06 attempt #1 / PR #26 — **INVALID / INTERRUPTED / CLOSED UNMERGED**; generated dashboard-heavy mockup is rejected and is not a design reference.
+
+## 3. Operational project self-model
 
 ANVIL may be treated as a third governance actor alongside Owner and Orchestrator. This is an operational metaphor, not literal consciousness.
 
 - **Owner** — purpose, values, subjective product acceptance, explicit vision changes.
 - **Orchestrator** — investigation, falsification, planning, implementation, continuity.
-- **Project self-model** — encoded accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next unresolved question.
+- **Project self-model** — accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next unresolved question.
 
-A proposal contradicting accepted evidence/frozen boundaries must be surfaced and consciously reclassified rather than silently executed.
+Contradictions with accepted evidence/boundaries must be surfaced and consciously reclassified, never silently executed.
 
-## Studio north star
+## 4. Studio north star
 
 **ANVIL Studio is one long-lived, world-first interactive 3D laboratory for Physical Fabric.**
 
-North-star loop:
-
 `CREATE MATTER → GIVE IT LOCAL MEANING → COMPOSE → SIMULATE → OBSERVE → MODIFY → DISCOVER`
 
-Grounded product loop:
+Grounded loop:
 
 `BUILD → GIVE LOCAL MEANING → RUN → OBSERVE → PAUSE / TRACE → STOP → MODIFY → RUN AGAIN`
 
-Shortest accepted mental model:
+Shortest mental model:
 
 > **I build persistent matter. I give physical meaning to places on it. Studio continuously determines whether that authored composition can currently be realized. RUN creates a fresh disposable physical realization. I observe it, pause it and trace why it behaved that way. STOP discards the realization, not my construction. If I exceed ANVIL's earned capability, my authored intent survives and Studio tells me honestly that the composition is not yet supported.**
 
-The world is the product. UI supplies tools and reveals truth when needed; it must not become an evidence dashboard, owner gate, set of experiment routes, generic CAD/game editor or ontology browser.
+## 5. P06 accepted product contract
 
-## C5A / Product Behavior — accepted
+### Identity / lifetime
 
-Persistent authoring:
+Do not renegotiate without real contradiction:
 
-`TARGET → PREVIEW / DRAFT → COMMIT → RECOMPILE / RECLASSIFY → IMMEDIATE SPATIAL FEEDBACK`
+- `authored != compiled != runtime != render`;
+- runtime is disposable;
+- BUILD mutates persistent construction;
+- RUN creates fresh runtime;
+- PAUSE preserves current runtime for STEP/TRACE, not arbitrary source editing;
+- STOP disposes runtime, not construction;
+- runtime manifestations must never be presented as if authored source itself moved;
+- `cellId@face` is current laboratory dialect, not final ontology;
+- generic source edits may rebuild/reset runtime unless continuity is separately qualified;
+- `UNSUPPORTED != INVALID`.
 
-Truth states remain distinct:
+### Product truth states
 
-- **READY** — current authored composition can be realized;
-- **INVALID** — authored intent violates current semantic contract;
-- **UNSUPPORTED** — intent may be meaningful but ANVIL has not qualified the requested composition;
-- **REQUIRES BUILD** — requested persistent edit cannot honestly be performed against a live realization;
-- **RUNTIME FAULT** — source/composition passed validation but execution failed technically.
+Keep distinct:
 
-`UNSUPPORTED != INVALID`. Unsupported authored intent normally survives.
+`READY / INVALID / UNSUPPORTED / REQUIRES BUILD / RUNTIME FAULT`.
 
-BUILD edits what persists. RUN creates fresh disposable runtime. PAUSE preserves the same runtime for STEP/TRACE, not arbitrary source editing. STOP disposes runtime, not construction. Accepted CUT remains a specifically qualified topology intervention, not generic free editing.
+Unsupported authored intent normally survives. READY is quiet.
 
-## C5B / Product Interaction — accepted
+### Interaction
 
-Attention rule:
+Persistent authoring follows:
+
+`TARGET → PREVIEW / DRAFT → COMMIT → RECOMPILE / RECLASSIFY → SPATIAL FEEDBACK`
+
+Final direct-input contract from P06.8A:
+
+- LMB = target/select/direct interaction;
+- MMB drag = orbit;
+- Shift+MMB = pan;
+- wheel = zoom;
+- F = focus selection;
+- Esc = cancel current transient draft;
+- Enter = commit current parameterized draft;
+- Ctrl+Z / Ctrl+Shift+Z = authored history;
+- Ctrl+S = Save authored workspace.
+
+**Continuous manipulation is relative/no-jump:** pointer-down captures the current draft value, then drag applies a delta. Exact sensitivity is tuned in browser fidelity, not promoted into domain semantics.
+
+First-envelope direct authoring:
+
+- Add/Remove one matter cell at a time with spatial preview;
+- assign existing authored material;
+- Bearing: target shared seam, choose one of the two legal tangent axes spatially, Commit;
+- TorquePatch: target eligible Bearing endpoint face, local patch/arrow, relative no-jump signed effort edit + exact numeric fallback, Commit;
+- ACTIVATE is transient `OFF | ON` only.
+
+Generic Move/Copy/Duplicate/Multi-select are outside v0.
+
+### Attention / surfaces
 
 > **Matter first. Context second. Explanation on demand. Engineering internals last.**
 
-Spatial rule:
-
 > **Local truth close to matter; global state at workspace boundary; investigation only on request.**
 
-Earned semantic surfaces before layout:
-
-- world-attached;
-- context-action;
-- workspace-global;
-- investigation.
-
-BUILD/RUN/PAUSE/TRACE/STOP remain one workspace. RUN quiets UI. STOP changes lifetime/representation and must not fake reverse physics. Runtime manifestations of authored meaning are related to but not identical with authored source marks.
-
-Instrumentation remains question-driven:
-
-`BEHAVIOR QUESTION → TEMPORARY LENS/OVERLAY → SPATIAL ANSWER → OPTIONAL DEEPER EXPLANATION`
-
-Save/Load preserves authored workspace, never canonical runtime state. View navigation is presentation-only. Generic Move/Copy/Duplicate/Multi-select are deliberately outside the first envelope.
-
-## P06.7A / Product Surface Architecture — accepted
-
-Canonical: `docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md`.
-
-Selected direction:
+Selected surface architecture:
 
 > **WORLD CANVAS + PERIPHERAL ISLANDS**
 
-The Three.js world fills the application; sparse React chrome overlays it rather than framing a smaller viewport.
+- full-window World Canvas;
+- upper-left Workspace Dock;
+- left-edge `Select / Matter / Meaning / Inspect` Intent Rail;
+- lower-center Simulation Dock;
+- local Context/Draft Pod;
+- conditional right-edge Investigation Drawer.
 
-Earned surfaces:
+No permanent full-height inspector/hierarchy/timeline/dashboard/property wall is earned for first envelope.
 
-1. **World Canvas** — full-window primary world.
-2. **Workspace Dock** — upper-left workspace identity/save/history.
-3. **Intent Rail** — left-edge high-level `Select / Matter / Meaning / Inspect`.
-4. **Simulation Dock** — lower-center BUILD/RUN/PAUSE lifetime and current simulation actions.
-5. **Context/Draft Pod** — local target/selection action + draft Commit/Cancel.
-6. **Investigation Drawer** — conditional right-edge `Inspect / Trace / Details`, closed by default.
+Reference desktop `1440×900`; minimum first-envelope product target `1024×640 CSS px`, still requiring empirical browser validation.
 
-No permanent full-height inspector, hierarchy/outliner, timeline, dashboard, runtime entity browser, material-definition lab, environment editor or Generic Entity/Component inspector is earned for the first envelope.
+### First run
 
-Material surface assigns existing authored materials only. Simulation profile selection appears only when real qualified choice/compatibility makes it relevant.
+Same World Canvas; small `Empty / Editable Starter` choice only.
 
-First run remains in the same world and offers only `Empty / Editable Starter`; no dashboard/home route.
+- Empty: no cells, but at least one usable authored material seed.
+- Editable Starter: ordinary editable workspace using only qualified first-envelope semantics — small Matter, exactly one Bearing, exactly one TorquePatch, compatible active-bearing profile, runtime starts OFF and ACTIVATE produces visible motion.
 
-Desktop design target:
+No dashboard/home/tutorial route.
 
-- reference: **1440×900 CSS px**;
-- minimum first-envelope target: **1024×640 CSS px**, to be empirically validated during implementation/fidelity.
+### Visual language
 
-## P06.7B / Visual Language — accepted
-
-Canonical: `docs/studio/P06-7B-VISUAL-LANGUAGE.md`.
-
-Selected v0 visual direction:
+Selected:
 
 > **QUIET PHYSICAL WORKSHOP**
 
-Visual constitution:
+Matter tangible; meaning deliberately authored onto places; runtime becomes visually alive only when physics is alive; chrome is a quiet precision instrument; deeper truth is temporary explanation.
 
-> **Matter should feel touchable. Meaning should look deliberately authored onto places. Runtime should become alive only when physics is alive. Chrome should behave like a quiet precision instrument. Deeper truth should appear as temporary explanation, not permanent spectacle.**
+Canonical tokens/details live in `docs/studio/P06-7B-VISUAL-LANGUAGE.md`.
 
-### Governing grammar
+Do not regress to black-void neon HUD, glass/holographic panes, permanent rainbow overlays, generic dark SaaS cards or visual structure invented by styling.
 
-- shape communicates capability/kind;
-- stroke/material treatment communicates authored/runtime lifetime;
-- color reinforces semantics but is never the sole carrier;
-- motion is reserved for real action/change/transition.
+## 6. P06.8 adversarial result
 
-### World / matter
+Final complete-product review attacked:
 
-- neutral mid-dark world roughly `#202327–#262A2E`, not black void;
-- calm studio/workshop lighting; stable exposure; no dramatic game lighting or sci-fi fog;
-- authored material `displayColor` remains meaningful;
-- matte/tangible matter, subtle bevel/contact grounding, no permanent full wireframe;
-- grid is an orientation instrument and may quiet in RUN.
+- W1 dashboard regression;
+- corrupted-P06 generative-design regression;
+- generic CAD/game-editor drift;
+- source/runtime identity confusion;
+- hidden-only interaction;
+- instrumentation clutter;
+- React hot-loop leakage;
+- ontology overclaim;
+- silent destructive convenience;
+- manipulation-feel ambiguity.
 
-### Chrome / typography
+The direct-manipulation gap initially failed and was corrected through P06.8A. No blocker remains before implementation preparation.
 
-- graphite chrome `#1C1F23`;
-- no glassmorphism/holographic panes/nested SaaS card stacks;
-- moderate radius around `8 px`;
-- spacing rhythm `4 / 8 / 12 / 16 / 24 px`;
-- control height roughly `32–36 px`;
-- **IBM Plex Sans** for normal UI; **IBM Plex Mono** only for numeric/technical reveal;
-- geometric stroke icons around `18 px`.
+**P06.8 verdict: PASS — PRODUCT DESIGN ACCEPTED FOR IMPLEMENTATION PREPARATION.**
 
-### Semantic visual tokens
+This is not Owner Value proof. The running Studio must still earn real feel/visual/usefulness acceptance.
 
-- Bearing `#4BC7C1` — ring + axis;
-- Torque `#F2A65A` — surface patch + directional arrow;
-- INVALID `#E56A6A` + broken/hatched/slashed treatment;
-- UNSUPPORTED `#B7A0D8` + dashed/open frontier treatment, never generic error-red;
-- REQUIRES BUILD `#D7BC68` + lifetime-transition cue;
-- READY remains quiet;
-- RUNTIME FAULT uses fault context/icon/recovery treatment rather than inventing a permanent new color family.
+## 7. Remaining issue classes
 
-Selection/focus uses a **two-tone high-contrast outline** so arbitrary material colors cannot hide the state. Critical authoring handles retain minimum screen-space legibility; controlled x-ray/dashed continuation is allowed only for the active operation where necessary.
+### Implementation / fidelity, not product invention
 
-### Authored vs runtime
+- storage/file mechanism preserving Save/Open semantics;
+- compile scheduling/caching;
+- exact hit-test implementation preserving semantic priority;
+- Torque drag sensitivity;
+- Context/Draft Pod DOM anchoring;
+- outline/ghost implementation;
+- fonts/icons/browser focus;
+- actual `1024×640` density and extreme-view legibility.
 
-- authored meaning: solid/matte, spatially attached, stable, no ambient animation;
-- runtime manifestation: related shape/hue but distinct treatment; motion only if the runtime behavior is actually active;
-- no broad neon bloom;
-- TRACE reveals source/compiled/runtime relation through temporary neutral ghosts/cross-highlights;
-- runtime manifestation must never imply authored source itself moved.
+### Research boundaries
 
-### Motion
+- multi-bearing runtime composition;
+- multiple TorquePatch composition beyond accepted evidence;
+- generic CUT/free-runtime editing;
+- arbitrary continuity/state transfer;
+- final representation-independent locality ontology.
 
-Functional and short:
+### Future product problems outside first envelope
 
-- hover `0–80 ms`;
-- Context/Draft Pod `100–140 ms`;
-- drawer `160–200 ms`;
-- BUILD→RUN handoff `120–180 ms`;
-- STOP runtime ghost `280–360 ms`;
-- explicit camera Focus/Reframe `180–260 ms`.
+- generic Move/Copy/Duplicate/Multi-select;
+- large-world navigator/outliner;
+- material-definition authoring;
+- richer environment/profile authoring;
+- touch/mobile;
+- input remapping.
 
-No springy/bouncy default motion. STOP never animates runtime physically back to source pose.
+## 8. Next stage — C6 / IMPLEMENTATION READY
 
-### Explicit anti-patterns
+**Do not start Studio product code yet.**
 
-Reject:
+C6 must translate the frozen product into:
 
-- black void + neon cyan/purple HUD;
-- holographic/glass panels;
-- permanent glowing/rainbow overlays;
-- generic dark SaaS card UI;
-- all-terminal/monospace product styling;
-- dramatic game post-processing obscuring matter;
-- any visual redesign that changes the P06.7A surface anatomy merely for fashion.
+- concrete app/module boundaries;
+- ordered vertical implementation slices;
+- source/adaptor/presentation ownership map;
+- exact first-envelope feature inventory;
+- test/evidence/fidelity gates per slice;
+- owner-facing browser delivery path;
+- implementation stop rules;
+- cold-takeover instructions for the implementation conversation.
 
-## Accepted engineering/product boundaries
+C6 may choose engineering mechanisms. It may not silently reopen P06 product behavior, surface structure or visual language to fit a framework/template.
 
-Do not renegotiate without real contradiction/new evidence:
-
-- `authored != compiled != runtime != render`;
-- `render entity != authored entity != runtime entity`;
-- runtime is disposable;
-- React does not own/mirror hot 60 Hz runtime state;
-- Three scene objects are presentation-only;
-- selection crosses renderer/application boundaries as sparse semantic references/events;
-- generic authored edits may rebuild/reset runtime unless continuity is separately qualified;
-- `UNSUPPORTED != INVALID`;
-- `cellId@face` is current laboratory dialect, not final Machine Matter ontology;
-- runtime manifestations of authored meaning are not authored source itself;
-- no permanent inspector/hierarchy/timeline/dashboard is earned for first envelope.
-
-## Empirical obligations carried into implementation/fidelity
-
-These are not silently declared proven by design:
-
-- actual `1024×640` density/readability;
-- arbitrary light/dark authored material color clashes;
-- extreme zoom/camera-angle target/handle legibility;
-- actual keyboard focus/contrast behavior;
-- outline/ghost browser/GPU behavior;
-- font metrics/loading and icon optical quality;
-- performance of hot Three overlays while sparse React chrome remains cold.
-
-## P06 method
-
-Every mini-stage uses `PLAN → REALIZATION → RED TEAM → VERDICT`.
-
-Before Product Design acceptance:
-
-- ImageGen/mockups do not invent product structure;
-- Build Web Apps does not invent product behavior/information architecture;
-- no Studio implementation;
-- visual styling may express but must not rewrite earned structure.
-
-Build Web Apps returns after Product Design acceptance as implementation/fidelity discipline.
-
-## Next stage — P06.8 / Complete Product Contract + adversarial red-team
-
-P06.8 must not produce another visual concept. It must combine the already-earned product into one falsifiable first-envelope contract.
-
-Required review:
-
-1. walk complete representative journeys through C5A behavior + C5B interaction + P06.7A surfaces + P06.7B visual language;
-2. test default, selection, authoring, INVALID, UNSUPPORTED, RUN, PAUSE, TRACE, STOP, RUNTIME FAULT and reopen/recovery as one coherent product;
-3. attack W1 regression, corrupted-P06 regression, generic CAD/SaaS drift, source/runtime identity confusion, hidden-only actions, instrumentation clutter and implementation-only unanswered decisions;
-4. classify every remaining question as blocker / implementation-fidelity / research boundary / explicit Owner choice;
-5. issue **PRODUCT DESIGN ACCEPTED** only if no fundamental product decision is being deferred to implementation.
-
-Only after acceptance proceed to **C6 / IMPLEMENTATION READY** and hand the frozen contract to Build Web Apps as implementation/fidelity discipline.
+After C6 PASS, Build Web Apps may return strictly as implementation/fidelity discipline working from the accepted contract. It has no redesign authority by inertia.
