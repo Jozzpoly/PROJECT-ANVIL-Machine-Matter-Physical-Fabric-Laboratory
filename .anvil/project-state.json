@@ -12,7 +12,12 @@
     "status": "closed",
     "closureMerge": "56993324c636e55607b18059ada4e33153d263be"
   },
-  "activeWork": null,
+  "activeWork": {
+    "name": "P06 / ANVIL Studio Product Design",
+    "checkpoint": "C5A / PRODUCT BEHAVIOR",
+    "status": "pass-grounding",
+    "record": "docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md"
+  },
   "workbenchW1": {
     "pr": 22,
     "source": "ee5604caefc69ae83952d7030bea2543bb41d37b",
@@ -22,8 +27,7 @@
     "meaning": "negative integration/product evidence; does not falsify Physical Fabric or ANVIL-00..10"
   },
   "studioPreparation": {
-    "status": "product-design-next",
-    "direction": "one long-lived world-first interactive 3D laboratory; viewport central; authored, compiled, runtime and presentation remain separate",
+    "direction": "one long-lived world-first interactive 3D laboratory; authored, compiled, runtime and presentation remain separate",
     "boundaryProof": {
       "pr": 23,
       "head": "6d4ee4fc78d8a9123359775a17169b601f67b28b",
@@ -38,30 +42,68 @@
       "selectedDirection": "existing Vite + TypeScript; React sparse editor shell; imperative Three.js presentation controller; WebGL2 first; existing Box3D/ANVIL runtime",
       "disposition": "CLOSED UNMERGED"
     },
+    "failedDesignAttempt": {
+      "pr": 26,
+      "verdict": "INVALID / INTERRUPTED",
+      "disposition": "CLOSED UNMERGED",
+      "rule": "generated mockup is rejected and is not a design reference"
+    },
+    "c5a": {
+      "verdict": "PASS",
+      "meaning": "product behavior and user mental model are coherent without freezing layout or inventing new science",
+      "coreModel": "build persistent matter -> give local meaning -> run fresh disposable realization -> observe/pause/trace -> stop -> modify -> run again",
+      "truthStates": [
+        "READY",
+        "INVALID",
+        "UNSUPPORTED",
+        "REQUIRES BUILD",
+        "RUNTIME FAULT"
+      ],
+      "nextQuestion": "P06.3 / Attention Architecture"
+    },
     "boundaryLocks": [
+      "authored != compiled != runtime != render",
       "render entity != authored entity != runtime entity",
+      "runtime is disposable",
       "React must not own or mirror the hot 60 Hz runtime loop",
       "Three scene objects are presentation only",
       "selection crosses into application/UI state as sparse semantic events",
       "gizmos edit preview/draft state until an explicit authored command commits a change",
-      "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified"
+      "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified",
+      "UNSUPPORTED != INVALID",
+      "cellId@face is a current laboratory dialect, not final Machine Matter ontology"
     ]
   },
+  "projectSelfModel": {
+    "meaning": "operational metaphor only; not a claim of literal consciousness",
+    "actors": {
+      "owner": "purpose, values, subjective acceptance and explicit vision changes",
+      "orchestrator": "investigation, falsification, planning, implementation and continuity",
+      "project": "encoded accepted truth, negative evidence, boundaries, active uncertainty, contradictions and next question"
+    },
+    "contradictionPolicy": "a proposal that conflicts with accepted evidence or frozen boundaries must be surfaced and consciously reclassified rather than silently executed"
+  },
   "nextStage": {
-    "name": "P06 / ANVIL Studio Product Design",
+    "name": "P06.3 / Attention Architecture",
     "type": "integration-product-design",
     "status": "selected-not-active",
-    "purpose": "freeze a complete world-first Studio product/visual/interaction contract before implementation",
-    "method": "use the proven P04/P05 boundaries plus owner preferences and complete visual concepts; reject dashboard/gate-first designs and do not code the Studio before design approval",
-    "completion": "accepted complete concept + state catalogue + design system + interaction grammar + implementation inventory"
+    "purpose": "derive the hierarchy of always-visible, contextual, temporary and normally-hidden information/controls from grounded product behavior before freezing spatial layout",
+    "completion": "attention hierarchy passes red-team without hiding necessary truth or regressing into dashboard-first design"
+  },
+  "p06Method": {
+    "rule": "PLAN -> REALIZATION -> RED TEAM -> VERDICT for every mini-stage",
+    "currentDiscoveryMode": "behavior/interaction-first; no ImageGen or Build Web Apps-led concept generation before product design is frozen",
+    "buildWebAppsLaterRole": "implementation/fidelity discipline after accepted Product Design"
   },
   "doNotDoNow": [
     "create or activate ANVIL-11 by inheritance",
-    "merge W1 PR 22 or polish its AUTHORED/RUNTIME/BOTH owner-gate UI into the Studio product",
-    "implement Studio product code before P06 design freeze",
+    "reopen/merge W1 or reuse its AUTHORED/RUNTIME/BOTH gate UI as product direction",
+    "reuse the rejected P06 attempt #1 mockup as a design reference",
+    "implement Studio product code before Product Design acceptance",
+    "freeze exact layout or visual system before Attention and Spatial Interaction checkpoints",
     "promote P04/P05 spike helper shapes into Foundation or ontology by inertia",
     "treat cellId@face as final Machine Matter ontology",
-    "let React own runtime-frame state or let renderer entities become authored identity",
-    "force WebGPU, react-three-fiber, a generic state manager or a generic FabricRuntime without a demonstrated need"
+    "let React own runtime-frame state or renderer entities become authored identity",
+    "force WebGPU, react-three-fiber, a generic state manager or a generic FabricRuntime without demonstrated need"
   ]
 }
