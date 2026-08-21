@@ -15,8 +15,8 @@ window.__P05B = {
   sourceUntouched: false,
 };
 
-function InspectorValue({ className = "", children }) {
-  return <span className={`v ${className}`}>{children}</span>;
+function InspectorValue({ className = "", children, ...props }) {
+  return <span className={`v ${className}`} {...props}>{children}</span>;
 }
 
 function App() {
