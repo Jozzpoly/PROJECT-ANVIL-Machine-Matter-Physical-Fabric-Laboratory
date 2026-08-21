@@ -14,25 +14,29 @@
   },
   "activeWork": {
     "name": "P06 / ANVIL Studio Product Design",
-    "checkpoint": "P06.7B / VISUAL LANGUAGE",
+    "checkpoint": "P06.8 / COMPLETE PRODUCT CONTRACT",
     "status": "pass-grounding",
-    "record": "docs/studio/P06-7B-VISUAL-LANGUAGE.md"
+    "record": "docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md"
   },
-  "workbenchW1": {
-    "pr": 22,
-    "ownerVerdict": "NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE",
-    "disposition": "CLOSED UNMERGED",
-    "meaning": "negative integration/product evidence; its dashboard/gate form is not the Studio direction"
-  },
-  "studioPreparation": {
-    "direction": "one long-lived world-first interactive 3D laboratory; authored, compiled, runtime and presentation remain separate",
-    "technologyDirection": "Vite + TypeScript; React sparse editor shell; imperative Three.js/WebGL2 presentation; existing Box3D/ANVIL runtime",
-    "failedDesignAttempt": {
+  "historicalProductEvidence": {
+    "w1": {
+      "pr": 22,
+      "ownerVerdict": "NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE",
+      "disposition": "CLOSED UNMERGED",
+      "meaning": "negative product evidence; dashboard/gate form is not Studio direction"
+    },
+    "failedP06Attempt": {
       "pr": 26,
       "verdict": "INVALID / INTERRUPTED",
       "disposition": "CLOSED UNMERGED",
       "rule": "generated mockup is rejected and is not a design reference"
-    },
+    }
+  },
+  "studioPreparation": {
+    "direction": "one long-lived world-first interactive 3D laboratory; authored, compiled, runtime and presentation remain separate",
+    "technologyDirection": "Vite + TypeScript; React sparse editor shell; imperative Three.js/WebGL2 presentation; existing Box3D/ANVIL runtime",
+    "boundaryEvidence": "P04 / PR #23 closed-unmerged PASS for first active-bearing Studio envelope",
+    "technologyEvidence": "P05 / PR #24 closed-unmerged TECHNOLOGY PROVEN — PASS",
     "c5a": {
       "verdict": "PASS",
       "record": "docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md",
@@ -42,52 +46,37 @@
       "verdict": "PASS",
       "record": "docs/studio/P06-C5B-PRODUCT-INTERACTION.md",
       "attentionRule": "matter first; context second; explanation on demand; engineering internals last",
-      "spatialRule": "local truth close to matter; global state at workspace boundary; investigation only on request",
-      "workspaceRule": "save authored workspace, never canonical runtime state; reload returns to BUILD"
+      "spatialRule": "local truth close to matter; global state at workspace boundary; investigation only on request"
     },
     "p067a": {
       "verdict": "PASS",
       "record": "docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md",
       "selectedSurface": "WORLD CANVAS + PERIPHERAL ISLANDS",
-      "surfaces": [
-        "World Canvas — full-window primary surface",
-        "Workspace Dock — upper-left workspace/save/history actions",
-        "Intent Rail — left edge high-level Select/Matter/Meaning/Inspect intents",
-        "Simulation Dock — lower-center BUILD/RUN/PAUSE lifetime and simulation actions",
-        "Context/Draft Pod — local target/selection actions and authored draft commit/cancel",
-        "Investigation Drawer — right-edge conditional Inspect/Trace/Details surface"
-      ],
       "referenceViewportCssPx": "1440x900",
-      "minimumFirstEnvelopeCssPx": "1024x640",
-      "materialRule": "assign existing authored materials only; no new material-definition editor earned",
-      "profileRule": "profile selector is contextual and absent when only one qualified profile exists",
-      "firstRunRule": "same world with a small Empty / Editable Starter start surface; no dashboard/home route"
+      "minimumFirstEnvelopeCssPx": "1024x640"
     },
     "p067b": {
       "verdict": "PASS",
       "record": "docs/studio/P06-7B-VISUAL-LANGUAGE.md",
-      "selectedDirection": "QUIET PHYSICAL WORKSHOP",
-      "visualConstitution": "matter feels touchable; meaning looks deliberately authored onto places; runtime becomes alive only when physics is alive; chrome behaves like a quiet precision instrument; deeper truth appears as temporary explanation",
-      "worldRange": "#202327–#262A2E",
-      "chrome": "#1C1F23",
-      "typography": "IBM Plex Sans + IBM Plex Mono for numeric/technical reveal",
-      "semanticColors": {
-        "bearing": "#4BC7C1",
-        "torque": "#F2A65A",
-        "invalid": "#E56A6A",
-        "unsupported": "#B7A0D8",
-        "requiresBuild": "#D7BC68"
-      },
-      "selectionRule": "two-tone high-contrast outline so arbitrary material displayColor cannot hide selection/focus",
-      "lifetimeRule": "shape communicates capability; stroke/material treatment communicates authored vs runtime lifetime; motion only for real action/change",
-      "motionRule": "short functional transitions; STOP uses brief fading ghost and never reverse-physics animation",
-      "antiPatterns": [
-        "black void + neon HUD",
-        "glassmorphism/holographic panels",
-        "generic dark SaaS cards",
-        "permanent glowing/rainbow overlays",
-        "visual changes that rewrite P06.7A surface structure"
-      ]
+      "selectedDirection": "QUIET PHYSICAL WORKSHOP"
+    },
+    "p068": {
+      "verdict": "PASS — PRODUCT DESIGN ACCEPTED FOR IMPLEMENTATION PREPARATION",
+      "record": "docs/studio/P06-8-COMPLETE-PRODUCT-CONTRACT.md",
+      "directInput": "LMB interaction; MMB orbit; Shift+MMB pan; wheel zoom; F focus; Esc cancel draft; Enter commit parameterized draft; Ctrl+Z/Ctrl+Shift+Z authored history; Ctrl+S save",
+      "manipulationRule": "continuous manipulation captures the grabbed value and applies relative deltas; never jump to absolute pointer position",
+      "firstEnvelope": [
+        "add/remove single matter cells",
+        "assign existing authored material",
+        "author Bearing through seam + tangent-axis spatial choice",
+        "author TorquePatch through local patch + relative/no-jump effort draft",
+        "RUN/ACTIVATE/PAUSE/STEP/STOP/RESTART",
+        "Inspect/Trace",
+        "authored Undo/Redo",
+        "Save/Open authored workspace",
+        "Empty / Editable Starter first-run"
+      ],
+      "ownerValueBoundary": "Product Design acceptance is not Owner Value proof; running Studio must earn direct feel/visual/usefulness acceptance"
     },
     "boundaryLocks": [
       "authored != compiled != runtime != render",
@@ -99,9 +88,9 @@
       "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified",
       "UNSUPPORTED != INVALID",
       "cellId@face is a current laboratory dialect, not final Machine Matter ontology",
-      "view navigation is presentation-only and independent of authoring/runtime physics",
-      "runtime manifestations of authored meaning must not be presented as if authored source itself moved",
-      "no permanent full-height inspector/dashboard/hierarchy is earned for first envelope"
+      "view navigation is presentation-only",
+      "runtime manifestations of authored meaning must not be presented as authored source itself",
+      "no permanent full-height inspector/dashboard/hierarchy/timeline is earned for first envelope"
     ]
   },
   "projectSelfModel": {
@@ -113,32 +102,58 @@
     },
     "contradictionPolicy": "a proposal that conflicts with accepted evidence or frozen boundaries must be surfaced and consciously reclassified rather than silently executed"
   },
+  "openClasses": {
+    "blocker": [],
+    "implementationFidelity": [
+      "storage backend preserving Save/Open semantics",
+      "compile scheduling/caching",
+      "exact hit-test mechanics preserving semantic priority",
+      "Torque drag sensitivity",
+      "Context/Draft Pod DOM anchoring",
+      "outline/ghost rendering technique",
+      "font/icon/browser-focus details"
+    ],
+    "researchBoundary": [
+      "multi-bearing runtime composition",
+      "multiple TorquePatch composition beyond accepted evidence",
+      "generic CUT/free-runtime editing",
+      "arbitrary continuity/state transfer",
+      "representation-independent locality/final ontology"
+    ],
+    "ownerReality": [
+      "direct-manipulation feel",
+      "real visual/emotional acceptance",
+      "first-loop creative pull",
+      "1024x640 readability",
+      "extreme angle/zoom legibility",
+      "TRACE usefulness vs clutter"
+    ]
+  },
   "nextStage": {
-    "name": "P06.8 / Complete Product Contract + adversarial red-team",
-    "type": "integration-product-design",
+    "name": "C6 / IMPLEMENTATION READY",
+    "type": "implementation-preparation",
     "status": "selected-not-active",
-    "purpose": "combine C5A, C5B, P06.7A and P06.7B into one complete first-envelope product contract and attempt to falsify it before Product Design acceptance",
-    "completion": "representative end-to-end journeys/states survive adversarial review; open questions are classified; no fundamental product decision remains for implementation; Owner/project acceptance can be issued or explicitly withheld"
+    "purpose": "translate the accepted Product Design into implementation boundaries, ordered vertical slices, browser/owner evidence gates and cold-takeover instructions without reopening product invention",
+    "completion": "implementation map is concrete enough that the next conversation can start coding from live main without deciding fundamental product behavior, surface or visual language"
   },
   "laterStages": [
-    "PRODUCT DESIGN ACCEPTED",
-    "C6 / IMPLEMENTATION READY",
-    "Build Web Apps returns as implementation/fidelity discipline"
+    "Studio implementation vertical slices",
+    "browser/fidelity qualification",
+    "Owner Reality / Value gate"
   ],
   "p06Method": {
-    "rule": "PLAN -> REALIZATION -> RED TEAM -> VERDICT for every mini-stage",
-    "currentDiscoveryMode": "product contract first; no ImageGen or Build Web Apps-led product invention before Product Design is frozen",
-    "buildWebAppsLaterRole": "implementation/fidelity discipline after accepted Product Design"
+    "status": "complete after P06.8 grounding",
+    "rule": "PLAN -> REALIZATION -> RED TEAM -> VERDICT",
+    "buildWebAppsLaterRole": "implementation/fidelity discipline working from accepted Product Design; no redesign authority by inertia"
   },
   "doNotDoNow": [
     "create or activate ANVIL-11 by inheritance",
-    "reopen/merge W1 or reuse its AUTHORED/RUNTIME/BOTH gate UI as product direction",
-    "reuse the rejected P06 attempt #1 mockup as a design reference",
-    "implement Studio product code before Product Design acceptance",
-    "change earned surface structure merely to fit a fashionable visual concept",
-    "add permanent hierarchy/inspector/timeline/material/environment surfaces without demonstrated need",
+    "reopen/merge W1 or reuse its dashboard/gate UI",
+    "reuse rejected P06 attempt #1 mockup",
+    "implement Studio before C6 implementation-readiness pass",
+    "reopen accepted Product Design merely to fit a framework/template",
     "promote product-local helper shapes into Foundation or ontology by inertia",
-    "treat cellId@face as final Machine Matter ontology",
+    "treat cellId@face as final ontology",
     "let React own runtime-frame state or renderer entities become authored identity",
     "serialize runtime physics as canonical workspace state"
   ]
