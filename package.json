@@ -17,10 +17,16 @@
     "build": "vite build && node scripts/write-artifact-manifest.mjs"
   },
   "dependencies": {
-    "box3d.js": "0.0.2"
+    "box3d.js": "0.0.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@types/three": "0.185.1",
     "typescript": "7.0.2",
     "vite": "8.1.5"
   },
