@@ -14,34 +14,19 @@
   },
   "activeWork": {
     "name": "P06 / ANVIL Studio Product Design",
-    "checkpoint": "C5B / PRODUCT INTERACTION",
+    "checkpoint": "P06.7A / PRODUCT SURFACE ARCHITECTURE",
     "status": "pass-grounding",
-    "record": "docs/studio/P06-C5B-PRODUCT-INTERACTION.md"
+    "record": "docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md"
   },
   "workbenchW1": {
     "pr": 22,
-    "source": "ee5604caefc69ae83952d7030bea2543bb41d37b",
-    "technicalQualification": "PASS",
     "ownerVerdict": "NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE",
     "disposition": "CLOSED UNMERGED",
-    "meaning": "negative integration/product evidence; does not falsify Physical Fabric or ANVIL-00..10"
+    "meaning": "negative integration/product evidence; its dashboard/gate form is not the Studio direction"
   },
   "studioPreparation": {
     "direction": "one long-lived world-first interactive 3D laboratory; authored, compiled, runtime and presentation remain separate",
-    "boundaryProof": {
-      "pr": 23,
-      "head": "6d4ee4fc78d8a9123359775a17169b601f67b28b",
-      "verdict": "PASS for the first active-bearing Studio envelope",
-      "disposition": "CLOSED UNMERGED"
-    },
-    "technologyProof": {
-      "pr": 24,
-      "head": "8e3b9a767c1cb2ef1e7a81b96a63a27c75a7b95a",
-      "run": 32432616046,
-      "verdict": "TECHNOLOGY PROVEN — PASS",
-      "selectedDirection": "existing Vite + TypeScript; React sparse editor shell; imperative Three.js presentation controller; WebGL2 first; existing Box3D/ANVIL runtime",
-      "disposition": "CLOSED UNMERGED"
-    },
+    "technologyDirection": "Vite + TypeScript; React sparse editor shell; imperative Three.js/WebGL2 presentation; existing Box3D/ANVIL runtime",
     "failedDesignAttempt": {
       "pr": 26,
       "verdict": "INVALID / INTERRUPTED",
@@ -51,24 +36,33 @@
     "c5a": {
       "verdict": "PASS",
       "record": "docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md",
-      "coreModel": "build persistent matter -> give local meaning -> run fresh disposable realization -> observe/pause/trace -> stop -> modify -> run again",
-      "truthStates": [
-        "READY",
-        "INVALID",
-        "UNSUPPORTED",
-        "REQUIRES BUILD",
-        "RUNTIME FAULT"
-      ]
+      "coreModel": "build persistent matter -> give local meaning -> run fresh disposable realization -> observe/pause/trace -> stop -> modify -> run again"
     },
     "c5b": {
       "verdict": "PASS",
       "record": "docs/studio/P06-C5B-PRODUCT-INTERACTION.md",
       "attentionRule": "matter first; context second; explanation on demand; engineering internals last",
       "spatialRule": "local truth close to matter; global state at workspace boundary; investigation only on request",
-      "stateRule": "BUILD/RUN/PAUSE/TRACE/STOP are lifetime/state changes inside one workspace and must not fake authored-runtime identity continuity",
-      "failureRule": "INVALID, UNSUPPORTED, REQUIRES BUILD and RUNTIME FAULT remain distinct with different recovery paths",
-      "workspaceRule": "save authored workspace, never canonical runtime state; reload returns to BUILD and rebuilds interpretation/runtime on demand",
-      "scopeDecision": "generic Move/Copy/Duplicate/Multi-select are not first-envelope requirements"
+      "workspaceRule": "save authored workspace, never canonical runtime state; reload returns to BUILD"
+    },
+    "p067a": {
+      "verdict": "PASS",
+      "record": "docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md",
+      "selectedSurface": "WORLD CANVAS + PERIPHERAL ISLANDS",
+      "surfaces": [
+        "World Canvas — full-window primary surface",
+        "Workspace Dock — upper-left workspace/save/history actions",
+        "Intent Rail — left edge high-level Select/Matter/Meaning/Inspect intents",
+        "Simulation Dock — lower-center BUILD/RUN/PAUSE lifetime and simulation actions",
+        "Context/Draft Pod — local target/selection actions and authored draft commit/cancel",
+        "Investigation Drawer — right-edge conditional Inspect/Trace/Details surface"
+      ],
+      "referenceViewportCssPx": "1440x900",
+      "minimumFirstEnvelopeCssPx": "1024x640",
+      "materialRule": "assign existing authored materials only; no new material-definition editor earned",
+      "profileRule": "profile selector is contextual and absent when only one qualified profile exists",
+      "firstRunRule": "same world with a small Empty / Editable Starter start surface; no dashboard/home route",
+      "expertRule": "command palette may complement but never replace discoverable core interaction"
     },
     "boundaryLocks": [
       "authored != compiled != runtime != render",
@@ -77,12 +71,12 @@
       "React must not own or mirror the hot 60 Hz runtime loop",
       "Three scene objects are presentation only",
       "selection crosses into application/UI state as sparse semantic events",
-      "gizmos edit preview/draft state until an explicit authored command commits a change",
       "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified",
       "UNSUPPORTED != INVALID",
       "cellId@face is a current laboratory dialect, not final Machine Matter ontology",
       "view navigation is presentation-only and independent of authoring/runtime physics",
-      "runtime manifestations of authored meaning must not be presented as if authored source itself moved"
+      "runtime manifestations of authored meaning must not be presented as if authored source itself moved",
+      "no permanent full-height inspector/dashboard/hierarchy is earned for first envelope"
     ]
   },
   "projectSelfModel": {
@@ -95,21 +89,21 @@
     "contradictionPolicy": "a proposal that conflicts with accepted evidence or frozen boundaries must be surfaced and consciously reclassified rather than silently executed"
   },
   "nextStage": {
-    "name": "P06.7A / Product Surface Architecture",
+    "name": "P06.7B / Visual Language",
     "type": "integration-product-design",
     "status": "selected-not-active",
-    "purpose": "translate grounded product behavior + interaction architecture into the complete desktop Studio working surface without yet using aesthetic styling to invent product structure",
-    "completion": "complete surface layout/containment and representative state surfaces pass red-team for world dominance, discoverability, continuity and implementation feasibility"
+    "purpose": "translate the earned Studio behavior, interaction and surface architecture into a coherent visual/emotional system without changing product structure for fashion",
+    "completion": "typography, palette, world/material character, semantic overlays, authored/runtime manifestation distinction, state styling, icons, spacing/container treatment and motion pass owner/project red-team"
   },
   "laterStages": [
-    "P06.7B / Visual Language",
     "P06.8 / Complete Product Contract + adversarial red-team",
     "PRODUCT DESIGN ACCEPTED",
-    "C6 / IMPLEMENTATION READY"
+    "C6 / IMPLEMENTATION READY",
+    "Build Web Apps returns as implementation/fidelity discipline"
   ],
   "p06Method": {
     "rule": "PLAN -> REALIZATION -> RED TEAM -> VERDICT for every mini-stage",
-    "currentDiscoveryMode": "behavior/interaction/surface-first; no ImageGen or Build Web Apps-led product invention before Product Design is frozen",
+    "currentDiscoveryMode": "product contract first; no ImageGen or Build Web Apps-led product invention before Product Design is frozen",
     "buildWebAppsLaterRole": "implementation/fidelity discipline after accepted Product Design"
   },
   "doNotDoNow": [
@@ -117,11 +111,11 @@
     "reopen/merge W1 or reuse its AUTHORED/RUNTIME/BOTH gate UI as product direction",
     "reuse the rejected P06 attempt #1 mockup as a design reference",
     "implement Studio product code before Product Design acceptance",
-    "use visual styling to decide unresolved product behavior",
-    "promote P04/P05 spike helper shapes into Foundation or ontology by inertia",
+    "change earned surface structure merely to fit a fashionable visual concept",
+    "add permanent hierarchy/inspector/timeline/material/environment surfaces without demonstrated need",
+    "promote product-local helper shapes into Foundation or ontology by inertia",
     "treat cellId@face as final Machine Matter ontology",
     "let React own runtime-frame state or renderer entities become authored identity",
-    "serialize runtime physics as canonical workspace state",
-    "force WebGPU, react-three-fiber, a generic state manager or a generic FabricRuntime without demonstrated need"
+    "serialize runtime physics as canonical workspace state"
   ]
 }
