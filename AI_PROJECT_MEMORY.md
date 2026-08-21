@@ -1,12 +1,14 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last strategic grounding: 2026-08-20.
+Last strategic grounding: 2026-08-21.
 
 Accepted scientific truth is through **ANVIL-10 / TORQUE-PATCH-REBIND**. **Epoch I (ANVIL-00…10) is closed.** No ANVIL-11 is active.
 
-**W0 / Physical Fabric Workbench v0 design is complete once PR #20 is merged.** It selected **B0 / post-rebind activation specimen**. W1 implementation is selected but not active; it must begin on a new integration branch/PR after cold verification of the merged W0 contract.
+The old Physical Fabric Workbench W1 path is finished as **negative integration/product evidence**: PR #22 is closed unmerged after owner verdict **NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE**. Its technical path remains a donor; its owner-gate/dashboard form is not the product direction.
 
-Live Git overrides this memory. If PR #20 is still open, finish/reconcile W0 before treating the post-merge state below as live.
+The active strategic direction is **ANVIL Studio**: one long-lived, world-first interactive 3D laboratory for Physical Fabric. P04 boundary proof (PR #23) and P05 technology proof (PR #24) are completed, closed-unmerged engineering evidence. The next selected stage is **P06 / Studio Product Design**. Do not implement Studio product code before the complete visual/state/interaction design contract is accepted.
+
+Live Git overrides this memory.
 
 ## Authority
 
@@ -18,7 +20,7 @@ Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
 4. this memory and canonical docs;
 5. conversation/donor history only as leads.
 
-ANVIL investigates persistent authored Machine Matter / Physical Fabric meaning compiling into disposable runtime representations. Runtime Box3D bodies/joints/actions are interpretations, not construction identity. Cubic cells remain a laboratory dialect, not final ontology.
+ANVIL investigates persistent authored Machine Matter / Physical Fabric meaning compiling into disposable runtime representations. Runtime Box3D bodies/joints/actions are interpretations, not construction identity. Cubic cells and `cellId@face` remain a laboratory dialect, not final ontology.
 
 ## Accepted capability stack — Epoch I
 
@@ -34,132 +36,110 @@ ANVIL investigates persistent authored Machine Matter / Physical Fabric meaning 
 - **ANVIL-09 / ACTIVATE** — runtime-only OFF/ON/OFF activation; OFF adds no active torque; fresh runtime defaults OFF.
 - **ANVIL-10 / TORQUE-PATCH-REBIND** — unchanged persistent local TORQUE-PATCH can be re-lowered after CUT onto the rebound BEARING/current body; stale action binding is rejected; fresh action acts through the correct new endpoint without acting on stale sibling.
 
-Exact claims and negative evidence live under `docs/experiments/`.
+Exact scientific claims and negative evidence live under `docs/experiments/`.
 
-## ANVIL-10 accepted boundary
+## Studio north star
 
-```text
-frozen preflight        d89f001705a8b80da822792ecef24e30af31ac89
-A/B source/run          4be76be143a93acc13c45842218d5efa4e1dfe4a / 32199521910
-C0-C2 source/run        a448167642d0fd2435d44b8efc42f972fdac698a / 32199721488
-Ready source/run        c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20 / 32199826901
-Ready synthetic merge   94015244dc854ff03210eaa9fc6b459ac61ceb9d
-qualified tree          6cbfede282e2d9243634d5d73d0c2dfd74df269f
-material merge           ffde8c0babdd473454b3e769cb10fd31537a0c70
-evidence grounding       ba7ce2dc67c6f7aa936e20a0294d9cc12208a549
-```
+> **ANVIL Studio is a long-lived interactive 3D laboratory for Physical Fabric.**
 
-Frozen discriminator: ACTIVE-vs-OFF final relative-speed advantage `5.955601841211319 rad/s` versus minimum `0.25 rad/s`; stale sibling angular and linear deltas were both zero.
+North-star loop:
 
-Supported interpretation: **persistent semantic re-lowering across changed disposable representation**, not persistence/migration of `TorqueActionPlan`, activation state or solver state.
+`CREATE MATTER → GIVE IT LOCAL MEANING → COMPOSE → SIMULATE → OBSERVE → MODIFY → DISCOVER`
 
-Not earned generically: FUNCTION, Control/Signal, Surface, generic invalidation, command migration, representation independence or foundation promotion of BEARING/TORQUE-PATCH/ACTIVATE/REBIND.
+or, operationally:
 
-## Epoch I closure
+`BUILD → PAINT / DEFINE LOCAL BEHAVIOR → RUN → SEE → MODIFY → RUN AGAIN`
 
-```text
-C1 truth/governance merge bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30
-C2 infrastructure merge   4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0
-C3 repository merge       5aaa5eca256bf64f83fa7949f05d29db25b894e8
-C4 closure merge          56993324c636e55607b18059ada4e33153d263be
-Q0 / C3 tree              870a5b416c262eefbee13b817636a9246afb0378
-Q0 run                    32372701068
-```
+Studio is not a single experiment route, evidence dashboard, owner-gate UI, final CAD/game editor or final Machine Matter ontology. UX/visualization are research instrumentation and owner agency is a primary product measure.
 
-Q0: 29 automatically discovered Node test files, 53/53 Node + real-Box3D PASS, production build PASS, launcher PASS and 19/19 Chromium PASS. Whole-project regression/transport evidence only.
+## Product/architecture locks before P06
 
-Residual process debt: no server-side `main` protection; deletion-safe historical refs remain. Expected-head/path audits remain mandatory.
+- one persistent 3D world is the primary surface;
+- viewport is central; chrome supports the world instead of replacing it;
+- authored / compiled / runtime / presentation remain separate;
+- `render entity != authored entity != runtime entity`;
+- runtime is disposable;
+- renderer is presentation-only;
+- experiments/capabilities become tools, overlays, presets or scenarios inside one world rather than separate apps/routes;
+- generic edits may rebuild/reset runtime unless continuity is separately qualified;
+- unsupported composition is an honest product state, not a reason to invent new science;
+- exploratory capability use does not promote Foundation or ontology.
 
-## Workbench W0 — accepted B0 design
+## P04 boundary proof — PR #23
 
-Authority order:
+Closed unmerged. Final head: `6d4ee4fc78d8a9123359775a17169b601f67b28b`.
 
-1. `docs/workbench/W0-FINAL-SCOPE.md` — exact W1 implementation contract;
-2. `docs/workbench/W0-ADVERSARIAL-REVIEW.md` — narrowing evidence;
-3. `docs/workbench/W0-VERDICT.md` — acceptance logic;
-4. `docs/workbench/W0-DESIGN-GATE.md` — initial provisional design only where not contradicted later.
+Bounded engineering conclusions for the first active-bearing Studio envelope:
 
-W0 compared:
+- existing accepted APIs can support a hand-authored Matter + BEARING + TORQUE-PATCH + ACTIVATE path without a generic runtime/compiler ontology;
+- neutral presentation data can be derived without Box3D-handle leakage;
+- source, compiled generation and runtime session identities require separate scoping;
+- valid authored intent may remain `UNSUPPORTED` when composition is unqualified;
+- simulation-profile compatibility remains separate from source validity.
 
-- A / passive topology — fallback; too close to existing ANVIL-03 owner gate.
-- B / original active topology — **rejected** because pre-CUT torque and arbitrary CUT timing could feed unqualified dynamic states into CUT/REBIND.
-- **B0 / post-rebind activation — accepted.**
-- C / compliance-resolution — deferred as a separate possible later specimen.
+No multi-bearing physics, arbitrary CUT editor semantics, generic capability/runtime/compiler architecture or new scientific claim was earned.
 
-### B0 exact story
+## P05 technology proof — PR #24
 
-```text
-AUTHORED
-Matter + one BEARING + one local TORQUE-PATCH
+Closed unmerged. Final head: `8e3b9a767c1cb2ef1e7a81b96a63a27c75a7b95a`; final dedicated run `32432616046` PASS.
 
-PRE-CUT
-known moving passive state
-→ deterministic CUT READY
-→ no pre-CUT torque activation
+Selected first Studio engineering direction:
 
-OWNER
-execute one accepted nearby CUT
+- existing **Vite + TypeScript** repository/build substrate;
+- existing **Box3D / accepted ANVIL adapters** for physics;
+- **Three.js** renderer;
+- **WebGL2** first backend;
+- **React** editor/UI shell;
+- imperative Three controller outside React's hot runtime-state loop.
 
-TRANSACTION
-old runtime discarded
-motion transferred
-2 bodies → 3 bodies
-same persistent BEARING reconstructed
-same persistent TORQUE-PATCH re-lowered
-fresh post-CUT runtime/action starts OFF
+Boundary contract:
 
-OWNER
-activate torque
+1. React does not own or mirror 60 Hz runtime body state.
+2. Three scene objects are presentation objects, never authored/runtime identity.
+3. Runtime snapshots update Three directly through presentation/controller adapters.
+4. Renderer selection enters application/UI state only as sparse semantic events/references.
+5. Transform gizmos edit presentation/editor drafts until an explicit authored command commits change.
+6. WebGPU is not a launch gate.
+7. `react-three-fiber` is not selected because no demonstrated need currently justifies the extra layer.
 
-OBSERVATION
-bounded active window
-causal work through rebound endpoint
-stale sibling not part of fresh action binding
-```
+P05 did not freeze final visual design, workspace schema, state manager, undo/redo, arbitrary gizmo semantics, owner-hardware performance, material/shader system or multi-capability runtime composition.
 
-B0 does **not** demonstrate that active behavior survived through CUT. Persistent source meaning survives/rebinds; a **fresh** compiled action derived after the transaction can act correctly.
+## P06 / Studio Product Design — selected next stage
 
-## Frozen W1 boundary
+P06 exists to answer:
 
-W1 may implement only:
+> **How do we design Studio so well that implementation becomes execution rather than product invention?**
 
-- one frozen authored fixture;
-- one persistent BEARING;
-- one persistent TORQUE-PATCH with frozen effort;
-- **AUTHORED MATTER / RUNTIME INTERPRETATION / BOTH** views;
-- deterministic progression to CUT READY;
-- one marked accepted CUT;
-- explicit 2 → 3 runtime decomposition;
-- BEARING reconstruction;
-- same-source TORQUE-PATCH re-lowering;
-- fresh post-CUT runtime OFF;
-- one bounded post-CUT activation/observation;
-- optional background OFF control / technical provenance reveal;
-- reset;
-- bounded Workbench-specific controller/rendering/glue/tests.
+Use @Build Web Apps as the design discipline: complete visual concepts before code, owner review before freeze, then extract design tokens, typography, components, states, interactions, icon grammar, container rules and implementation inventory.
 
-W1 must not add pre-CUT torque activation, arbitrary CUT timing/location, active-during-CUT, action/activation/solver-state migration, torque scaling/editor semantics, indefinite owner control presented as accepted behavior, gravity/contact/load/compliance composition, generic `FabricRuntime`, generic Relation/Entity/Component/FUNCTION/Control/Signal/Surface/Power architecture, or foundation promotion for integration convenience.
+The complete product surface must include representative states for:
 
-Any required forbidden item is a STOP/reclassification point.
+- world/default editing;
+- matter selected;
+- local face meaning authoring;
+- simulation RUN;
+- PAUSE / inspection;
+- authored/runtime/provenance reveal;
+- invalid authoring;
+- unsupported composition;
+- rebuild/trace after a meaningful change.
 
-## Owner Reality Gate
+Design filters:
 
-First-pass observation must precede detailed technical explanation. The owner should say what remained the same, what changed, where torque meaning appears to live, and what they expect after activation. Then technical reveal may show source IDs, body decomposition, rebound bearing provenance, fresh action binding and control diagnostics.
+- world-first, direct manipulation, minimal persistent chrome;
+- contextual/adaptive tools and progressive technical reveal;
+- physical differences shown primarily in the world;
+- playful creative immediacy with serious technical legibility;
+- no dashboard-first layout, log walls, decorative sci-fi HUD, nested-card clutter or process UI louder than the matter itself.
 
-Verdict classes:
+P06 ends only when a complete concept is owner-accepted and converted into a frozen design system/state catalogue/implementation inventory. Then C6 can prepare implementation.
 
-- **VALUE SIGNAL**;
-- **LEGIBLE BUT SCRIPTED**;
-- **NO VALUE SIGNAL**.
+## Do not do now
 
-All are integration evidence only. `LEGIBLE BUT SCRIPTED` should point toward authorship/locality/editing/emergence investigation rather than automatic primitive accumulation.
-
-## Next action after W0 merge
-
-1. Resolve live `main` and open PRs; verify PR #20 is merged and no W1 implementation is already active.
-2. Read the merged `W0-FINAL-SCOPE.md`, adversarial review and verdict.
-3. Create a new W1 integration branch/PR.
-4. Implement B0 only; do not resurrect freedoms rejected by W0.
-5. Preserve Draft/core → Ready/candidate validation, and keep browser/owner evidence separate from scientific promotion.
-
-Do not create ANVIL-11 by inheritance.
+- create ANVIL-11 by inheritance;
+- reopen/merge W1 as the product direction;
+- implement Studio before P06 design freeze;
+- promote P04/P05 spike helper shapes into Foundation or ontology by inertia;
+- treat `cellId@face` as final Machine Matter ontology;
+- let renderer entities become authored identity or React become the physics-frame state owner;
+- force WebGPU, R3F, a state manager, generic `FabricRuntime` or generic capability architecture without a demonstrated need.

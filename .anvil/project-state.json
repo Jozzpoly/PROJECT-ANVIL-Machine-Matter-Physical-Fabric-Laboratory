@@ -5,118 +5,63 @@
   "acceptedScientific": {
     "through": "ANVIL-10 / TORQUE-PATCH-REBIND",
     "materialCheckpoint": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
-    "lastMaterialMerge": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
     "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
     "verdictBoundary": "SUPPORTED FOR FROZEN FIXTURE; no generic FUNCTION, Control, Surface, representation-independence or Machine Matter ontology is earned"
   },
-  "activeWork": null,
-  "anvil10": {
-    "experiment": "ANVIL-10 / TORQUE-PATCH-REBIND",
-    "status": "promoted",
-    "verdict": "SUPPORTED FOR FROZEN FIXTURE",
-    "pr": 15,
-    "preflight": "docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-PREFLIGHT.md",
-    "preflightSource": "d89f001705a8b80da822792ecef24e30af31ac89",
-    "abSource": "4be76be143a93acc13c45842218d5efa4e1dfe4a",
-    "abRun": 32199521910,
-    "c0c2Source": "a448167642d0fd2435d44b8efc42f972fdac698a",
-    "c0c2Run": 32199721488,
-    "readySource": "c173a6d336f3917bbd8ef74e1fb2f2118ffc6d20",
-    "readyRun": 32199826901,
-    "readyBase": "b825002141d30cf2190ae3475b94020f261fc8dd",
-    "readySyntheticMerge": "94015244dc854ff03210eaa9fc6b459ac61ceb9d",
-    "qualifiedTree": "6cbfede282e2d9243634d5d73d0c2dfd74df269f",
-    "materialMerge": "ffde8c0babdd473454b3e769cb10fd31537a0c70",
-    "evidenceGrounding": "ba7ce2dc67c6f7aa936e20a0294d9cc12208a549",
-    "evidenceLog": "docs/experiments/ANVIL-10-TORQUE-PATCH-REBIND-EVIDENCE.md",
-    "acceptedResult": "For the frozen single-bearing moving fixture, one unchanged persistent local TORQUE-PATCH can be re-lowered onto the rebound BEARING after CUT, a valid-looking stale pre-CUT action is rejected even though its old body still exists, and the fresh action produces causal post-CUT ON-vs-OFF torque through the correct new endpoint body without acting on the stale sibling."
+  "epochI": {
+    "status": "closed",
+    "closureMerge": "56993324c636e55607b18059ada4e33153d263be"
   },
-  "epochIClosure": {
-    "status": "complete",
-    "baselineMain": "e24a0b940f111a14eaefc5efe51fb0975e30e888",
-    "baselineTree": "178889bd7c4a24e1787b12fc1e726aede67e735f",
-    "baselineOpenPrs": 0,
-    "baselineNonMainBranches": 18,
-    "invariant": "closure changed truth/governance/tooling/packaging/neutral integration preparation without changing ANVIL-00..10 scientific semantics",
-    "checkpoints": [
-      "C0 baseline freeze — complete",
-      "C1 truth and governance reset — merged as bd1e1a61f1fe1bc2c6dae38c86c95b587e935e30",
-      "C2 infrastructure hygiene — merged as 4f3cec42424ef4b70ad1992af21ec3a2b1a2d6e0",
-      "C3 repository hygiene — merged as 5aaa5eca256bf64f83fa7949f05d29db25b894e8",
-      "C4 final qualification and cold-handoff grounding — merged as 56993324c636e55607b18059ada4e33153d263be"
-    ],
-    "finalQualification": {
-      "source": "275c872c8efbf53c396d8d0ed9873b7c023f3b93",
-      "syntheticMerge": "1a7547b9b3193ef2a7260fd42fd4a76cd7c169b2",
-      "qualifiedTree": "870a5b416c262eefbee13b817636a9246afb0378",
-      "actualC3Merge": "5aaa5eca256bf64f83fa7949f05d29db25b894e8",
-      "actualC3MergeTree": "870a5b416c262eefbee13b817636a9246afb0378",
-      "run": 32372701068,
-      "nodeTestFiles": 29,
-      "nodeTests": "53/53 PASS",
-      "browserTests": "19/19 PASS",
-      "launcher": "PASS",
-      "stagingArtifact": 9407755370,
-      "stagingDigest": "sha256:d89d72ee6909e44a6aac88957c9c67b60daaf2a338c583115a619c813a2d3ae2",
-      "ownerArtifact": 9407794380,
-      "ownerArtifactBytes": 425758,
-      "ownerArtifactDigest": "sha256:4280b53915286832c68eb2b6fa329c2b8a8d153a972595abc8893e2c117f786d",
-      "meaning": "whole-Epoch-I regression and owner-transport qualification only; it does not broaden any ANVIL scientific claim"
+  "activeWork": null,
+  "workbenchW1": {
+    "pr": 22,
+    "source": "ee5604caefc69ae83952d7030bea2543bb41d37b",
+    "technicalQualification": "PASS",
+    "ownerVerdict": "NO VALUE SIGNAL — PRESENTATION / INSTRUMENT FAILURE",
+    "disposition": "CLOSED UNMERGED",
+    "meaning": "negative integration/product evidence; does not falsify Physical Fabric or ANVIL-00..10"
+  },
+  "studioPreparation": {
+    "status": "product-design-next",
+    "direction": "one long-lived world-first interactive 3D laboratory; viewport central; authored, compiled, runtime and presentation remain separate",
+    "boundaryProof": {
+      "pr": 23,
+      "head": "6d4ee4fc78d8a9123359775a17169b601f67b28b",
+      "verdict": "PASS for the first active-bearing Studio envelope",
+      "disposition": "CLOSED UNMERGED"
     },
-    "branchAudit": "docs/ANVIL_EPOCH_I_BRANCH_AUDIT.md",
-    "preserveUniqueHistory": [
-      "experiment/anvil-00-collapse",
-      "foundation/lab-kernel"
-    ],
-    "residualDebt": [
-      "server-side main protection remains absent; expected-head and path-diff checks remain mandatory",
-      "deletion-safe historical refs remain until a supported direct branch-delete operation is available and ancestry is rechecked"
+    "technologyProof": {
+      "pr": 24,
+      "head": "8e3b9a767c1cb2ef1e7a81b96a63a27c75a7b95a",
+      "run": 32432616046,
+      "verdict": "TECHNOLOGY PROVEN — PASS",
+      "selectedDirection": "existing Vite + TypeScript; React sparse editor shell; imperative Three.js presentation controller; WebGL2 first; existing Box3D/ANVIL runtime",
+      "disposition": "CLOSED UNMERGED"
+    },
+    "boundaryLocks": [
+      "render entity != authored entity != runtime entity",
+      "React must not own or mirror the hot 60 Hz runtime loop",
+      "Three scene objects are presentation only",
+      "selection crosses into application/UI state as sparse semantic events",
+      "gizmos edit preview/draft state until an explicit authored command commits a change",
+      "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified"
     ]
   },
-  "workbenchW0": {
-    "status": "complete",
-    "designPr": 20,
-    "initialDesign": "docs/workbench/W0-DESIGN-GATE.md",
-    "adversarialReview": "docs/workbench/W0-ADVERSARIAL-REVIEW.md",
-    "finalScope": "docs/workbench/W0-FINAL-SCOPE.md",
-    "verdict": "docs/workbench/W0-VERDICT.md",
-    "selectedSpecimen": "B0 / post-rebind activation specimen",
-    "rejectedOriginalFreedom": "pre-CUT torque and arbitrary CUT timing/state were removed because they exceed the frozen ANVIL-10 dynamic path",
-    "scientificMeaning": "integration design only; W0 earns no new ANVIL scientific claim"
-  },
   "nextStage": {
-    "name": "Physical Fabric Workbench v0 — W1 B0 Implementation",
-    "type": "integration-implementation-owner-reality-gate",
+    "name": "P06 / ANVIL Studio Product Design",
+    "type": "integration-product-design",
     "status": "selected-not-active",
-    "purpose": "implement the exact B0 post-rebind activation specimen frozen by W0 without adding new scientific semantics or generic ontology",
-    "scientificBoundary": "Workbench integration and owner judgement do not by themselves earn a new ANVIL-NN capability or generic ontology",
-    "firstAction": "cold-verify that W0 PR 20 is merged into live main, then create a separate W1 integration branch/PR and implement only docs/workbench/W0-FINAL-SCOPE.md under its stop rules",
-    "implementationContract": "docs/workbench/W0-FINAL-SCOPE.md"
-  },
-  "researchHorizon": {
-    "status": "deferred-until-owner-reality-gate",
-    "importantUncertainty": "persistent local meaning is still tied to the current cellId@face authored dialect",
-    "priorCandidate": "TORQUE-PATCH-REPRESENTATION",
-    "correction": "do not inherit TORQUE-PATCH-REPRESENTATION as ANVIL-11; its target/effort semantics were not sufficiently representation-independent and the owner-facing composition checkpoint has higher information value",
-    "possibleLaterDirection": "representation-independent locality/interface identity may become a stronger falsifier after Workbench feedback, but it is not frozen or active"
+    "purpose": "freeze a complete world-first Studio product/visual/interaction contract before implementation",
+    "method": "use the proven P04/P05 boundaries plus owner preferences and complete visual concepts; reject dashboard/gate-first designs and do not code the Studio before design approval",
+    "completion": "accepted complete concept + state catalogue + design system + interaction grammar + implementation inventory"
   },
   "doNotDoNow": [
-    "implement W1 while W0 PR 20 is still open or unverified on main",
     "create or activate ANVIL-11 by inheritance",
-    "add pre-CUT torque activation or arbitrary CUT timing to B0",
-    "extend ANVIL-10 with command migration, active-during-CUT, load/contact, arbitrary-transform, multiple-patch/bearing, compliance or UI variants",
-    "treat compiled TorqueActionPlan as persistent or migrated state; ANVIL-10 supports re-lowering, not action persistence",
-    "promote TORQUE-PATCH, BEARING, ACTIVATE, REBIND, generic FUNCTION, Control, Surface or generic invalidation into src/foundation without new evidence",
-    "assume refined TORQUE-PATCH effort scales per face or by area before a physical authored contract is justified",
+    "merge W1 PR 22 or polish its AUTHORED/RUNTIME/BOTH owner-gate UI into the Studio product",
+    "implement Studio product code before P06 design freeze",
+    "promote P04/P05 spike helper shapes into Foundation or ontology by inertia",
     "treat cellId@face as final Machine Matter ontology",
-    "refactor accepted experiment runtimes into a generic FabricRuntime merely to make Workbench composition convenient"
-  ],
-  "takeoverVerification": [
-    "resolve live main and open PRs; this state is intended as the post-W0-merge durable checkpoint and live Git overrides it while PR 20 remains open",
-    "verify ANVIL-10 material merge ffde8c0babdd473454b3e769cb10fd31537a0c70 and evidence grounding ba7ce2dc67c6f7aa936e20a0294d9cc12208a549 are ancestors of live main",
-    "verify W0 PR 20 is merged before treating workbenchW0.status complete as live fact",
-    "read docs/workbench/W0-FINAL-SCOPE.md, W0-ADVERSARIAL-REVIEW.md and W0-VERDICT.md; later files supersede conflicting freedoms in the initial W0-DESIGN-GATE.md",
-    "confirm no executable Workbench implementation or ANVIL-11 was added inside W0",
-    "begin W1 only on a new integration branch/PR and implement only the merged W0-FINAL-SCOPE contract"
+    "let React own runtime-frame state or let renderer entities become authored identity",
+    "force WebGPU, react-three-fiber, a generic state manager or a generic FabricRuntime without a demonstrated need"
   ]
 }
