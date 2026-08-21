@@ -14,9 +14,9 @@
   },
   "activeWork": {
     "name": "P06 / ANVIL Studio Product Design",
-    "checkpoint": "P06.7A / PRODUCT SURFACE ARCHITECTURE",
+    "checkpoint": "P06.7B / VISUAL LANGUAGE",
     "status": "pass-grounding",
-    "record": "docs/studio/P06-7A-PRODUCT-SURFACE-ARCHITECTURE.md"
+    "record": "docs/studio/P06-7B-VISUAL-LANGUAGE.md"
   },
   "workbenchW1": {
     "pr": 22,
@@ -61,8 +61,33 @@
       "minimumFirstEnvelopeCssPx": "1024x640",
       "materialRule": "assign existing authored materials only; no new material-definition editor earned",
       "profileRule": "profile selector is contextual and absent when only one qualified profile exists",
-      "firstRunRule": "same world with a small Empty / Editable Starter start surface; no dashboard/home route",
-      "expertRule": "command palette may complement but never replace discoverable core interaction"
+      "firstRunRule": "same world with a small Empty / Editable Starter start surface; no dashboard/home route"
+    },
+    "p067b": {
+      "verdict": "PASS",
+      "record": "docs/studio/P06-7B-VISUAL-LANGUAGE.md",
+      "selectedDirection": "QUIET PHYSICAL WORKSHOP",
+      "visualConstitution": "matter feels touchable; meaning looks deliberately authored onto places; runtime becomes alive only when physics is alive; chrome behaves like a quiet precision instrument; deeper truth appears as temporary explanation",
+      "worldRange": "#202327–#262A2E",
+      "chrome": "#1C1F23",
+      "typography": "IBM Plex Sans + IBM Plex Mono for numeric/technical reveal",
+      "semanticColors": {
+        "bearing": "#4BC7C1",
+        "torque": "#F2A65A",
+        "invalid": "#E56A6A",
+        "unsupported": "#B7A0D8",
+        "requiresBuild": "#D7BC68"
+      },
+      "selectionRule": "two-tone high-contrast outline so arbitrary material displayColor cannot hide selection/focus",
+      "lifetimeRule": "shape communicates capability; stroke/material treatment communicates authored vs runtime lifetime; motion only for real action/change",
+      "motionRule": "short functional transitions; STOP uses brief fading ghost and never reverse-physics animation",
+      "antiPatterns": [
+        "black void + neon HUD",
+        "glassmorphism/holographic panels",
+        "generic dark SaaS cards",
+        "permanent glowing/rainbow overlays",
+        "visual changes that rewrite P06.7A surface structure"
+      ]
     },
     "boundaryLocks": [
       "authored != compiled != runtime != render",
@@ -89,14 +114,13 @@
     "contradictionPolicy": "a proposal that conflicts with accepted evidence or frozen boundaries must be surfaced and consciously reclassified rather than silently executed"
   },
   "nextStage": {
-    "name": "P06.7B / Visual Language",
+    "name": "P06.8 / Complete Product Contract + adversarial red-team",
     "type": "integration-product-design",
     "status": "selected-not-active",
-    "purpose": "translate the earned Studio behavior, interaction and surface architecture into a coherent visual/emotional system without changing product structure for fashion",
-    "completion": "typography, palette, world/material character, semantic overlays, authored/runtime manifestation distinction, state styling, icons, spacing/container treatment and motion pass owner/project red-team"
+    "purpose": "combine C5A, C5B, P06.7A and P06.7B into one complete first-envelope product contract and attempt to falsify it before Product Design acceptance",
+    "completion": "representative end-to-end journeys/states survive adversarial review; open questions are classified; no fundamental product decision remains for implementation; Owner/project acceptance can be issued or explicitly withheld"
   },
   "laterStages": [
-    "P06.8 / Complete Product Contract + adversarial red-team",
     "PRODUCT DESIGN ACCEPTED",
     "C6 / IMPLEMENTATION READY",
     "Build Web Apps returns as implementation/fidelity discipline"
