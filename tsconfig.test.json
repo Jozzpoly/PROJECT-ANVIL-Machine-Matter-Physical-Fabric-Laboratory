@@ -14,6 +14,8 @@
     "src/fixture.ts",
     "src/physics.ts",
     "src/foundation/**/*.ts",
-    "src/experiments/**/*.ts"
+    "src/experiments/**/*.ts",
+    "src/studio/workspace.ts",
+    "src/studio/storage.ts"
   ]
 }
