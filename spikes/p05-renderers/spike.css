@@ -1,0 +1,9 @@
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #0b0f14; color: #dbe7f3; font: 13px/1.35 system-ui, sans-serif; }
+canvas { display: block; width: 100%; height: 100%; }
+.panel { position: fixed; z-index: 10; top: 12px; left: 12px; max-width: 430px; padding: 10px 12px; border: 1px solid #344353; border-radius: 8px; background: rgba(8, 13, 19, .88); backdrop-filter: blur(6px); pointer-events: none; }
+.panel strong { font-size: 14px; }
+.row { display: flex; gap: 8px; margin-top: 5px; }
+.label { color: #8ea1b5; min-width: 82px; }
+#status[data-state="ready"] { color: #90e5a5; }
+#selection { color: #f6d57c; }
+.hint { margin-top: 7px; color: #8ea1b5; }
