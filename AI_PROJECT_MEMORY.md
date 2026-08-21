@@ -1,6 +1,6 @@
 # AI Project Memory — PROJECT ANVIL
 
-Last strategic grounding: 2026-08-21 pre-implementation handoff seal.
+Last strategic grounding: 2026-08-21 final pre-implementation handoff seal.
 
 Live Git overrides this memory.
 
@@ -101,31 +101,60 @@ Key implementation boundaries:
 - P05 renderer/controller is donor pattern only; library defaults cannot override accepted P06.8 input behavior;
 - Save/Open persists authored source, never runtime.
 
-## Final pre-implementation audit
+## Final pre-implementation handoff seal — complete
 
-One-time record:
+Canonical final closure record:
+
+`docs/studio/PREIMPLEMENTATION-HANDOFF-SEAL.md`
+
+Detailed candidate-stage audit:
 
 `docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md`
 
-Seal PR:
+Seal material PR:
 
-**#33 / Pre-implementation handoff seal**
+**#33 / Pre-implementation handoff seal — MERGED**
 
-Audit independently established:
+Exact identities:
 
-- no open competing PR existed at audit start;
-- accepted PR/evidence chain ANVIL-00…10 and Epoch I closure exists in live Git;
-- live `docs/studio/` contains only accepted recovered P06/C6 authorities;
-- rejected P06 attempt is absent from main;
-- from fully qualified executable merge `5aaa5eca256bf64f83fa7949f05d29db25b894e8` to C6 main `a9b5381d5535e55fc0f91b37599d05c5be4f6d28`, every main change is docs/meta only;
-- independent re-read of workflow run `32372701068` confirms 53/53 Node tests, build, launcher self-test and 19/19 Chromium PASS on that executable baseline;
-- stale README Workbench pointer, post-merge C6 activeWork drift and incomplete Foundation experiment-local list were documentation-only defects corrected by the seal.
+- qualified seal source head: `8abdd7ea1aec8c7fa77ab31a59d0ddf3960e187b`;
+- seal material merge: `90380649164b4f336b8e521ab937c2769d08c18c`;
+- full exact-head validation run: `32510878999`;
+- **53/53 Node tests PASS**;
+- production build PASS;
+- exact staging digest revalidated by candidate;
+- launcher self-test PASS;
+- **19/19 Chromium PASS**;
+- owner artifact ID `9457000717`;
+- owner artifact digest `sha256:3b03604ce3865f220bfb8f711189a2b1e3642c85ffba6a5c58b4c60320ba7758`.
 
-Seal is valid only if live Git confirms PR #33 merged from its exact fully qualified candidate head. Its fresh candidate run is workflow/handoff smoke evidence, not new physics or Owner product evidence.
+This validation is repository/workflow/handoff smoke evidence, not a new physics or Owner product claim.
 
-## Current work state after seal
+The final audit independently established:
+
+- live accepted PR/evidence chain ANVIL-00…10 + Epoch I closure is coherent;
+- W1 remains closed-unmerged negative product evidence;
+- P04/P05 remain closed-unmerged engineering donors;
+- rejected P06 attempt is absent from accepted main Studio docs;
+- recovered P06 Product Design and C6 implementation plan are the only live authorities;
+- from fully qualified executable merge `5aaa5eca256bf64f83fa7949f05d29db25b894e8` through C6 base `a9b5381d5535e55fc0f91b37599d05c5be4f6d28`, main changed only in docs/meta paths;
+- historical full run `32372701068` independently reconfirmed the same 53/53 + build + launcher + 19/19 baseline;
+- final seal run `32510878999` reconfirmed current repository/workflow transport on the exact seal head.
+
+Documentation/current-state drift found and corrected before seal:
+
+1. README stale Workbench/W0 next-stage pointer;
+2. post-merge C6 still appeared as active work in machine state;
+3. Foundation experiment-local list omitted explicit ANVIL-07…10 entries;
+4. cold handoff/memory did not yet expose the no-active-work implementation boundary strongly enough.
+
+No executable or scientific correction was required.
+
+## Current work state after final grounding
 
 **Active material work: NONE.**
+
+**Active Studio implementation PR: NONE.**
 
 Selected next stage:
 
@@ -135,7 +164,7 @@ Planned branch:
 
 `integration/studio-v0-i1-first-loop`
 
-A fresh orchestrator creates it from exact sealed live main only after cold takeover reconciliation.
+A fresh implementation orchestrator creates it from the exact sealed live main only after cold takeover reconciliation.
 
 I1 sequence:
 
@@ -147,7 +176,7 @@ I1 sequence:
 6. Ready exact candidate;
 7. O1 / FIRST LOOP REALITY GATE.
 
-Technical PASS alone cannot authorize product-direction merge. O1 must judge real selection/targeting feel, no-jump manipulation, causal clarity, UI quietness and creative pull.
+Technical PASS alone cannot authorize product-direction merge. O1 must judge actual selection/targeting feel, spatial authoring, no-jump manipulation, causal clarity, UI quietness and creative pull.
 
 Only after positive O1 starts I2 / LABORATORY DEPTH.
 
@@ -172,10 +201,10 @@ May be used only as implementation/testing/fidelity discipline after takeover. T
 
 ## Exact takeover pointer
 
-New implementation conversation should:
+A new implementation conversation should:
 
 1. verify live sealed main + no conflicting PR;
-2. read state/handoff/P06.8/C6;
-3. do not restart ANVIL-00…10, W0/W1, P04/P05 or P06 planning when fingerprint reconciles;
+2. read state/handoff/P06.8/C6/final seal;
+3. do not restart ANVIL-00…10, W0/W1, P04/P05, P06 or C6 when fingerprint reconciles;
 4. create Draft `integration/studio-v0-i1-first-loop`;
 5. execute **I1.0 / Studio substrate** first.
