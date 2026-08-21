@@ -30,8 +30,8 @@ jobs:
           cache: npm
       - name: Install canonical repository dependencies
         run: npm ci --no-audit --no-fund
-      - name: Install disposable renderer candidates without changing project manifest
-        run: npm install --no-save --package-lock=false three@0.185.1 @babylonjs/core@9.21.2
+      - name: Install disposable technology candidates without changing project manifest
+        run: npm install --no-save --package-lock=false three@0.185.1 @babylonjs/core@9.21.2 react@19.2.8 react-dom@19.2.8
       - name: Preserve accepted ANVIL regression surface
         run: npm run check
       - name: Preserve production browser build
@@ -40,11 +40,15 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run identical renderer technology probes
         run: mkdir -p p05-results && npx playwright test --config=playwright.p05.config.ts
+      - name: Prove Three renderer loop and React editor shell remain separated
+        run: mkdir -p p05b-results && npx playwright test --config=playwright.p05b.config.ts
       - name: Upload visual proof
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: p05-renderer-proof
-          path: p05-results
+          name: p05-technology-proof
+          path: |
+            p05-results
+            p05b-results
           if-no-files-found: warn
           retention-days: 7
