@@ -40,10 +40,17 @@
     "activationRule": "a fresh orchestrator creates the branch from exact sealed live main only after cold takeover reconciliation"
   },
   "handoffSeal": {
-    "record": "docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md",
-    "pr": 33,
-    "meaning": "one-time final repository/evidence/workflow/documentation audit before implementation",
-    "validityRule": "treat the seal as final only if live Git shows PR #33 merged from its exact fully qualified candidate head and no newer contradictory work exists"
+    "status": "SEALED — HANDOFF READY",
+    "detailedAudit": "docs/studio/PREIMPLEMENTATION-HANDOFF-AUDIT.md",
+    "finalRecord": "docs/studio/PREIMPLEMENTATION-HANDOFF-SEAL.md",
+    "sealPr": 33,
+    "qualifiedSourceHead": "8abdd7ea1aec8c7fa77ab31a59d0ddf3960e187b",
+    "sealMaterialMerge": "90380649164b4f336b8e521ab937c2769d08c18c",
+    "validationRun": 32510878999,
+    "validationSummary": "53/53 Node PASS; production build PASS; exact staging digest revalidated; launcher self-test PASS; 19/19 Chromium PASS; owner artifact produced",
+    "ownerArtifactId": 9457000717,
+    "ownerArtifactDigest": "sha256:3b03604ce3865f220bfb8f711189a2b1e3642c85ffba6a5c58b4c60320ba7758",
+    "validityRule": "verify live Git has no newer contradictory material work before takeover"
   },
   "historicalProductEvidence": {
     "w1": {
@@ -70,9 +77,10 @@
   },
   "executableBaseline": {
     "qualifiedMerge": "5aaa5eca256bf64f83fa7949f05d29db25b894e8",
-    "fullQualificationRun": 32372701068,
-    "qualificationSummary": "53/53 Node tests PASS; production build PASS; launcher self-test PASS; 19/19 Chromium PASS",
-    "ancestryAudit": "all main changes from qualifiedMerge through C6 main a9b5381d5535e55fc0f91b37599d05c5be4f6d28 are docs/meta only"
+    "historicalFullQualificationRun": 32372701068,
+    "historicalQualificationSummary": "53/53 Node tests PASS; production build PASS; launcher self-test PASS; 19/19 Chromium PASS",
+    "ancestryAudit": "all main changes from qualifiedMerge through C6 main a9b5381d5535e55fc0f91b37599d05c5be4f6d28 are docs/meta only",
+    "freshSealRun": 32510878999
   },
   "boundaryLocks": [
     "authored != compiled != runtime != render",
@@ -124,7 +132,7 @@
   "buildWebAppsRole": "implementation/fidelity discipline only; Product Design is frozen and ImageGen-led redesign is explicitly opted out",
   "doNotDoNow": [
     "create or activate ANVIL-11 by inheritance",
-    "restart ANVIL-00…10, W0/W1, P04/P05 or P06 planning when live seal reconciles",
+    "restart ANVIL-00…10, W0/W1, P04/P05, P06 or C6 when live seal reconciles",
     "treat historical branch existence as active-work authority",
     "reuse W1 dashboard/gate UI or rejected P06 mockup as product direction",
     "promote Studio app-local helpers or ANVIL-02…10 semantics into Foundation/ontology by inertia",
