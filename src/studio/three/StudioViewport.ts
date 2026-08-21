@@ -269,7 +269,7 @@ export class StudioViewport {
     );
     this.#raycaster.setFromCamera(pointer, this.#camera);
     const intersection = this.#raycaster.intersectObjects(this.#cellMeshes, false)[0];
-    if (intersection === undefined || intersection.face === null) return null;
+    if (intersection === undefined || intersection.face == null) return null;
     const cellId = (intersection.object.userData.cellId as string | undefined) ?? null;
     if (cellId === null) return null;
     return { cellId, face: faceFromNormal(intersection.face.normal) };
