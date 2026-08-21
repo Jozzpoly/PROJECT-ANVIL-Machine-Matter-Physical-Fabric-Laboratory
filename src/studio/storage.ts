@@ -68,7 +68,12 @@ export function parseStudioSource(text: string): StudioSourceV0 {
     throw new Error("Studio workspace local-meaning collections are malformed");
   }
   for (const bearing of value.bearings) {
-    if (!isRecord(bearing) || typeof bearing.id !== "string" || !AXES.has(bearing.freeAxis)) {
+    if (
+      !isRecord(bearing) ||
+      typeof bearing.id !== "string" ||
+      typeof bearing.freeAxis !== "string" ||
+      !AXES.has(bearing.freeAxis)
+    ) {
       throw new Error("Studio workspace contains a malformed Bearing mark");
     }
     assertEndpoint(bearing.endpointA, "Bearing endpoint A");
