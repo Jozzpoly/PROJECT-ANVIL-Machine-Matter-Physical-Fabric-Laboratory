@@ -14,9 +14,9 @@
   },
   "activeWork": {
     "name": "P06 / ANVIL Studio Product Design",
-    "checkpoint": "C5A / PRODUCT BEHAVIOR",
+    "checkpoint": "C5B / PRODUCT INTERACTION",
     "status": "pass-grounding",
-    "record": "docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md"
+    "record": "docs/studio/P06-C5B-PRODUCT-INTERACTION.md"
   },
   "workbenchW1": {
     "pr": 22,
@@ -50,7 +50,7 @@
     },
     "c5a": {
       "verdict": "PASS",
-      "meaning": "product behavior and user mental model are coherent without freezing layout or inventing new science",
+      "record": "docs/studio/P06-C5A-PRODUCT-BEHAVIOR.md",
       "coreModel": "build persistent matter -> give local meaning -> run fresh disposable realization -> observe/pause/trace -> stop -> modify -> run again",
       "truthStates": [
         "READY",
@@ -58,8 +58,17 @@
         "UNSUPPORTED",
         "REQUIRES BUILD",
         "RUNTIME FAULT"
-      ],
-      "nextQuestion": "P06.3 / Attention Architecture"
+      ]
+    },
+    "c5b": {
+      "verdict": "PASS",
+      "record": "docs/studio/P06-C5B-PRODUCT-INTERACTION.md",
+      "attentionRule": "matter first; context second; explanation on demand; engineering internals last",
+      "spatialRule": "local truth close to matter; global state at workspace boundary; investigation only on request",
+      "stateRule": "BUILD/RUN/PAUSE/TRACE/STOP are lifetime/state changes inside one workspace and must not fake authored-runtime identity continuity",
+      "failureRule": "INVALID, UNSUPPORTED, REQUIRES BUILD and RUNTIME FAULT remain distinct with different recovery paths",
+      "workspaceRule": "save authored workspace, never canonical runtime state; reload returns to BUILD and rebuilds interpretation/runtime on demand",
+      "scopeDecision": "generic Move/Copy/Duplicate/Multi-select are not first-envelope requirements"
     },
     "boundaryLocks": [
       "authored != compiled != runtime != render",
@@ -71,7 +80,9 @@
       "gizmos edit preview/draft state until an explicit authored command commits a change",
       "generic authoring edits may rebuild/reset runtime unless continuity is separately qualified",
       "UNSUPPORTED != INVALID",
-      "cellId@face is a current laboratory dialect, not final Machine Matter ontology"
+      "cellId@face is a current laboratory dialect, not final Machine Matter ontology",
+      "view navigation is presentation-only and independent of authoring/runtime physics",
+      "runtime manifestations of authored meaning must not be presented as if authored source itself moved"
     ]
   },
   "projectSelfModel": {
@@ -84,15 +95,21 @@
     "contradictionPolicy": "a proposal that conflicts with accepted evidence or frozen boundaries must be surfaced and consciously reclassified rather than silently executed"
   },
   "nextStage": {
-    "name": "P06.3 / Attention Architecture",
+    "name": "P06.7A / Product Surface Architecture",
     "type": "integration-product-design",
     "status": "selected-not-active",
-    "purpose": "derive the hierarchy of always-visible, contextual, temporary and normally-hidden information/controls from grounded product behavior before freezing spatial layout",
-    "completion": "attention hierarchy passes red-team without hiding necessary truth or regressing into dashboard-first design"
+    "purpose": "translate grounded product behavior + interaction architecture into the complete desktop Studio working surface without yet using aesthetic styling to invent product structure",
+    "completion": "complete surface layout/containment and representative state surfaces pass red-team for world dominance, discoverability, continuity and implementation feasibility"
   },
+  "laterStages": [
+    "P06.7B / Visual Language",
+    "P06.8 / Complete Product Contract + adversarial red-team",
+    "PRODUCT DESIGN ACCEPTED",
+    "C6 / IMPLEMENTATION READY"
+  ],
   "p06Method": {
     "rule": "PLAN -> REALIZATION -> RED TEAM -> VERDICT for every mini-stage",
-    "currentDiscoveryMode": "behavior/interaction-first; no ImageGen or Build Web Apps-led concept generation before product design is frozen",
+    "currentDiscoveryMode": "behavior/interaction/surface-first; no ImageGen or Build Web Apps-led product invention before Product Design is frozen",
     "buildWebAppsLaterRole": "implementation/fidelity discipline after accepted Product Design"
   },
   "doNotDoNow": [
@@ -100,10 +117,11 @@
     "reopen/merge W1 or reuse its AUTHORED/RUNTIME/BOTH gate UI as product direction",
     "reuse the rejected P06 attempt #1 mockup as a design reference",
     "implement Studio product code before Product Design acceptance",
-    "freeze exact layout or visual system before Attention and Spatial Interaction checkpoints",
+    "use visual styling to decide unresolved product behavior",
     "promote P04/P05 spike helper shapes into Foundation or ontology by inertia",
     "treat cellId@face as final Machine Matter ontology",
     "let React own runtime-frame state or renderer entities become authored identity",
+    "serialize runtime physics as canonical workspace state",
     "force WebGPU, react-three-fiber, a generic state manager or a generic FabricRuntime without demonstrated need"
   ]
 }
