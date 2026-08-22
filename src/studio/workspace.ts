@@ -95,6 +95,17 @@ const DEFAULT_MATERIAL: MaterialDefinition = Object.freeze({
   displayColor: "#91AABE",
 });
 
+const SECONDARY_MATERIAL: MaterialDefinition = Object.freeze({
+  id: "studio:alloy-dark",
+  densityKgM3: DEFAULT_MATERIAL.densityKgM3,
+  friction: DEFAULT_MATERIAL.friction,
+  displayColor: "#4F5964",
+});
+
+function createStudioMaterials(): MaterialDefinition[] {
+  return [{ ...DEFAULT_MATERIAL }, { ...SECONDARY_MATERIAL }];
+}
+
 export function createEmptyStudioSource(): StudioSourceV0 {
   return {
     schema: "anvil-studio-source/0",
@@ -102,7 +113,7 @@ export function createEmptyStudioSource(): StudioSourceV0 {
       schema: "anvil-matter/0",
       revision: "studio-matter/empty",
       cellSizeM: 0.5,
-      materials: [{ ...DEFAULT_MATERIAL }],
+      materials: createStudioMaterials(),
       cells: [],
     },
     bearings: [],
@@ -111,22 +122,24 @@ export function createEmptyStudioSource(): StudioSourceV0 {
 }
 
 export function createEditableStarterSource(): StudioSourceV0 {
-  const material = { ...DEFAULT_MATERIAL };
+  const materials = createStudioMaterials();
+  const primaryMaterial = materials[0];
+  if (primaryMaterial === undefined) throw new Error("Studio starter requires a primary material");
   return {
     schema: "anvil-studio-source/0",
     matter: {
       schema: "anvil-matter/0",
       revision: "studio-matter/editable-starter-v0",
       cellSizeM: 0.5,
-      materials: [material],
+      materials,
       cells: [
-        { id: "starter:a0", grid: { x: -2, y: 0, z: 0 }, materialId: material.id },
-        { id: "starter:a1", grid: { x: -2, y: 1, z: 0 }, materialId: material.id },
-        { id: "starter:a2", grid: { x: -1, y: 0, z: 0 }, materialId: material.id },
-        { id: "starter:b0", grid: { x: 0, y: 0, z: 0 }, materialId: material.id },
-        { id: "starter:b1", grid: { x: 1, y: 0, z: 0 }, materialId: material.id },
-        { id: "starter:b2", grid: { x: 1, y: -1, z: 0 }, materialId: material.id },
-        { id: "starter:b3", grid: { x: 2, y: 0, z: 0 }, materialId: material.id },
+        { id: "starter:a0", grid: { x: -2, y: 0, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:a1", grid: { x: -2, y: 1, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:a2", grid: { x: -1, y: 0, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:b0", grid: { x: 0, y: 0, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:b1", grid: { x: 1, y: 0, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:b2", grid: { x: 1, y: -1, z: 0 }, materialId: primaryMaterial.id },
+        { id: "starter:b3", grid: { x: 2, y: 0, z: 0 }, materialId: primaryMaterial.id },
       ],
     },
     bearings: [
