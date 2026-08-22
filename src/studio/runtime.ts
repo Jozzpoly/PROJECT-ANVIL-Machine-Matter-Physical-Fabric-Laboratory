@@ -1,5 +1,6 @@
 import type { BearingRuntimeSnapshot } from "../experiments/anvil-02-bearing.js";
 import { ActivatePhysics } from "../experiments/anvil-09-activate-runtime.js";
+import type { Vec3 } from "../model.js";
 import type { StudioClassification } from "./compile.js";
 import type { StudioSourceV0 } from "./workspace.js";
 
@@ -10,6 +11,16 @@ export interface StudioRuntimeBodyRef {
   readonly sessionId: string;
   readonly sourceGeneration: number;
   readonly planBodyId: string;
+}
+
+export interface StudioRuntimePlanBody {
+  readonly planBodyId: string;
+  readonly centerOfMassWorld: Vec3;
+}
+
+export interface StudioRuntimePlan {
+  readonly cellToBody: Readonly<Record<string, string>>;
+  readonly bodies: readonly StudioRuntimePlanBody[];
 }
 
 export interface StudioRuntimeFrame {
@@ -71,15 +82,33 @@ function requireSingleReadyCompilation(
   return patch.compilation;
 }
 
+function runtimePlanFromCompilation(compilation: ReturnType<typeof requireSingleReadyCompilation>): StudioRuntimePlan {
+  const physicalPlan = compilation.torque.bearing.physicalPlan;
+  return {
+    cellToBody: { ...physicalPlan.cellToBody },
+    bodies: physicalPlan.bodies.map((body) => ({
+      planBodyId: body.id,
+      centerOfMassWorld: { ...body.centerOfMassWorld },
+    })),
+  };
+}
+
 export class StudioRuntimeSession {
   readonly #sessionId: string;
   readonly #sourceGeneration: number;
+  readonly #plan: StudioRuntimePlan;
   readonly #physics: ActivatePhysics;
   #disposed = false;
 
-  private constructor(sessionId: string, sourceGeneration: number, physics: ActivatePhysics) {
+  private constructor(
+    sessionId: string,
+    sourceGeneration: number,
+    plan: StudioRuntimePlan,
+    physics: ActivatePhysics,
+  ) {
     this.#sessionId = sessionId;
     this.#sourceGeneration = sourceGeneration;
+    this.#plan = plan;
     this.#physics = physics;
   }
 
@@ -92,8 +121,9 @@ export class StudioRuntimeSession {
     const compilation = requireSingleReadyCompilation(source, sourceGeneration, classification);
     const sessionId = idSource().trim();
     if (sessionId.length === 0) throw new Error("Studio runtime id source returned an empty id");
+    const plan = runtimePlanFromCompilation(compilation);
     const physics = await ActivatePhysics.create(compilation, source.matter.materials);
-    return new StudioRuntimeSession(sessionId, sourceGeneration, physics);
+    return new StudioRuntimeSession(sessionId, sourceGeneration, plan, physics);
   }
 
   get sessionId(): string {
@@ -104,6 +134,11 @@ export class StudioRuntimeSession {
   get sourceGeneration(): number {
     this.#assertActive();
     return this.#sourceGeneration;
+  }
+
+  get plan(): StudioRuntimePlan {
+    this.#assertActive();
+    return this.#plan;
   }
 
   get activation(): StudioRuntimeActivation {
