@@ -255,7 +255,6 @@ export function classifyStudioSource(
     if (bearingMatch.kind === "UNSUPPORTED") {
       continue;
     }
-    if (bearingMatch.kind !== "VALID") integrationFault("TorquePatch bearing state", patch.id, bearingMatch.kind);
 
     try {
       validPatchCompilations.push({
