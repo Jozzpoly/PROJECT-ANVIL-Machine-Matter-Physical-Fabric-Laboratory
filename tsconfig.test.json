@@ -19,6 +19,7 @@
     "src/studio/storage.ts",
     "src/studio/compile.ts",
     "src/studio/meaning.ts",
-    "src/studio/runtime.ts"
+    "src/studio/runtime.ts",
+    "src/studio/o1x-representation.ts"
   ]
 }
