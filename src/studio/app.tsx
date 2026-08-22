@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import type { BearingAxis } from "../experiments/anvil-02-bearing.js";
 import { classifyStudioSource, type StudioClassification } from "./compile.js";
-import { resolveBearingTarget } from "./meaning.js";
+import { resolveBearingTarget, resolveTorqueTarget } from "./meaning.js";
 import {
   StudioWorkspace,
   createEditableStarterSource,
@@ -16,7 +16,10 @@ import {
   type StudioMeaningTool,
   type StudioViewportHit,
 } from "./three/StudioViewport.js";
-import type { StudioBearingDraftVisual } from "./three/StudioMeaningPresentation.js";
+import type {
+  StudioBearingDraftVisual,
+  StudioTorqueDraftVisual,
+} from "./three/StudioMeaningPresentation.js";
 
 type StudioIntent = "select" | "matter" | "meaning";
 
@@ -25,7 +28,12 @@ interface StudioBearingDraft extends StudioBearingDraftVisual {
   readonly legalAxes: readonly [BearingAxis, BearingAxis];
 }
 
+interface StudioTorqueDraft extends StudioTorqueDraftVisual {
+  readonly patchId: string | null;
+}
+
 const EMPTY_PREVIEW = createEmptyStudioSource();
+const DEFAULT_TORQUE_EFFORT_NM = 100;
 
 export function StudioApp(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,6 +51,8 @@ export function StudioApp(): React.JSX.Element {
   const [matterTool, setMatterTool] = useState<StudioMatterTool>("add");
   const [meaningTool, setMeaningTool] = useState<StudioMeaningTool>("bearing");
   const [bearingDraft, setBearingDraft] = useState<StudioBearingDraft | null>(null);
+  const [torqueDraft, setTorqueDraft] = useState<StudioTorqueDraft | null>(null);
+  const [torqueText, setTorqueText] = useState("");
   const [selection, setSelection] = useState<string | null>(null);
   const [hover, setHover] = useState<StudioViewportHit | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -78,7 +88,10 @@ export function StudioApp(): React.JSX.Element {
 
   const clearMeaningDraft = (): void => {
     setBearingDraft(null);
+    setTorqueDraft(null);
+    setTorqueText("");
     viewportRef.current?.setBearingDraft(null);
+    viewportRef.current?.setTorqueDraft(null);
   };
 
   const startWorkspace = (source: ReturnType<typeof createEmptyStudioSource>): void => {
@@ -109,6 +122,23 @@ export function StudioApp(): React.JSX.Element {
       refreshWorkspace();
     } catch (error: unknown) {
       setNotice(error instanceof Error ? error.message : "Bearing commit failed");
+    }
+  };
+
+  const commitTorqueDraft = (draft: StudioTorqueDraft): void => {
+    const workspace = workspaceRef.current;
+    if (workspace === null || !Number.isFinite(draft.effortNm)) return;
+    try {
+      if (draft.patchId === null) {
+        workspace.commitAddTorquePatch(draft.target, draft.effortNm);
+      } else {
+        workspace.commitEditTorquePatch(draft.patchId, draft.target, draft.effortNm);
+      }
+      setNotice(null);
+      clearMeaningDraft();
+      refreshWorkspace();
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "TorquePatch commit failed");
     }
   };
 
@@ -159,33 +189,65 @@ export function StudioApp(): React.JSX.Element {
       },
       onMeaningTarget: (hit) => {
         const workspace = workspaceRef.current;
-        if (workspace === null || meaningToolRef.current !== "bearing") return;
+        if (workspace === null) return;
         const current = workspace.snapshot();
-        const target = resolveBearingTarget(current.source, hit.cellId, hit.face);
+
+        if (meaningToolRef.current === "bearing") {
+          const target = resolveBearingTarget(current.source, hit.cellId, hit.face);
+          if (target === null) {
+            clearMeaningDraft();
+            setNotice("Choose a shared Matter interface for Bearing.");
+            return;
+          }
+          if (target.existingBearings.length > 1) {
+            clearMeaningDraft();
+            setNotice("This interface already contains multiple Bearing intents. Repair the composition before editing it here.");
+            return;
+          }
+          const existing = target.existingBearings[0] ?? null;
+          const freeAxis = existing !== null && target.legalAxes.includes(existing.freeAxis)
+            ? existing.freeAxis
+            : target.legalAxes[0];
+          setTorqueDraft(null);
+          setTorqueText("");
+          setBearingDraft({
+            bearingId: existing?.id ?? null,
+            endpointA: target.endpointA,
+            endpointB: target.endpointB,
+            legalAxes: target.legalAxes,
+            freeAxis,
+          });
+          setNotice(null);
+          return;
+        }
+
+        const target = resolveTorqueTarget(current.source, hit.cellId, hit.face);
         if (target === null) {
-          setBearingDraft(null);
-          viewportRef.current?.setBearingDraft(null);
-          setNotice("Choose a shared Matter interface for Bearing.");
+          clearMeaningDraft();
+          setNotice("Choose one authored Bearing endpoint for TorquePatch.");
           return;
         }
-        if (target.existingBearings.length > 1) {
-          setBearingDraft(null);
-          viewportRef.current?.setBearingDraft(null);
-          setNotice("This interface already contains multiple Bearing intents. Repair the composition before editing it here.");
+        if (target.existingPatches.length > 1) {
+          clearMeaningDraft();
+          setNotice("This endpoint already contains multiple TorquePatch intents. Repair the composition before editing it here.");
           return;
         }
-        const existing = target.existingBearings[0] ?? null;
-        const freeAxis = existing !== null && target.legalAxes.includes(existing.freeAxis)
-          ? existing.freeAxis
-          : target.legalAxes[0];
-        setBearingDraft({
-          bearingId: existing?.id ?? null,
-          endpointA: target.endpointA,
-          endpointB: target.endpointB,
-          legalAxes: target.legalAxes,
-          freeAxis,
-        });
+        const existing = target.existingPatches[0] ?? null;
+        const effortNm = existing?.effortNm ?? DEFAULT_TORQUE_EFFORT_NM;
+        const draft: StudioTorqueDraft = {
+          patchId: existing?.id ?? null,
+          target: target.target,
+          bearingAxis: target.bearing.freeAxis,
+          effortNm,
+        };
+        setBearingDraft(null);
+        setTorqueDraft(draft);
+        setTorqueText(String(effortNm));
         setNotice(null);
+      },
+      onTorqueDraftEffort: (effortNm) => {
+        setTorqueDraft((current) => current === null ? null : { ...current, effortNm });
+        setTorqueText(String(effortNm));
       },
     });
     viewportRef.current = viewport;
@@ -210,6 +272,7 @@ export function StudioApp(): React.JSX.Element {
     viewport.setTool(tool);
     viewport.clearDraft();
     if (intent === "meaning" && bearingDraft !== null) viewport.setBearingDraft(bearingDraft);
+    if (intent === "meaning" && torqueDraft !== null) viewport.setTorqueDraft(torqueDraft);
     setHover(null);
   }, [intent, matterTool, meaningTool]);
 
@@ -222,6 +285,13 @@ export function StudioApp(): React.JSX.Element {
   }, [bearingDraft]);
 
   useEffect(() => {
+    viewportRef.current?.setTorqueDraft(torqueDraft);
+  }, [torqueDraft]);
+
+  const torqueNumericValue = torqueText.trim() === "" ? Number.NaN : Number(torqueText);
+  const torqueNumericValid = Number.isFinite(torqueNumericValue);
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       const workspace = workspaceRef.current;
       if (event.key === "Escape") {
@@ -231,10 +301,17 @@ export function StudioApp(): React.JSX.Element {
         setNotice(null);
         return;
       }
-      if (event.key === "Enter" && bearingDraft !== null && intent === "meaning" && meaningTool === "bearing") {
-        event.preventDefault();
-        commitBearingDraft(bearingDraft);
-        return;
+      if (event.key === "Enter" && intent === "meaning") {
+        if (meaningTool === "bearing" && bearingDraft !== null) {
+          event.preventDefault();
+          commitBearingDraft(bearingDraft);
+          return;
+        }
+        if (meaningTool === "torque" && torqueDraft !== null && torqueNumericValid) {
+          event.preventDefault();
+          commitTorqueDraft({ ...torqueDraft, effortNm: torqueNumericValue });
+          return;
+        }
       }
       if (workspace === null || !event.ctrlKey) return;
       const key = event.key.toLowerCase();
@@ -257,7 +334,7 @@ export function StudioApp(): React.JSX.Element {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [bearingDraft, intent, meaningTool]);
+  }, [bearingDraft, torqueDraft, torqueNumericValid, torqueNumericValue, intent, meaningTool]);
 
   const selectedCell = useMemo(
     () => snapshot?.source.matter.cells.find((cell) => cell.id === selection) ?? null,
@@ -361,6 +438,28 @@ export function StudioApp(): React.JSX.Element {
     }
   };
 
+  const removeTorquePatch = (): void => {
+    const workspace = workspaceRef.current;
+    const id = torqueDraft?.patchId;
+    if (workspace === null || id == null) return;
+    try {
+      workspace.commitRemoveTorquePatch(id);
+      clearMeaningDraft();
+      setNotice("TorquePatch removed.");
+      refreshWorkspace();
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "TorquePatch removal failed");
+    }
+  };
+
+  const updateTorqueFromText = (text: string): void => {
+    setTorqueText(text);
+    if (text.trim() === "") return;
+    const effortNm = Number(text);
+    if (!Number.isFinite(effortNm)) return;
+    setTorqueDraft((current) => current === null ? null : { ...current, effortNm });
+  };
+
   const dependentCount =
     (removePreview?.dependentBearingIds.length ?? 0) +
     (removePreview?.dependentTorquePatchIds.length ?? 0);
@@ -380,6 +479,7 @@ export function StudioApp(): React.JSX.Element {
       data-authored-validity={classification?.authoredValidity ?? "UNKNOWN"}
       data-composition-support={classification?.compositionSupport ?? "UNKNOWN"}
       data-run-readiness={classification?.runReadiness ?? "UNKNOWN"}
+      data-torque-draft-effort={torqueDraft?.effortNm ?? ""}
     >
       <canvas
         ref={canvasRef}
@@ -475,30 +575,83 @@ export function StudioApp(): React.JSX.Element {
 
       {snapshot !== null && intent === "meaning" && (
         <section className="studio-context-pod studio-island" aria-label="Meaning tools">
-          <div className="studio-pod-title">BEARING</div>
-          {bearingDraft === null ? (
-            <p>Click a shared Matter interface to author or edit its Bearing.</p>
-          ) : (
-            <>
-              <p>{bearingDraft.bearingId === null ? "New Bearing draft." : "Editing the Bearing on this interface."}</p>
-              <div className="studio-axis-row" aria-label="Bearing axis">
-                {bearingDraft.legalAxes.map((axis) => (
-                  <button
-                    key={axis}
-                    type="button"
-                    className={bearingDraft.freeAxis === axis ? "active meaning-bearing" : "meaning-bearing"}
-                    onClick={() => setBearingDraft({ ...bearingDraft, freeAxis: axis })}
-                  >Axis {axis.toUpperCase()}</button>
-                ))}
-              </div>
-              <div className="studio-button-row studio-commit-row">
-                <button type="button" className="commit" onClick={() => commitBearingDraft(bearingDraft)}>Commit</button>
-                <button type="button" onClick={() => clearMeaningDraft()}>Cancel</button>
-                {bearingDraft.bearingId !== null && <button type="button" className="danger-quiet" onClick={removeBearing}>Remove</button>}
-              </div>
-              <p className="studio-hint">Enter commits · Esc cancels</p>
-            </>
+          <div className="studio-pod-title">MEANING</div>
+          <div className="studio-tool-tabs">
+            <button
+              type="button"
+              className={meaningTool === "bearing" ? "active meaning-bearing" : "meaning-bearing"}
+              onClick={() => chooseMeaningTool("bearing")}
+            >Bearing</button>
+            <button
+              type="button"
+              className={meaningTool === "torque" ? "active meaning-torque" : "meaning-torque"}
+              onClick={() => chooseMeaningTool("torque")}
+            >Torque</button>
+          </div>
+
+          {meaningTool === "bearing" && (
+            bearingDraft === null ? (
+              <p>Click a shared Matter interface to author or edit its Bearing.</p>
+            ) : (
+              <>
+                <p>{bearingDraft.bearingId === null ? "New Bearing draft." : "Editing the Bearing on this interface."}</p>
+                <div className="studio-axis-row" aria-label="Bearing axis">
+                  {bearingDraft.legalAxes.map((axis) => (
+                    <button
+                      key={axis}
+                      type="button"
+                      className={bearingDraft.freeAxis === axis ? "active meaning-bearing" : "meaning-bearing"}
+                      onClick={() => setBearingDraft({ ...bearingDraft, freeAxis: axis })}
+                    >Axis {axis.toUpperCase()}</button>
+                  ))}
+                </div>
+                <div className="studio-button-row studio-commit-row">
+                  <button type="button" className="commit bearing-commit" onClick={() => commitBearingDraft(bearingDraft)}>Commit</button>
+                  <button type="button" onClick={clearMeaningDraft}>Cancel</button>
+                  {bearingDraft.bearingId !== null && <button type="button" className="danger-quiet" onClick={removeBearing}>Remove</button>}
+                </div>
+                <p className="studio-hint">Enter commits · Esc cancels</p>
+              </>
+            )
           )}
+
+          {meaningTool === "torque" && (
+            torqueDraft === null ? (
+              <p>Click one authored Bearing endpoint to create or edit its TorquePatch.</p>
+            ) : (
+              <>
+                <p>{torqueDraft.patchId === null ? "New TorquePatch draft." : "Editing this TorquePatch."}</p>
+                <label className="studio-effort-field">
+                  <span>Effort</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={torqueText}
+                    aria-label="Torque effort Nm"
+                    onChange={(event) => updateTorqueFromText(event.currentTarget.value)}
+                    onBlur={() => {
+                      if (!torqueNumericValid) setTorqueText(String(torqueDraft.effortNm));
+                    }}
+                  />
+                  <span>Nm</span>
+                </label>
+                <p className="studio-hint">Drag the orange world handle for relative adjustment · Shift = fine</p>
+                {!torqueNumericValid && <p className="studio-issue invalid">Effort must be a finite number.</p>}
+                <div className="studio-button-row studio-commit-row">
+                  <button
+                    type="button"
+                    className="commit torque-commit"
+                    disabled={!torqueNumericValid}
+                    onClick={() => commitTorqueDraft({ ...torqueDraft, effortNm: torqueNumericValue })}
+                  >Commit</button>
+                  <button type="button" onClick={clearMeaningDraft}>Cancel</button>
+                  {torqueDraft.patchId !== null && <button type="button" className="danger-quiet" onClick={removeTorquePatch}>Remove</button>}
+                </div>
+                <p className="studio-hint">Enter commits · Esc cancels · crossing zero reverses direction</p>
+              </>
+            )
+          )}
+
           {classificationFault !== null && <p className="studio-issue invalid">{classificationFault}</p>}
           {primaryIssue !== null && <p className={`studio-issue ${primaryIssueClass}`}>{primaryIssue.message}</p>}
           {notice !== null && <p className="studio-notice">{notice}</p>}
