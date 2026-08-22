@@ -39,6 +39,14 @@ input {
   cursor: default;
 }
 
+.studio-world[data-runtime-hand="ready"] {
+  cursor: grab;
+}
+
+.studio-world[data-runtime-hand="active"] {
+  cursor: grabbing;
+}
+
 .studio-island {
   position: absolute;
   z-index: 5;
@@ -165,6 +173,14 @@ input {
 
 .studio-island button.stop-control {
   color: #d89595;
+}
+
+.studio-runtime-hint {
+  min-width: 0;
+  padding: 0 4px;
+  color: #8f98a3;
+  font-size: 9px;
+  white-space: nowrap;
 }
 
 .studio-simulation-notice {
@@ -378,7 +394,8 @@ input {
     bottom: 76px;
   }
 
-  .studio-simulation-notice {
+  .studio-simulation-notice,
+  .studio-runtime-hint {
     flex-basis: 100%;
   }
 
