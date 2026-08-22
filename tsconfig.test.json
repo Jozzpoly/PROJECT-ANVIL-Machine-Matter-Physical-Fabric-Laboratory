@@ -16,6 +16,7 @@
     "src/foundation/**/*.ts",
     "src/experiments/**/*.ts",
     "src/studio/workspace.ts",
-    "src/studio/storage.ts"
+    "src/studio/storage.ts",
+    "src/studio/compile.ts"
   ]
 }
