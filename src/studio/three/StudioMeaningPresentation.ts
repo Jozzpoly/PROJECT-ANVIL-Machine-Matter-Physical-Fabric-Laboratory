@@ -31,6 +31,7 @@ const BEARING_HOVER_COLOR = 0x72d8d2;
 const TORQUE_COLOR = 0xf2a65a;
 const TORQUE_DRAFT_COLOR = 0xffbf78;
 const TORQUE_HOVER_COLOR = 0xf2a65a;
+const INVALID_COLOR = 0xe56a6a;
 
 function axisVector(axis: BearingAxis): THREE.Vector3 {
   if (axis === "x") return new THREE.Vector3(1, 0, 0);
@@ -98,6 +99,15 @@ function setMaterialOpacity(material: THREE.Material | THREE.Material[], opacity
 
 function orientNormal(object: THREE.Object3D, normal: THREE.Vector3): void {
   object.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal.clone().normalize());
+}
+
+function faceTangents(normal: THREE.Vector3): readonly [THREE.Vector3, THREE.Vector3] {
+  const seed = Math.abs(normal.x) < 0.9
+    ? new THREE.Vector3(1, 0, 0)
+    : new THREE.Vector3(0, 1, 0);
+  const first = seed.sub(normal.clone().multiplyScalar(seed.dot(normal))).normalize();
+  const second = normal.clone().cross(first).normalize();
+  return [first, second];
 }
 
 export class StudioMeaningPresentation {
@@ -184,7 +194,10 @@ export class StudioMeaningPresentation {
     }
     for (const patch of this.#source.torquePatches) {
       const target = resolveTorqueTarget(this.#source, patch.target.cellId, patch.target.face);
-      if (target === null) continue;
+      if (target === null) {
+        this.#addUnresolvedTorquePatch(this.#persistent, patch);
+        continue;
+      }
       this.#addTorquePatch(this.#persistent, patch, target.bearing.freeAxis, TORQUE_COLOR, 0.82, false);
     }
   }
@@ -264,6 +277,39 @@ export class StudioMeaningPresentation {
     const line = new THREE.Line(lineGeometry, lineMaterial);
     line.renderOrder = 4;
     group.add(line);
+  }
+
+  #addUnresolvedTorquePatch(group: THREE.Group, patch: TorquePatch): void {
+    const point = endpointPoint(this.#source, patch.target);
+    if (point === null) return;
+    const size = this.#source.matter.cellSizeM;
+    const normal = faceVector(patch.target.face);
+    const surfacePoint = point.clone().addScaledVector(normal, size * 0.014);
+
+    const patchGeometry = new THREE.PlaneGeometry(size * 0.36, size * 0.36);
+    const patchMaterial = new THREE.MeshBasicMaterial({
+      color: INVALID_COLOR,
+      transparent: true,
+      opacity: 0.46,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const patchMesh = new THREE.Mesh(patchGeometry, patchMaterial);
+    patchMesh.position.copy(surfacePoint);
+    orientNormal(patchMesh, normal);
+    patchMesh.renderOrder = 5;
+    group.add(patchMesh);
+
+    const [first, second] = faceTangents(normal);
+    const half = size * 0.16;
+    const slashGeometry = new THREE.BufferGeometry().setFromPoints([
+      surfacePoint.clone().addScaledVector(first, -half).addScaledVector(second, -half),
+      surfacePoint.clone().addScaledVector(first, half).addScaledVector(second, half),
+    ]);
+    const slashMaterial = new THREE.LineBasicMaterial({ color: INVALID_COLOR });
+    const slash = new THREE.Line(slashGeometry, slashMaterial);
+    slash.renderOrder = 6;
+    group.add(slash);
   }
 
   #addTorquePatch(
