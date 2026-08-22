@@ -7,7 +7,10 @@ import {
   compileBreakLab,
 } from "../.test-build/src/studio/break-lab.js";
 import { createStudioRuntimeIdSource } from "../.test-build/src/studio/runtime.js";
-import { createEmptyStudioSource } from "../.test-build/src/studio/workspace.js";
+import {
+  createEditableStarterSource,
+  createEmptyStudioSource,
+} from "../.test-build/src/studio/workspace.js";
 
 function createChainSource() {
   const base = createEmptyStudioSource();
@@ -48,6 +51,22 @@ function createChainSource() {
   };
 }
 
+function createStarterBreakSource() {
+  const source = createEditableStarterSource();
+  return {
+    ...source,
+    bearings: [
+      ...source.bearings,
+      {
+        id: "bearing:break-second",
+        endpointA: { cellId: "starter:b0", face: "x+" },
+        endpointB: { cellId: "starter:b1", face: "x-" },
+        freeAxis: "z",
+      },
+    ],
+  };
+}
+
 test("Break Lab keeps standard Studio classification honest while qualifying simultaneous multi-Bearing composition separately", () => {
   const source = createChainSource();
   const standard = classifyStudioSource(source, 7);
@@ -71,9 +90,15 @@ test("Break Lab keeps standard Studio classification honest while qualifying sim
   );
 });
 
-test("Break Lab real Box3D runtime drives one persistent TorquePatch through two composed Bearings without mutating authored source", async () => {
-  const source = createChainSource();
+test("Break Lab real Box3D runtime drives the starter TorquePatch through a second composed Bearing without mutating authored source", async () => {
+  const source = createStarterBreakSource();
   const sourceBefore = structuredClone(source);
+  const standard = classifyStudioSource(source, 3);
+  assert.equal(standard.authoredValidity, "VALID");
+  assert.equal(standard.compositionSupport, "UNSUPPORTED");
+  assert.equal(standard.runReadiness, "INCOMPLETE");
+  assert.equal(classifyBreakLabSource(source).eligibility, "ELIGIBLE");
+
   const ids = createStudioRuntimeIdSource("break-lab-session");
   const runtime = await BreakLabRuntimeSession.create(source, 3, ids);
 
@@ -86,17 +111,17 @@ test("Break Lab real Box3D runtime drives one persistent TorquePatch through two
     assert.equal(runtime.receipt.relationCount, 2);
 
     runtime.step(60);
-    const offSpeed = Math.abs(runtime.relativeAngularSpeedRadps("bearing:ab"));
+    const offSpeed = Math.abs(runtime.relativeAngularSpeedRadps("bearing:starter-seam"));
     assert.ok(offSpeed < 1e-6, `OFF control moved targeted Bearing at ${offSpeed} rad/s`);
 
     runtime.setActivation("ON");
-    runtime.step(120);
-    const activeSpeed = Math.abs(runtime.relativeAngularSpeedRadps("bearing:ab"));
+    runtime.step(60);
+    const activeSpeed = Math.abs(runtime.relativeAngularSpeedRadps("bearing:starter-seam"));
     const anchorErrors = runtime.anchorErrorsM();
     const maxAnchorError = Math.max(...Object.values(anchorErrors));
 
     console.log(JSON.stringify({
-      probe: "O1-X/BREAK-LAB-V0-CHAIN",
+      probe: "O1-X/BREAK-LAB-V0-STARTER-PLUS-BEARING",
       bodyCount: runtime.receipt.bodyCount,
       relationCount: runtime.receipt.relationCount,
       offSpeedRadps: offSpeed,
@@ -116,7 +141,7 @@ test("Break Lab real Box3D runtime drives one persistent TorquePatch through two
   try {
     assert.equal(fresh.sessionId, "break-lab-session:2");
     assert.equal(fresh.activation, "OFF");
-    assert.equal(Math.abs(fresh.relativeAngularSpeedRadps("bearing:ab")), 0);
+    assert.equal(Math.abs(fresh.relativeAngularSpeedRadps("bearing:starter-seam")), 0);
   } finally {
     fresh.dispose();
   }
