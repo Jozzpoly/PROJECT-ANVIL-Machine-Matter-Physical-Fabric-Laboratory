@@ -73,20 +73,14 @@ test("Studio Remove preserves dependent local meaning as dangling authored inten
 
 test("Studio material assignment is authored history and Save/Open persists source only", () => {
   const source = createEditableStarterSource();
-  const secondMaterial = {
-    id: "studio:dark",
-    densityKgM3: 900,
-    friction: 0.5,
-    displayColor: "#343A42",
-  };
-  const withMaterial = {
-    ...source,
-    matter: {
-      ...source.matter,
-      materials: [...source.matter.materials, secondMaterial],
-    },
-  };
-  const workspace = new StudioWorkspace(withMaterial);
+  const primaryMaterial = source.matter.materials[0];
+  const secondMaterial = source.matter.materials[1];
+  assert.ok(primaryMaterial !== undefined && secondMaterial !== undefined, "Studio starter must expose a real material choice");
+  assert.equal(secondMaterial.densityKgM3, primaryMaterial.densityKgM3, "v0 material choice invented a new density claim");
+  assert.equal(secondMaterial.friction, primaryMaterial.friction, "v0 material choice invented a new friction claim");
+  assert.notEqual(secondMaterial.displayColor, primaryMaterial.displayColor, "material choice has no visible authored consequence");
+
+  const workspace = new StudioWorkspace(source);
   workspace.commitAssignMaterial("starter:b3", secondMaterial.id);
   let snapshot = workspace.snapshot();
   assert.equal(snapshot.sourceGeneration, 1);
