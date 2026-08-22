@@ -18,6 +18,7 @@
     "src/studio/workspace.ts",
     "src/studio/storage.ts",
     "src/studio/compile.ts",
-    "src/studio/meaning.ts"
+    "src/studio/meaning.ts",
+    "src/studio/runtime.ts"
   ]
 }
