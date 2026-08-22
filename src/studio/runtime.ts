@@ -1,4 +1,4 @@
-import type { BearingRuntimeSnapshot } from "../experiments/anvil-02-bearing.js";
+import type { BearingEndpoint, BearingRuntimeSnapshot } from "../experiments/anvil-02-bearing.js";
 import { ActivatePhysics } from "../experiments/anvil-09-activate-runtime.js";
 import type { Vec3 } from "../model.js";
 import type { StudioClassification } from "./compile.js";
@@ -18,9 +18,29 @@ export interface StudioRuntimePlanBody {
   readonly centerOfMassWorld: Vec3;
 }
 
+export interface StudioRuntimeBearingPlan {
+  readonly sourceBearingId: string;
+  readonly endpointA: BearingEndpoint;
+  readonly endpointB: BearingEndpoint;
+  readonly bodyAId: string;
+  readonly bodyBId: string;
+  readonly localAnchorA: Vec3;
+  readonly localAnchorB: Vec3;
+  readonly localAxisA: Vec3;
+  readonly localAxisB: Vec3;
+}
+
+export interface StudioRuntimeTorquePlan {
+  readonly sourcePatchId: string;
+  readonly target: BearingEndpoint;
+  readonly effortNm: number;
+}
+
 export interface StudioRuntimePlan {
   readonly cellToBody: Readonly<Record<string, string>>;
   readonly bodies: readonly StudioRuntimePlanBody[];
+  readonly bearing: StudioRuntimeBearingPlan;
+  readonly torque: StudioRuntimeTorquePlan;
 }
 
 export interface StudioRuntimeFrame {
@@ -83,13 +103,32 @@ function requireSingleReadyCompilation(
 }
 
 function runtimePlanFromCompilation(compilation: ReturnType<typeof requireSingleReadyCompilation>): StudioRuntimePlan {
-  const physicalPlan = compilation.torque.bearing.physicalPlan;
+  const bearing = compilation.torque.bearing;
+  const physicalPlan = bearing.physicalPlan;
+  const relation = bearing.relation;
+  const action = compilation.torque.action;
   return {
     cellToBody: { ...physicalPlan.cellToBody },
     bodies: physicalPlan.bodies.map((body) => ({
       planBodyId: body.id,
       centerOfMassWorld: { ...body.centerOfMassWorld },
     })),
+    bearing: {
+      sourceBearingId: relation.sourceBearingId,
+      endpointA: { ...relation.endpointA },
+      endpointB: { ...relation.endpointB },
+      bodyAId: relation.bodyAId,
+      bodyBId: relation.bodyBId,
+      localAnchorA: { ...relation.localAnchorA },
+      localAnchorB: { ...relation.localAnchorB },
+      localAxisA: { ...relation.localAxisA },
+      localAxisB: { ...relation.localAxisB },
+    },
+    torque: {
+      sourcePatchId: compilation.sourcePatchId,
+      target: { ...compilation.sourceTarget },
+      effortNm: action.effortNm,
+    },
   };
 }
 
