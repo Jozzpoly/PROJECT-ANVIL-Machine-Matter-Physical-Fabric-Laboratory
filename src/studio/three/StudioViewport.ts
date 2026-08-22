@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { applyTorqueDraftDrag } from "../meaning.js";
+import type { StudioRuntimeFrame, StudioRuntimeSession } from "../runtime.js";
 import {
   createEmptyStudioSource,
   previewAddMatterFromFace,
@@ -33,6 +34,7 @@ export interface StudioViewportCallbacks {
   readonly onRemove: (cellId: string) => void;
   readonly onMeaningTarget: (hit: StudioViewportHit) => void;
   readonly onTorqueDraftEffort: (effortNm: number) => void;
+  readonly onRuntimeFault: (message: string) => void;
 }
 
 type ViewDragMode = "orbit" | "pan";
@@ -57,6 +59,8 @@ const INITIAL_CAMERA = new THREE.Vector3(5.5, 4.25, 6.5);
 const MIN_DISTANCE = 1.25;
 const MAX_DISTANCE = 80;
 const ORBIT_RADIANS_PER_PIXEL = 0.006;
+const RUNTIME_STEP_MS = 1000 / 60;
+const MAX_RUNTIME_STEPS_PER_FRAME = 4;
 
 function centerForGrid(grid: { x: number; y: number; z: number }, cellSizeM: number): THREE.Vector3 {
   return new THREE.Vector3(
@@ -73,6 +77,14 @@ function faceFromNormal(normal: THREE.Vector3): StudioGridFace {
   if (ax >= ay && ax >= az) return normal.x >= 0 ? "x+" : "x-";
   if (ay >= ax && ay >= az) return normal.y >= 0 ? "y+" : "y-";
   return normal.z >= 0 ? "z+" : "z-";
+}
+
+function vector3(value: { readonly x: number; readonly y: number; readonly z: number }): THREE.Vector3 {
+  return new THREE.Vector3(value.x, value.y, value.z);
+}
+
+function quaternion(value: { readonly x: number; readonly y: number; readonly z: number; readonly w: number }): THREE.Quaternion {
+  return new THREE.Quaternion(value.x, value.y, value.z, value.w);
 }
 
 export class StudioViewport {
@@ -104,6 +116,11 @@ export class StudioViewport {
   #removeHelper: THREE.BoxHelper | null = null;
   #hoverKey: string | null = null;
   #drag: ActiveDrag | null = null;
+  #runtime: StudioRuntimeSession | null = null;
+  #runtimeRunning = false;
+  #runtimeLastTimestamp: number | null = null;
+  #runtimeAccumulatorMs = 0;
+  #runtimeStepCount = 0;
   #frame = 0;
   #disposed = false;
 
@@ -142,6 +159,7 @@ export class StudioViewport {
   }
 
   setSource(source: StudioSourceV0): void {
+    if (this.#runtime !== null) throw new Error("Studio viewport source cannot change while a runtime session is live");
     this.#source = source;
     this.#rebuildMatter();
     this.#meaningPresentation.setSource(source);
@@ -151,6 +169,9 @@ export class StudioViewport {
   }
 
   setTool(tool: StudioViewportTool): void {
+    if (this.#runtime !== null && tool !== "select") {
+      throw new Error("Studio viewport persistent authoring requires BUILD");
+    }
     this.#tool = tool;
     this.#setHover(null);
     this.#refreshDraftOverlay();
@@ -162,11 +183,59 @@ export class StudioViewport {
   }
 
   setBearingDraft(draft: StudioBearingDraftVisual | null): void {
+    if (this.#runtime !== null && draft !== null) throw new Error("Studio Bearing draft requires BUILD");
     this.#meaningPresentation.setBearingDraft(draft);
   }
 
   setTorqueDraft(draft: StudioTorqueDraftVisual | null): void {
+    if (this.#runtime !== null && draft !== null) throw new Error("Studio TorquePatch draft requires BUILD");
     this.#meaningPresentation.setTorqueDraft(draft);
+  }
+
+  attachRuntime(runtime: StudioRuntimeSession): void {
+    if (this.#runtime !== null) throw new Error("Studio viewport already owns a live runtime session");
+    this.clearDraft();
+    this.#tool = "select";
+    this.#runtime = runtime;
+    this.#runtimeRunning = true;
+    this.#runtimeLastTimestamp = null;
+    this.#runtimeAccumulatorMs = 0;
+    this.#runtimeStepCount = 0;
+    this.#meaningPresentation.group.visible = false;
+    this.#canvas.dataset.runtimeFrames = "0";
+    this.#applyRuntimeFrame(runtime.frame());
+  }
+
+  setRuntimeRunning(running: boolean): void {
+    if (this.#runtime === null) throw new Error("Studio viewport has no live runtime session");
+    this.#runtimeRunning = running;
+    this.#runtimeLastTimestamp = null;
+    this.#runtimeAccumulatorMs = 0;
+  }
+
+  stepRuntimeOnce(): void {
+    const runtime = this.#runtime;
+    if (runtime === null) throw new Error("Studio viewport has no live runtime session");
+    try {
+      this.#applyRuntimeFrame(runtime.step(1));
+      this.#runtimeStepCount += 1;
+      this.#canvas.dataset.runtimeFrames = String(this.#runtimeStepCount);
+    } catch (error: unknown) {
+      this.#handleRuntimeFault(error);
+    }
+  }
+
+  detachRuntime(): void {
+    if (this.#runtime === null) return;
+    this.#runtime = null;
+    this.#runtimeRunning = false;
+    this.#runtimeLastTimestamp = null;
+    this.#runtimeAccumulatorMs = 0;
+    delete this.#canvas.dataset.runtimeFrames;
+    this.#meaningPresentation.group.visible = true;
+    this.#rebuildMatter();
+    this.#meaningPresentation.setSource(this.#source);
+    this.#refreshSelection();
   }
 
   clearDraft(): void {
@@ -188,6 +257,7 @@ export class StudioViewport {
     this.#canvas.removeEventListener("pointercancel", this.#onPointerUp);
     this.#canvas.removeEventListener("wheel", this.#onWheel);
     window.removeEventListener("keydown", this.#onKeyDown);
+    this.#runtime = null;
     this.#removeGhost();
     this.#removeRemoveHelper();
     this.#selectionHelper?.geometry.dispose();
@@ -470,6 +540,73 @@ export class StudioViewport {
     this.#canvas.dataset.authoredCells = String(this.#source.matter.cells.length);
   }
 
+  #applyRuntimeFrame(frame: StudioRuntimeFrame): void {
+    const runtime = this.#runtime;
+    if (runtime === null) throw new Error("Studio viewport received a runtime frame without a live session");
+    if (frame.sessionId !== runtime.sessionId || frame.sourceGeneration !== runtime.sourceGeneration) {
+      throw new Error("Studio viewport received a stale runtime frame");
+    }
+
+    const plan = runtime.plan;
+    const runtimeBodies = new Map(frame.bodies.map((body) => [body.planBodyId, body] as const));
+    const planBodies = new Map(plan.bodies.map((body) => [body.planBodyId, body] as const));
+    const size = this.#source.matter.cellSizeM;
+
+    for (const cell of this.#source.matter.cells) {
+      const mesh = this.#cellById.get(cell.id);
+      if (mesh === undefined) continue;
+      const planBodyId = plan.cellToBody[cell.id];
+      if (planBodyId === undefined) throw new Error(`Studio runtime plan lost cell ${cell.id}`);
+      const planBody = planBodies.get(planBodyId);
+      const runtimeBody = runtimeBodies.get(planBodyId);
+      if (planBody === undefined || runtimeBody === undefined) {
+        throw new Error(`Studio runtime lost body ${planBodyId} for cell ${cell.id}`);
+      }
+
+      const rotation = quaternion(runtimeBody.rotation);
+      const localCenter = centerForGrid(cell.grid, size).sub(vector3(planBody.centerOfMassWorld));
+      mesh.position.copy(localCenter.applyQuaternion(rotation).add(vector3(runtimeBody.position)));
+      mesh.quaternion.copy(rotation);
+    }
+    this.#selectionHelper?.update();
+  }
+
+  #handleRuntimeFault(error: unknown): void {
+    this.#runtimeRunning = false;
+    this.#runtimeLastTimestamp = null;
+    this.#runtimeAccumulatorMs = 0;
+    this.#callbacks.onRuntimeFault(error instanceof Error ? error.message : "Studio runtime fault");
+  }
+
+  #advanceRuntime(timestamp: number): void {
+    const runtime = this.#runtime;
+    if (runtime === null || !this.#runtimeRunning) return;
+    if (this.#runtimeLastTimestamp === null) {
+      this.#runtimeLastTimestamp = timestamp;
+      return;
+    }
+
+    const elapsed = Math.min(100, Math.max(0, timestamp - this.#runtimeLastTimestamp));
+    this.#runtimeLastTimestamp = timestamp;
+    this.#runtimeAccumulatorMs += elapsed;
+    let steps = 0;
+    let latestFrame: StudioRuntimeFrame | null = null;
+
+    while (this.#runtimeAccumulatorMs >= RUNTIME_STEP_MS && steps < MAX_RUNTIME_STEPS_PER_FRAME) {
+      latestFrame = runtime.step(1);
+      this.#runtimeAccumulatorMs -= RUNTIME_STEP_MS;
+      steps += 1;
+      this.#runtimeStepCount += 1;
+    }
+    if (steps === MAX_RUNTIME_STEPS_PER_FRAME && this.#runtimeAccumulatorMs >= RUNTIME_STEP_MS) {
+      this.#runtimeAccumulatorMs = 0;
+    }
+    if (latestFrame !== null) {
+      this.#applyRuntimeFrame(latestFrame);
+      this.#canvas.dataset.runtimeFrames = String(this.#runtimeStepCount);
+    }
+  }
+
   #orbit(dx: number, dy: number): void {
     const offset = this.#camera.position.clone().sub(this.#target);
     const spherical = new THREE.Spherical().setFromVector3(offset);
@@ -515,8 +652,13 @@ export class StudioViewport {
     );
   }
 
-  readonly #render = (): void => {
+  readonly #render = (timestamp: number): void => {
     if (this.#disposed) return;
+    try {
+      this.#advanceRuntime(timestamp);
+    } catch (error: unknown) {
+      this.#handleRuntimeFault(error);
+    }
     this.#renderer.render(this.#scene, this.#camera);
     this.#frame = requestAnimationFrame(this.#render);
   };
