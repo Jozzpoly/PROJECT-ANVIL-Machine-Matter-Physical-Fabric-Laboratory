@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { applyTorqueDraftDrag } from "../meaning.js";
 import {
   createEmptyStudioSource,
   previewAddMatterFromFace,
@@ -9,6 +10,7 @@ import {
 import {
   StudioMeaningPresentation,
   type StudioBearingDraftVisual,
+  type StudioTorqueDraftVisual,
 } from "./StudioMeaningPresentation.js";
 
 export type StudioMatterTool = "add" | "remove" | "material";
@@ -30,16 +32,26 @@ export interface StudioViewportCallbacks {
   readonly onAdd: (request: StudioAddRequest) => void;
   readonly onRemove: (cellId: string) => void;
   readonly onMeaningTarget: (hit: StudioViewportHit) => void;
+  readonly onTorqueDraftEffort: (effortNm: number) => void;
 }
 
-type DragMode = "orbit" | "pan";
+type ViewDragMode = "orbit" | "pan";
 
-interface ActiveDrag {
+interface ViewDrag {
   readonly pointerId: number;
-  readonly mode: DragMode;
+  readonly mode: ViewDragMode;
   x: number;
   y: number;
 }
+
+interface TorqueDrag {
+  readonly pointerId: number;
+  readonly mode: "torque";
+  x: number;
+  effortNm: number;
+}
+
+type ActiveDrag = ViewDrag | TorqueDrag;
 
 const INITIAL_CAMERA = new THREE.Vector3(5.5, 4.25, 6.5);
 const MIN_DISTANCE = 1.25;
@@ -153,6 +165,10 @@ export class StudioViewport {
     this.#meaningPresentation.setBearingDraft(draft);
   }
 
+  setTorqueDraft(draft: StudioTorqueDraftVisual | null): void {
+    this.#meaningPresentation.setTorqueDraft(draft);
+  }
+
   clearDraft(): void {
     this.#setHover(null);
     this.#removeGhost();
@@ -194,6 +210,21 @@ export class StudioViewport {
   readonly #onPointerDown = (event: PointerEvent): void => {
     if (event.button === 0) {
       this.#emitInput("semantic");
+      if (this.#tool === "torque") {
+        const effortNm = this.#meaningPresentation.torqueDraftEffortNm();
+        if (effortNm !== null && this.#pickTorqueHandle(event)) {
+          event.preventDefault();
+          this.#drag = {
+            pointerId: event.pointerId,
+            mode: "torque",
+            x: event.clientX,
+            effortNm,
+          };
+          this.#canvas.setPointerCapture(event.pointerId);
+          return;
+        }
+      }
+
       const hit = this.#pickMatter(event);
       if (this.#tool === "add") {
         if (this.#source.matter.cells.length === 0) {
@@ -228,7 +259,7 @@ export class StudioViewport {
     if (event.button !== 1) return;
 
     event.preventDefault();
-    const mode: DragMode = event.shiftKey ? "pan" : "orbit";
+    const mode: ViewDragMode = event.shiftKey ? "pan" : "orbit";
     this.#drag = { pointerId: event.pointerId, mode, x: event.clientX, y: event.clientY };
     this.#canvas.setPointerCapture(event.pointerId);
     this.#emitInput(mode);
@@ -238,8 +269,14 @@ export class StudioViewport {
     const drag = this.#drag;
     if (drag !== null && drag.pointerId === event.pointerId) {
       const dx = event.clientX - drag.x;
-      const dy = event.clientY - drag.y;
       drag.x = event.clientX;
+      if (drag.mode === "torque") {
+        drag.effortNm = applyTorqueDraftDrag(drag.effortNm, dx, event.shiftKey);
+        this.#callbacks.onTorqueDraftEffort(drag.effortNm);
+        return;
+      }
+
+      const dy = event.clientY - drag.y;
       drag.y = event.clientY;
       if (drag.mode === "orbit") this.#orbit(dx, dy);
       else this.#pan(dx, dy);
@@ -279,14 +316,19 @@ export class StudioViewport {
     this.#emitInput("focus");
   };
 
-  #pickMatter(event: PointerEvent): StudioViewportHit | null {
+  #setRayFromPointer(event: PointerEvent): boolean {
     const rect = this.#canvas.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) return null;
+    if (rect.width <= 0 || rect.height <= 0) return false;
     const pointer = new THREE.Vector2(
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
       -((event.clientY - rect.top) / rect.height) * 2 + 1,
     );
     this.#raycaster.setFromCamera(pointer, this.#camera);
+    return true;
+  }
+
+  #pickMatter(event: PointerEvent): StudioViewportHit | null {
+    if (!this.#setRayFromPointer(event)) return null;
     const intersection = this.#raycaster.intersectObjects(this.#cellMeshes, false)[0];
     if (intersection === undefined || intersection.face == null) return null;
     const cellId = (intersection.object.userData.cellId as string | undefined) ?? null;
@@ -296,14 +338,13 @@ export class StudioViewport {
 
   #pickGhost(event: PointerEvent): boolean {
     const ghost = this.#ghost;
-    if (ghost === null) return false;
-    const rect = this.#canvas.getBoundingClientRect();
-    const pointer = new THREE.Vector2(
-      ((event.clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1,
-      -((event.clientY - rect.top) / Math.max(1, rect.height)) * 2 + 1,
-    );
-    this.#raycaster.setFromCamera(pointer, this.#camera);
+    if (ghost === null || !this.#setRayFromPointer(event)) return false;
     return this.#raycaster.intersectObject(ghost, false).length > 0;
+  }
+
+  #pickTorqueHandle(event: PointerEvent): boolean {
+    if (!this.#setRayFromPointer(event)) return false;
+    return this.#meaningPresentation.hitTorqueHandle(this.#raycaster);
   }
 
   #setHover(hit: StudioViewportHit | null): void {
