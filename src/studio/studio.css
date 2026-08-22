@@ -112,10 +112,27 @@ input {
   color: #9be8e3;
 }
 
+.studio-island button.meaning-torque.active {
+  border-color: rgba(242, 166, 90, 0.42);
+  background: rgba(242, 166, 90, 0.12);
+  color: #ffd0a0;
+}
+
 .studio-island button.commit {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.studio-island button.bearing-commit {
   border-color: rgba(75, 199, 193, 0.34);
   background: rgba(75, 199, 193, 0.11);
   color: #9be8e3;
+}
+
+.studio-island button.torque-commit {
+  border-color: rgba(242, 166, 90, 0.38);
+  background: rgba(242, 166, 90, 0.11);
+  color: #ffd0a0;
 }
 
 .studio-island button.danger-quiet {
@@ -201,6 +218,33 @@ input {
 .studio-axis-row,
 .studio-commit-row {
   margin-top: 10px;
+}
+
+.studio-effort-field {
+  display: grid;
+  grid-template-columns: auto minmax(84px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #b8c0c8;
+}
+
+.studio-effort-field input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid rgba(242, 166, 90, 0.28);
+  border-radius: 6px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.18);
+  color: #ffd0a0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+}
+
+.studio-effort-field input:focus {
+  border-color: rgba(242, 166, 90, 0.58);
 }
 
 .studio-material-list {
