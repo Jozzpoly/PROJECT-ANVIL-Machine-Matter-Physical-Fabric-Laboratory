@@ -87,6 +87,15 @@ function disposeObjectTree(group: THREE.Group): void {
   }
 }
 
+function setMaterialOpacity(material: THREE.Material | THREE.Material[], opacity: number): void {
+  const materials = Array.isArray(material) ? material : [material];
+  for (const entry of materials) {
+    entry.transparent = opacity < 1;
+    entry.opacity = opacity;
+    entry.needsUpdate = true;
+  }
+}
+
 function orientNormal(object: THREE.Object3D, normal: THREE.Vector3): void {
   object.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal.clone().normalize());
 }
@@ -296,10 +305,8 @@ export class StudioMeaningPresentation {
       size * 0.12,
       size * 0.07,
     );
-    arrow.line.material.transparent = opacity < 1;
-    arrow.line.material.opacity = opacity;
-    arrow.cone.material.transparent = opacity < 1;
-    arrow.cone.material.opacity = opacity;
+    setMaterialOpacity(arrow.line.material, opacity);
+    setMaterialOpacity(arrow.cone.material, opacity);
     arrow.renderOrder = 5;
     group.add(arrow);
 
