@@ -1,5 +1,9 @@
 import type { GridPosition, MaterialDefinition, MatterCell, MatterDocument } from "../model.js";
-import type { BearingMark } from "../experiments/anvil-02-bearing.js";
+import type {
+  BearingAxis,
+  BearingEndpoint,
+  BearingMark,
+} from "../experiments/anvil-02-bearing.js";
 import type { TorquePatch } from "../experiments/anvil-06-torque-patch.js";
 
 export type StudioGridFace = "x-" | "x+" | "y-" | "y+" | "z-" | "z+";
@@ -58,16 +62,20 @@ function cloneCell(cell: MatterCell): MatterCell {
   return { ...cell, grid: { ...cell.grid } };
 }
 
+function cloneEndpoint(endpoint: BearingEndpoint): BearingEndpoint {
+  return { ...endpoint };
+}
+
 function cloneBearing(bearing: BearingMark): BearingMark {
   return {
     ...bearing,
-    endpointA: { ...bearing.endpointA },
-    endpointB: { ...bearing.endpointB },
+    endpointA: cloneEndpoint(bearing.endpointA),
+    endpointB: cloneEndpoint(bearing.endpointB),
   };
 }
 
 function cloneTorquePatch(patch: TorquePatch): TorquePatch {
-  return { ...patch, target: { ...patch.target } };
+  return { ...patch, target: cloneEndpoint(patch.target) };
 }
 
 export function cloneStudioSource(source: StudioSourceV0): StudioSourceV0 {
@@ -179,6 +187,26 @@ function assertGridFree(source: StudioSourceV0, grid: GridPosition): void {
   }
 }
 
+function assertBearingExists(source: StudioSourceV0, bearingId: string): void {
+  if (!source.bearings.some((bearing) => bearing.id === bearingId)) {
+    throw new Error(`Studio source has no Bearing ${bearingId}`);
+  }
+}
+
+function assertTorquePatchExists(source: StudioSourceV0, patchId: string): void {
+  if (!source.torquePatches.some((patch) => patch.id === patchId)) {
+    throw new Error(`Studio source has no TorquePatch ${patchId}`);
+  }
+}
+
+function nextSequentialId(prefix: string, reserved: ReadonlySet<string>): string {
+  for (let index = 1; index <= MAX_ID_ATTEMPTS; index += 1) {
+    const candidate = `${prefix}:${index}`;
+    if (!reserved.has(candidate)) return candidate;
+  }
+  throw new Error(`Studio ${prefix} id source could not produce a fresh id`);
+}
+
 export function previewSeedMatter(source: StudioSourceV0, materialId: string): AddMatterPreview {
   if (source.matter.cells.length !== 0) throw new Error("Studio seed Matter is only available in an empty workspace");
   assertKnownMaterial(source, materialId);
@@ -216,12 +244,12 @@ function sourceWithAddedCell(source: StudioSourceV0, preview: AddMatterPreview, 
   if (source.matter.cells.some((cell) => cell.id === id)) throw new Error(`Studio Matter cell id already exists: ${id}`);
   assertKnownMaterial(source, preview.materialId);
   assertGridFree(source, preview.grid);
+  const next = cloneStudioSource(source);
   return {
-    ...cloneStudioSource(source),
+    ...next,
     matter: {
-      ...source.matter,
-      materials: source.matter.materials.map(cloneMaterial),
-      cells: [...source.matter.cells.map(cloneCell), { id, grid: { ...preview.grid }, materialId: preview.materialId }],
+      ...next.matter,
+      cells: [...next.matter.cells, { id, grid: { ...preview.grid }, materialId: preview.materialId }],
     },
   };
 }
@@ -315,6 +343,86 @@ export class StudioWorkspace {
 
   commitAssignMaterial(cellId: string, materialId: string): void {
     this.#commit(sourceWithAssignedMaterial(this.#source, cellId, materialId), true);
+  }
+
+  commitAddBearing(endpointA: BearingEndpoint, endpointB: BearingEndpoint, freeAxis: BearingAxis): string {
+    const id = nextSequentialId(
+      "studio-bearing",
+      new Set(this.#source.bearings.map((bearing) => bearing.id)),
+    );
+    const next = cloneStudioSource(this.#source);
+    this.#commit(
+      {
+        ...next,
+        bearings: [
+          ...next.bearings,
+          { id, endpointA: cloneEndpoint(endpointA), endpointB: cloneEndpoint(endpointB), freeAxis },
+        ],
+      },
+      false,
+    );
+    return id;
+  }
+
+  commitEditBearing(bearingId: string, endpointA: BearingEndpoint, endpointB: BearingEndpoint, freeAxis: BearingAxis): void {
+    assertBearingExists(this.#source, bearingId);
+    const next = cloneStudioSource(this.#source);
+    this.#commit(
+      {
+        ...next,
+        bearings: next.bearings.map((bearing) =>
+          bearing.id === bearingId
+            ? { id: bearing.id, endpointA: cloneEndpoint(endpointA), endpointB: cloneEndpoint(endpointB), freeAxis }
+            : bearing,
+        ),
+      },
+      false,
+    );
+  }
+
+  commitRemoveBearing(bearingId: string): void {
+    assertBearingExists(this.#source, bearingId);
+    const next = cloneStudioSource(this.#source);
+    this.#commit({ ...next, bearings: next.bearings.filter((bearing) => bearing.id !== bearingId) }, false);
+  }
+
+  commitAddTorquePatch(target: BearingEndpoint, effortNm: number): string {
+    const id = nextSequentialId(
+      "studio-torque-patch",
+      new Set(this.#source.torquePatches.map((patch) => patch.id)),
+    );
+    const next = cloneStudioSource(this.#source);
+    this.#commit(
+      {
+        ...next,
+        torquePatches: [...next.torquePatches, { id, target: cloneEndpoint(target), effortNm }],
+      },
+      false,
+    );
+    return id;
+  }
+
+  commitEditTorquePatch(patchId: string, target: BearingEndpoint, effortNm: number): void {
+    assertTorquePatchExists(this.#source, patchId);
+    const next = cloneStudioSource(this.#source);
+    this.#commit(
+      {
+        ...next,
+        torquePatches: next.torquePatches.map((patch) =>
+          patch.id === patchId ? { id: patch.id, target: cloneEndpoint(target), effortNm } : patch,
+        ),
+      },
+      false,
+    );
+  }
+
+  commitRemoveTorquePatch(patchId: string): void {
+    assertTorquePatchExists(this.#source, patchId);
+    const next = cloneStudioSource(this.#source);
+    this.#commit(
+      { ...next, torquePatches: next.torquePatches.filter((patch) => patch.id !== patchId) },
+      false,
+    );
   }
 
   undo(): boolean {
