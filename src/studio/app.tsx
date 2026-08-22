@@ -93,7 +93,7 @@ export function StudioApp(): React.JSX.Element {
         if (workspace === null) return;
         try {
           const result = workspace.commitRemoveMatter(cellId);
-          if (selection === cellId) setSelection(null);
+          setSelection((current) => current === cellId ? null : current);
           const dependencies = result.dependentBearingIds.length + result.dependentTorquePatchIds.length;
           setNotice(
             dependencies > 0
