@@ -61,6 +61,7 @@ const MAX_DISTANCE = 80;
 const ORBIT_RADIANS_PER_PIXEL = 0.006;
 const RUNTIME_STEP_MS = 1000 / 60;
 const MAX_RUNTIME_STEPS_PER_FRAME = 4;
+const STOP_GHOST_MS = 280;
 
 function centerForGrid(grid: { x: number; y: number; z: number }, cellSizeM: number): THREE.Vector3 {
   return new THREE.Vector3(
@@ -96,6 +97,7 @@ export class StudioViewport {
   readonly #target = new THREE.Vector3(0, 0.5, 0);
   readonly #raycaster = new THREE.Raycaster();
   readonly #matterGroup = new THREE.Group();
+  readonly #stopGhostGroup = new THREE.Group();
   readonly #cellGeometry = new THREE.BoxGeometry(1, 1, 1);
   readonly #ghostMaterial = new THREE.MeshBasicMaterial({
     color: 0xa8c1d4,
@@ -111,6 +113,8 @@ export class StudioViewport {
   #cellMeshes: THREE.Mesh[] = [];
   #cellById = new Map<string, THREE.Mesh>();
   #cellMaterials: THREE.MeshStandardMaterial[] = [];
+  #stopGhostMaterials: THREE.MeshBasicMaterial[] = [];
+  #stopGhostStartedAt: number | null = null;
   #ghost: THREE.Mesh | null = null;
   #selectionHelper: THREE.BoxHelper | null = null;
   #removeHelper: THREE.BoxHelper | null = null;
@@ -148,7 +152,14 @@ export class StudioViewport {
     key.position.set(5, 8, 6);
     const grid = new THREE.GridHelper(40, 40, 0x545c66, 0x30353b);
     this.#meaningPresentation = new StudioMeaningPresentation(this.#source);
-    this.#scene.add(hemisphere, key, grid, this.#matterGroup, this.#meaningPresentation.group);
+    this.#scene.add(
+      hemisphere,
+      key,
+      grid,
+      this.#matterGroup,
+      this.#stopGhostGroup,
+      this.#meaningPresentation.group,
+    );
 
     this.#resizeObserver = new ResizeObserver(() => this.#resize());
     this.#resizeObserver.observe(canvas);
@@ -194,6 +205,7 @@ export class StudioViewport {
 
   attachRuntime(runtime: StudioRuntimeSession): void {
     if (this.#runtime !== null) throw new Error("Studio viewport already owns a live runtime session");
+    this.#clearStopGhost();
     this.clearDraft();
     this.#tool = "select";
     this.#runtime = runtime;
@@ -201,9 +213,10 @@ export class StudioViewport {
     this.#runtimeLastTimestamp = null;
     this.#runtimeAccumulatorMs = 0;
     this.#runtimeStepCount = 0;
-    this.#meaningPresentation.group.visible = false;
     this.#canvas.dataset.runtimeFrames = "0";
-    this.#applyRuntimeFrame(runtime.frame());
+    const frame = runtime.frame();
+    this.#meaningPresentation.startRuntime(runtime.plan, frame);
+    this.#applyRuntimeFrame(frame);
   }
 
   setRuntimeRunning(running: boolean): void {
@@ -225,14 +238,15 @@ export class StudioViewport {
     }
   }
 
-  detachRuntime(): void {
+  detachRuntime(showGhost = true): void {
     if (this.#runtime === null) return;
+    if (showGhost) this.#beginStopGhost();
     this.#runtime = null;
     this.#runtimeRunning = false;
     this.#runtimeLastTimestamp = null;
     this.#runtimeAccumulatorMs = 0;
     delete this.#canvas.dataset.runtimeFrames;
-    this.#meaningPresentation.group.visible = true;
+    this.#meaningPresentation.stopRuntime();
     this.#rebuildMatter();
     this.#meaningPresentation.setSource(this.#source);
     this.#refreshSelection();
@@ -258,6 +272,7 @@ export class StudioViewport {
     this.#canvas.removeEventListener("wheel", this.#onWheel);
     window.removeEventListener("keydown", this.#onKeyDown);
     this.#runtime = null;
+    this.#clearStopGhost();
     this.#removeGhost();
     this.#removeRemoveHelper();
     this.#selectionHelper?.geometry.dispose();
@@ -492,6 +507,46 @@ export class StudioViewport {
     this.#removeHelper = null;
   }
 
+  #beginStopGhost(): void {
+    this.#clearStopGhost();
+    for (const mesh of this.#cellMeshes) {
+      const sourceMaterial = mesh.material;
+      const color = !Array.isArray(sourceMaterial) && "color" in sourceMaterial
+        ? (sourceMaterial as THREE.MeshStandardMaterial).color
+        : new THREE.Color(0xa8c1d4);
+      const material = new THREE.MeshBasicMaterial({
+        color: color.clone(),
+        transparent: true,
+        opacity: 0.24,
+        depthWrite: false,
+      });
+      const ghost = new THREE.Mesh(this.#cellGeometry, material);
+      ghost.position.copy(mesh.position);
+      ghost.quaternion.copy(mesh.quaternion);
+      ghost.scale.copy(mesh.scale);
+      ghost.renderOrder = 6;
+      this.#stopGhostGroup.add(ghost);
+      this.#stopGhostMaterials.push(material);
+    }
+    this.#stopGhostStartedAt = performance.now();
+  }
+
+  #updateStopGhost(timestamp: number): void {
+    const startedAt = this.#stopGhostStartedAt;
+    if (startedAt === null) return;
+    const progress = Math.max(0, Math.min(1, (timestamp - startedAt) / STOP_GHOST_MS));
+    const opacity = 0.24 * (1 - progress);
+    for (const material of this.#stopGhostMaterials) material.opacity = opacity;
+    if (progress >= 1) this.#clearStopGhost();
+  }
+
+  #clearStopGhost(): void {
+    this.#stopGhostGroup.clear();
+    for (const material of this.#stopGhostMaterials) material.dispose();
+    this.#stopGhostMaterials = [];
+    this.#stopGhostStartedAt = null;
+  }
+
   #refreshSelection(): void {
     if (this.#selectionHelper !== null) {
       this.#scene.remove(this.#selectionHelper);
@@ -568,6 +623,7 @@ export class StudioViewport {
       mesh.position.copy(localCenter.applyQuaternion(rotation).add(vector3(runtimeBody.position)));
       mesh.quaternion.copy(rotation);
     }
+    this.#meaningPresentation.updateRuntime(frame);
     this.#selectionHelper?.update();
   }
 
@@ -656,6 +712,7 @@ export class StudioViewport {
     if (this.#disposed) return;
     try {
       this.#advanceRuntime(timestamp);
+      this.#updateStopGhost(timestamp);
     } catch (error: unknown) {
       this.#handleRuntimeFault(error);
     }
