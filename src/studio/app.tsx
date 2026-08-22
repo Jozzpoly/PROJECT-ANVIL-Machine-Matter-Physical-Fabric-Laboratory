@@ -1,20 +1,29 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import type { BearingAxis } from "../experiments/anvil-02-bearing.js";
+import { classifyStudioSource, type StudioClassification } from "./compile.js";
+import { resolveBearingTarget } from "./meaning.js";
 import {
   StudioWorkspace,
   createEditableStarterSource,
   createEmptyStudioSource,
   previewRemoveMatter,
-  type StudioGridFace,
   type StudioWorkspaceSnapshot,
 } from "./workspace.js";
 import { downloadStudioSource, readStudioSourceFile } from "./storage.js";
 import {
   StudioViewport,
   type StudioMatterTool,
+  type StudioMeaningTool,
   type StudioViewportHit,
 } from "./three/StudioViewport.js";
+import type { StudioBearingDraftVisual } from "./three/StudioMeaningPresentation.js";
 
-type StudioIntent = "select" | "matter";
+type StudioIntent = "select" | "matter" | "meaning";
+
+interface StudioBearingDraft extends StudioBearingDraftVisual {
+  readonly bearingId: string | null;
+  readonly legalAxes: readonly [BearingAxis, BearingAxis];
+}
 
 const EMPTY_PREVIEW = createEmptyStudioSource();
 
@@ -24,23 +33,40 @@ export function StudioApp(): React.JSX.Element {
   const workspaceRef = useRef<StudioWorkspace | null>(null);
   const viewportRef = useRef<StudioViewport | null>(null);
   const activeMaterialRef = useRef("studio:alloy");
+  const meaningToolRef = useRef<StudioMeaningTool>("bearing");
 
   const [snapshot, setSnapshot] = useState<StudioWorkspaceSnapshot | null>(null);
+  const [classification, setClassification] = useState<StudioClassification | null>(null);
+  const [classificationFault, setClassificationFault] = useState<string | null>(null);
   const [showFirstRun, setShowFirstRun] = useState(true);
   const [intent, setIntent] = useState<StudioIntent>("select");
   const [matterTool, setMatterTool] = useState<StudioMatterTool>("add");
+  const [meaningTool, setMeaningTool] = useState<StudioMeaningTool>("bearing");
+  const [bearingDraft, setBearingDraft] = useState<StudioBearingDraft | null>(null);
   const [selection, setSelection] = useState<string | null>(null);
   const [hover, setHover] = useState<StudioViewportHit | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  meaningToolRef.current = meaningTool;
 
   const refreshWorkspace = (): void => {
     const workspace = workspaceRef.current;
     if (workspace === null) {
       setSnapshot(null);
+      setClassification(null);
+      setClassificationFault(null);
       return;
     }
     const next = workspace.snapshot();
     setSnapshot(next);
+    try {
+      setClassification(classifyStudioSource(next.source, next.sourceGeneration));
+      setClassificationFault(null);
+    } catch (error: unknown) {
+      console.error(error);
+      setClassification(null);
+      setClassificationFault("Studio could not evaluate the current authored meaning.");
+    }
     const firstMaterial = next.source.matter.materials[0]?.id;
     if (
       firstMaterial !== undefined &&
@@ -50,6 +76,11 @@ export function StudioApp(): React.JSX.Element {
     }
   };
 
+  const clearMeaningDraft = (): void => {
+    setBearingDraft(null);
+    viewportRef.current?.setBearingDraft(null);
+  };
+
   const startWorkspace = (source: ReturnType<typeof createEmptyStudioSource>): void => {
     workspaceRef.current = new StudioWorkspace(source);
     setSelection(null);
@@ -57,8 +88,28 @@ export function StudioApp(): React.JSX.Element {
     setNotice(null);
     setIntent("select");
     setMatterTool("add");
+    setMeaningTool("bearing");
+    meaningToolRef.current = "bearing";
+    clearMeaningDraft();
     setShowFirstRun(false);
     refreshWorkspace();
+  };
+
+  const commitBearingDraft = (draft: StudioBearingDraft): void => {
+    const workspace = workspaceRef.current;
+    if (workspace === null) return;
+    try {
+      if (draft.bearingId === null) {
+        workspace.commitAddBearing(draft.endpointA, draft.endpointB, draft.freeAxis);
+      } else {
+        workspace.commitEditBearing(draft.bearingId, draft.endpointA, draft.endpointB, draft.freeAxis);
+      }
+      setNotice(null);
+      clearMeaningDraft();
+      refreshWorkspace();
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "Bearing commit failed");
+    }
   };
 
   useEffect(() => {
@@ -100,10 +151,41 @@ export function StudioApp(): React.JSX.Element {
               ? `${dependencies} local ${dependencies === 1 ? "meaning remains" : "meanings remain"} to repair.`
               : null,
           );
+          clearMeaningDraft();
           refreshWorkspace();
         } catch (error: unknown) {
           setNotice(error instanceof Error ? error.message : "Matter Remove failed");
         }
+      },
+      onMeaningTarget: (hit) => {
+        const workspace = workspaceRef.current;
+        if (workspace === null || meaningToolRef.current !== "bearing") return;
+        const current = workspace.snapshot();
+        const target = resolveBearingTarget(current.source, hit.cellId, hit.face);
+        if (target === null) {
+          setBearingDraft(null);
+          viewportRef.current?.setBearingDraft(null);
+          setNotice("Choose a shared Matter interface for Bearing.");
+          return;
+        }
+        if (target.existingBearings.length > 1) {
+          setBearingDraft(null);
+          viewportRef.current?.setBearingDraft(null);
+          setNotice("This interface already contains multiple Bearing intents. Repair the composition before editing it here.");
+          return;
+        }
+        const existing = target.existingBearings[0] ?? null;
+        const freeAxis = existing !== null && target.legalAxes.includes(existing.freeAxis)
+          ? existing.freeAxis
+          : target.legalAxes[0];
+        setBearingDraft({
+          bearingId: existing?.id ?? null,
+          endpointA: target.endpointA,
+          endpointB: target.endpointB,
+          legalAxes: target.legalAxes,
+          freeAxis,
+        });
+        setNotice(null);
       },
     });
     viewportRef.current = viewport;
@@ -120,22 +202,38 @@ export function StudioApp(): React.JSX.Element {
   useEffect(() => {
     const viewport = viewportRef.current;
     if (viewport === null) return;
-    viewport.setTool(intent === "select" ? "select" : matterTool);
+    const tool = intent === "select"
+      ? "select"
+      : intent === "matter"
+        ? matterTool
+        : meaningTool;
+    viewport.setTool(tool);
     viewport.clearDraft();
+    if (intent === "meaning" && bearingDraft !== null) viewport.setBearingDraft(bearingDraft);
     setHover(null);
-  }, [intent, matterTool]);
+  }, [intent, matterTool, meaningTool]);
 
   useEffect(() => {
     viewportRef.current?.setSelection(selection);
   }, [selection]);
 
   useEffect(() => {
+    viewportRef.current?.setBearingDraft(bearingDraft);
+  }, [bearingDraft]);
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       const workspace = workspaceRef.current;
       if (event.key === "Escape") {
+        clearMeaningDraft();
         viewportRef.current?.clearDraft();
         setHover(null);
         setNotice(null);
+        return;
+      }
+      if (event.key === "Enter" && bearingDraft !== null && intent === "meaning" && meaningTool === "bearing") {
+        event.preventDefault();
+        commitBearingDraft(bearingDraft);
         return;
       }
       if (workspace === null || !event.ctrlKey) return;
@@ -153,12 +251,13 @@ export function StudioApp(): React.JSX.Element {
       if (event.shiftKey) workspace.redo();
       else workspace.undo();
       setSelection(null);
+      clearMeaningDraft();
       setNotice(null);
       refreshWorkspace();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  }, [bearingDraft, intent, meaningTool]);
 
   const selectedCell = useMemo(
     () => snapshot?.source.matter.cells.find((cell) => cell.id === selection) ?? null,
@@ -177,15 +276,31 @@ export function StudioApp(): React.JSX.Element {
     }
   }, [snapshot, intent, matterTool, hover]);
 
+  const chooseIntent = (next: StudioIntent): void => {
+    setIntent(next);
+    setNotice(null);
+    if (next !== "meaning") clearMeaningDraft();
+  };
+
   const chooseMatterTool = (tool: StudioMatterTool): void => {
     setIntent("matter");
     setMatterTool(tool);
+    clearMeaningDraft();
+    setNotice(null);
+  };
+
+  const chooseMeaningTool = (tool: StudioMeaningTool): void => {
+    setIntent("meaning");
+    setMeaningTool(tool);
+    meaningToolRef.current = tool;
+    clearMeaningDraft();
     setNotice(null);
   };
 
   const undo = (): void => {
     if (workspaceRef.current?.undo()) {
       setSelection(null);
+      clearMeaningDraft();
       setNotice(null);
       refreshWorkspace();
     }
@@ -194,6 +309,7 @@ export function StudioApp(): React.JSX.Element {
   const redo = (): void => {
     if (workspaceRef.current?.redo()) {
       setSelection(null);
+      clearMeaningDraft();
       setNotice(null);
       refreshWorkspace();
     }
@@ -231,9 +347,29 @@ export function StudioApp(): React.JSX.Element {
     }
   };
 
+  const removeBearing = (): void => {
+    const workspace = workspaceRef.current;
+    const id = bearingDraft?.bearingId;
+    if (workspace === null || id == null) return;
+    try {
+      workspace.commitRemoveBearing(id);
+      clearMeaningDraft();
+      setNotice("Bearing removed. Dependent local intent, if any, remains authored for repair.");
+      refreshWorkspace();
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "Bearing removal failed");
+    }
+  };
+
   const dependentCount =
     (removePreview?.dependentBearingIds.length ?? 0) +
     (removePreview?.dependentTorquePatchIds.length ?? 0);
+  const primaryIssue = classification?.issues[0] ?? null;
+  const primaryIssueClass = primaryIssue?.code.includes("INVALID")
+    ? "invalid"
+    : primaryIssue === null
+      ? ""
+      : "unsupported";
 
   return (
     <main
@@ -241,6 +377,9 @@ export function StudioApp(): React.JSX.Element {
       data-anvil-studio="substrate"
       data-authored-cells={snapshot?.source.matter.cells.length ?? 0}
       data-source-generation={snapshot?.sourceGeneration ?? 0}
+      data-authored-validity={classification?.authoredValidity ?? "UNKNOWN"}
+      data-composition-support={classification?.compositionSupport ?? "UNKNOWN"}
+      data-run-readiness={classification?.runReadiness ?? "UNKNOWN"}
     >
       <canvas
         ref={canvasRef}
@@ -274,13 +413,18 @@ export function StudioApp(): React.JSX.Element {
           <button
             type="button"
             className={intent === "select" ? "active" : ""}
-            onClick={() => setIntent("select")}
+            onClick={() => chooseIntent("select")}
           >Select</button>
           <button
             type="button"
             className={intent === "matter" ? "active" : ""}
-            onClick={() => setIntent("matter")}
+            onClick={() => chooseIntent("matter")}
           >Matter</button>
+          <button
+            type="button"
+            className={intent === "meaning" ? "active" : ""}
+            onClick={() => chooseMeaningTool("bearing")}
+          >Meaning</button>
         </nav>
       )}
 
@@ -325,6 +469,38 @@ export function StudioApp(): React.JSX.Element {
               </div>
             )
           )}
+          {notice !== null && <p className="studio-notice">{notice}</p>}
+        </section>
+      )}
+
+      {snapshot !== null && intent === "meaning" && (
+        <section className="studio-context-pod studio-island" aria-label="Meaning tools">
+          <div className="studio-pod-title">BEARING</div>
+          {bearingDraft === null ? (
+            <p>Click a shared Matter interface to author or edit its Bearing.</p>
+          ) : (
+            <>
+              <p>{bearingDraft.bearingId === null ? "New Bearing draft." : "Editing the Bearing on this interface."}</p>
+              <div className="studio-axis-row" aria-label="Bearing axis">
+                {bearingDraft.legalAxes.map((axis) => (
+                  <button
+                    key={axis}
+                    type="button"
+                    className={bearingDraft.freeAxis === axis ? "active meaning-bearing" : "meaning-bearing"}
+                    onClick={() => setBearingDraft({ ...bearingDraft, freeAxis: axis })}
+                  >Axis {axis.toUpperCase()}</button>
+                ))}
+              </div>
+              <div className="studio-button-row studio-commit-row">
+                <button type="button" className="commit" onClick={() => commitBearingDraft(bearingDraft)}>Commit</button>
+                <button type="button" onClick={() => clearMeaningDraft()}>Cancel</button>
+                {bearingDraft.bearingId !== null && <button type="button" className="danger-quiet" onClick={removeBearing}>Remove</button>}
+              </div>
+              <p className="studio-hint">Enter commits · Esc cancels</p>
+            </>
+          )}
+          {classificationFault !== null && <p className="studio-issue invalid">{classificationFault}</p>}
+          {primaryIssue !== null && <p className={`studio-issue ${primaryIssueClass}`}>{primaryIssue.message}</p>}
           {notice !== null && <p className="studio-notice">{notice}</p>}
         </section>
       )}
