@@ -8,6 +8,7 @@ import {
   type StudioGridFace,
   type StudioSourceV0,
 } from "../workspace.js";
+import { O1xLensPresentation } from "./O1xLensPresentation.js";
 import {
   StudioMeaningPresentation,
   type StudioBearingDraftVisual,
@@ -107,6 +108,7 @@ export class StudioViewport {
   });
   readonly #resizeObserver: ResizeObserver;
   readonly #meaningPresentation: StudioMeaningPresentation;
+  readonly #lensPresentation: O1xLensPresentation;
   #source: StudioSourceV0 = createEmptyStudioSource();
   #tool: StudioViewportTool = "select";
   #selection: string | null = null;
@@ -152,6 +154,7 @@ export class StudioViewport {
     key.position.set(5, 8, 6);
     const grid = new THREE.GridHelper(40, 40, 0x545c66, 0x30353b);
     this.#meaningPresentation = new StudioMeaningPresentation(this.#source);
+    this.#lensPresentation = new O1xLensPresentation(canvas, this.#source);
     this.#scene.add(
       hemisphere,
       key,
@@ -159,6 +162,7 @@ export class StudioViewport {
       this.#matterGroup,
       this.#stopGhostGroup,
       this.#meaningPresentation.group,
+      this.#lensPresentation.group,
     );
 
     this.#resizeObserver = new ResizeObserver(() => this.#resize());
@@ -174,6 +178,7 @@ export class StudioViewport {
     this.#source = source;
     this.#rebuildMatter();
     this.#meaningPresentation.setSource(source);
+    this.#lensPresentation.setSource(source);
     this.#setHover(null);
     this.#refreshDraftOverlay();
     this.#refreshSelection();
@@ -184,6 +189,7 @@ export class StudioViewport {
       throw new Error("Studio viewport persistent authoring requires BUILD");
     }
     this.#tool = tool;
+    if (tool === "bearing" || tool === "torque") this.#lensPresentation.setLens("meaning");
     this.#setHover(null);
     this.#refreshDraftOverlay();
   }
@@ -208,6 +214,8 @@ export class StudioViewport {
     this.#clearStopGhost();
     this.clearDraft();
     this.#tool = "select";
+    this.#lensPresentation.setLens("surface");
+    this.#lensPresentation.setRuntimeActive(true);
     this.#runtime = runtime;
     this.#runtimeRunning = true;
     this.#runtimeLastTimestamp = null;
@@ -247,8 +255,10 @@ export class StudioViewport {
     this.#runtimeAccumulatorMs = 0;
     delete this.#canvas.dataset.runtimeFrames;
     this.#meaningPresentation.stopRuntime();
+    this.#lensPresentation.setRuntimeActive(false);
     this.#rebuildMatter();
     this.#meaningPresentation.setSource(this.#source);
+    this.#lensPresentation.setSource(this.#source);
     this.#refreshSelection();
   }
 
@@ -277,6 +287,7 @@ export class StudioViewport {
     this.#removeRemoveHelper();
     this.#selectionHelper?.geometry.dispose();
     this.#meaningPresentation.dispose();
+    this.#lensPresentation.dispose();
     this.#cellGeometry.dispose();
     this.#ghostMaterial.dispose();
     for (const material of this.#cellMaterials) material.dispose();
@@ -306,6 +317,14 @@ export class StudioViewport {
             effortNm,
           };
           this.#canvas.setPointerCapture(event.pointerId);
+          return;
+        }
+      }
+
+      if (this.#tool === "bearing" || this.#tool === "torque") {
+        const semanticHit = this.#pickMeaningLens(event, this.#tool);
+        if (semanticHit !== null) {
+          this.#callbacks.onMeaningTarget(semanticHit);
           return;
         }
       }
@@ -410,6 +429,14 @@ export class StudioViewport {
     );
     this.#raycaster.setFromCamera(pointer, this.#camera);
     return true;
+  }
+
+  #pickMeaningLens(
+    event: PointerEvent,
+    tool: StudioMeaningTool,
+  ): StudioViewportHit | null {
+    if (!this.#setRayFromPointer(event)) return null;
+    return this.#lensPresentation.pickMeaning(this.#raycaster, tool);
   }
 
   #pickMatter(event: PointerEvent): StudioViewportHit | null {
@@ -585,7 +612,7 @@ export class StudioViewport {
       const material = materialById.get(cell.materialId);
       if (material === undefined) continue;
       const mesh = new THREE.Mesh(this.#cellGeometry, material);
-      mesh.scale.setScalar(size * 0.96);
+      mesh.scale.setScalar(size);
       mesh.position.copy(centerForGrid(cell.grid, size));
       mesh.userData.cellId = cell.id;
       this.#matterGroup.add(mesh);
