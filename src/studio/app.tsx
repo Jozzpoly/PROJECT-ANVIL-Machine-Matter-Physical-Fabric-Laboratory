@@ -3,12 +3,10 @@ import type { BearingAxis } from "../experiments/anvil-02-bearing.js";
 import { classifyStudioSource, type StudioClassification } from "./compile.js";
 import { resolveBearingTarget, resolveTorqueTarget } from "./meaning.js";
 import {
-  StudioWorkspace,
-  createEditableStarterSource,
-  createEmptyStudioSource,
-  previewRemoveMatter,
-  type StudioWorkspaceSnapshot,
-} from "./workspace.js";
+  StudioRuntimeSession,
+  createStudioRuntimeIdSource,
+  type StudioRuntimeActivation,
+} from "./runtime.js";
 import { downloadStudioSource, readStudioSourceFile } from "./storage.js";
 import {
   StudioViewport,
@@ -20,8 +18,16 @@ import type {
   StudioBearingDraftVisual,
   StudioTorqueDraftVisual,
 } from "./three/StudioMeaningPresentation.js";
+import {
+  StudioWorkspace,
+  createEditableStarterSource,
+  createEmptyStudioSource,
+  previewRemoveMatter,
+  type StudioWorkspaceSnapshot,
+} from "./workspace.js";
 
 type StudioIntent = "select" | "matter" | "meaning";
+type StudioWorkState = "BUILD" | "RUNNING" | "PAUSED";
 
 interface StudioBearingDraft extends StudioBearingDraftVisual {
   readonly bearingId: string | null;
@@ -40,8 +46,14 @@ export function StudioApp(): React.JSX.Element {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const workspaceRef = useRef<StudioWorkspace | null>(null);
   const viewportRef = useRef<StudioViewport | null>(null);
+  const runtimeRef = useRef<StudioRuntimeSession | null>(null);
+  const runtimeIdSourceRef = useRef(createStudioRuntimeIdSource());
+  const runtimeStartingRef = useRef(false);
+  const workStateRef = useRef<StudioWorkState>("BUILD");
   const activeMaterialRef = useRef("studio:alloy");
   const meaningToolRef = useRef<StudioMeaningTool>("bearing");
+  const renderCountRef = useRef(0);
+  renderCountRef.current += 1;
 
   const [snapshot, setSnapshot] = useState<StudioWorkspaceSnapshot | null>(null);
   const [classification, setClassification] = useState<StudioClassification | null>(null);
@@ -56,8 +68,23 @@ export function StudioApp(): React.JSX.Element {
   const [selection, setSelection] = useState<string | null>(null);
   const [hover, setHover] = useState<StudioViewportHit | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [workState, setWorkState] = useState<StudioWorkState>("BUILD");
+  const [runtimeActivation, setRuntimeActivation] = useState<StudioRuntimeActivation>("OFF");
+  const [runtimeSessionId, setRuntimeSessionId] = useState<string | null>(null);
+  const [runtimeStarting, setRuntimeStarting] = useState(false);
 
   meaningToolRef.current = meaningTool;
+
+  const setWorkStateValue = (next: StudioWorkState): void => {
+    workStateRef.current = next;
+    setWorkState(next);
+  };
+
+  const requireBuild = (): boolean => {
+    if (workStateRef.current === "BUILD" && !runtimeStartingRef.current && runtimeRef.current === null) return true;
+    setNotice("REQUIRES BUILD · Stop & Edit before changing authored source.");
+    return false;
+  };
 
   const refreshWorkspace = (): void => {
     const workspace = workspaceRef.current;
@@ -95,6 +122,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const startWorkspace = (source: ReturnType<typeof createEmptyStudioSource>): void => {
+    if (!requireBuild()) return;
     workspaceRef.current = new StudioWorkspace(source);
     setSelection(null);
     setHover(null);
@@ -109,6 +137,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const commitBearingDraft = (draft: StudioBearingDraft): void => {
+    if (!requireBuild()) return;
     const workspace = workspaceRef.current;
     if (workspace === null) return;
     try {
@@ -126,6 +155,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const commitTorqueDraft = (draft: StudioTorqueDraft): void => {
+    if (!requireBuild()) return;
     const workspace = workspaceRef.current;
     if (workspace === null || !Number.isFinite(draft.effortNm)) return;
     try {
@@ -142,6 +172,114 @@ export function StudioApp(): React.JSX.Element {
     }
   };
 
+  const disposeRuntimeToBuild = (): void => {
+    const runtime = runtimeRef.current;
+    viewportRef.current?.detachRuntime();
+    runtimeRef.current = null;
+    runtime?.dispose();
+    setWorkStateValue("BUILD");
+    setRuntimeActivation("OFF");
+    setRuntimeSessionId(null);
+  };
+
+  const startRuntime = async (): Promise<void> => {
+    if (runtimeStartingRef.current || runtimeRef.current !== null || workStateRef.current !== "BUILD") return;
+    const workspace = workspaceRef.current;
+    const viewport = viewportRef.current;
+    if (workspace === null || viewport === null) return;
+
+    const current = workspace.snapshot();
+    let currentClassification: StudioClassification;
+    try {
+      currentClassification = classifyStudioSource(current.source, current.sourceGeneration);
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "Studio could not prepare this realization.");
+      return;
+    }
+    setClassification(currentClassification);
+    if (currentClassification.runReadiness !== "READY") {
+      setNotice("RUN requires one current valid and supported Bearing + TorquePatch composition.");
+      return;
+    }
+
+    runtimeStartingRef.current = true;
+    setRuntimeStarting(true);
+    clearMeaningDraft();
+    setIntent("select");
+    setHover(null);
+    setNotice(null);
+
+    let runtime: StudioRuntimeSession | null = null;
+    try {
+      runtime = await StudioRuntimeSession.create(
+        current.source,
+        current.sourceGeneration,
+        currentClassification,
+        runtimeIdSourceRef.current,
+      );
+      const latest = workspace.snapshot();
+      if (latest.sourceGeneration !== current.sourceGeneration) {
+        throw new Error("Authored source changed while Studio was creating the runtime session");
+      }
+      viewport.attachRuntime(runtime);
+      runtimeRef.current = runtime;
+      setRuntimeSessionId(runtime.sessionId);
+      setRuntimeActivation(runtime.activation);
+      setWorkStateValue("RUNNING");
+      runtime = null;
+    } catch (error: unknown) {
+      runtime?.dispose();
+      setNotice(error instanceof Error ? error.message : "Studio could not create the runtime session.");
+      setWorkStateValue("BUILD");
+      setRuntimeActivation("OFF");
+      setRuntimeSessionId(null);
+    } finally {
+      runtimeStartingRef.current = false;
+      setRuntimeStarting(false);
+    }
+  };
+
+  const pauseRuntime = (): void => {
+    if (runtimeRef.current === null || workStateRef.current !== "RUNNING") return;
+    viewportRef.current?.setRuntimeRunning(false);
+    setWorkStateValue("PAUSED");
+  };
+
+  const resumeRuntime = (): void => {
+    if (runtimeRef.current === null || workStateRef.current !== "PAUSED") return;
+    viewportRef.current?.setRuntimeRunning(true);
+    setWorkStateValue("RUNNING");
+  };
+
+  const stepRuntime = (): void => {
+    if (runtimeRef.current === null || workStateRef.current !== "PAUSED") return;
+    viewportRef.current?.stepRuntimeOnce();
+  };
+
+  const stopRuntime = (): void => {
+    if (runtimeRef.current === null) return;
+    disposeRuntimeToBuild();
+    setNotice(null);
+  };
+
+  const restartRuntime = async (): Promise<void> => {
+    if (runtimeRef.current === null || runtimeStartingRef.current) return;
+    disposeRuntimeToBuild();
+    await startRuntime();
+  };
+
+  const setActivation = (value: StudioRuntimeActivation): void => {
+    const runtime = runtimeRef.current;
+    if (runtime === null) return;
+    try {
+      runtime.setActivation(value);
+      setRuntimeActivation(runtime.activation);
+      setNotice(null);
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "Activation change failed");
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas === null) return;
@@ -152,6 +290,7 @@ export function StudioApp(): React.JSX.Element {
       },
       onHover: setHover,
       onAdd: (request) => {
+        if (!requireBuild()) return;
         const workspace = workspaceRef.current;
         if (workspace === null) return;
         try {
@@ -170,6 +309,7 @@ export function StudioApp(): React.JSX.Element {
         }
       },
       onRemove: (cellId) => {
+        if (!requireBuild()) return;
         const workspace = workspaceRef.current;
         if (workspace === null) return;
         try {
@@ -188,6 +328,7 @@ export function StudioApp(): React.JSX.Element {
         }
       },
       onMeaningTarget: (hit) => {
+        if (!requireBuild()) return;
         const workspace = workspaceRef.current;
         if (workspace === null) return;
         const current = workspace.snapshot();
@@ -246,18 +387,33 @@ export function StudioApp(): React.JSX.Element {
         setNotice(null);
       },
       onTorqueDraftEffort: (effortNm) => {
+        if (runtimeRef.current !== null) return;
         setTorqueDraft((current) => current === null ? null : { ...current, effortNm });
         setTorqueText(String(effortNm));
+      },
+      onRuntimeFault: (message) => {
+        const activeRuntime = runtimeRef.current;
+        viewportRef.current?.detachRuntime();
+        runtimeRef.current = null;
+        activeRuntime?.dispose();
+        setWorkStateValue("BUILD");
+        setRuntimeActivation("OFF");
+        setRuntimeSessionId(null);
+        setNotice(`RUNTIME FAULT · ${message}`);
       },
     });
     viewportRef.current = viewport;
     return () => {
+      const activeRuntime = runtimeRef.current;
+      runtimeRef.current = null;
+      activeRuntime?.dispose();
       viewportRef.current = null;
       viewport.dispose();
     };
   }, []);
 
   useEffect(() => {
+    if (runtimeRef.current !== null) return;
     viewportRef.current?.setSource(snapshot?.source ?? EMPTY_PREVIEW);
   }, [snapshot]);
 
@@ -269,10 +425,15 @@ export function StudioApp(): React.JSX.Element {
       : intent === "matter"
         ? matterTool
         : meaningTool;
-    viewport.setTool(tool);
-    viewport.clearDraft();
-    if (intent === "meaning" && bearingDraft !== null) viewport.setBearingDraft(bearingDraft);
-    if (intent === "meaning" && torqueDraft !== null) viewport.setTorqueDraft(torqueDraft);
+    try {
+      viewport.setTool(tool);
+      viewport.clearDraft();
+      if (intent === "meaning" && bearingDraft !== null) viewport.setBearingDraft(bearingDraft);
+      if (intent === "meaning" && torqueDraft !== null) viewport.setTorqueDraft(torqueDraft);
+    } catch (error: unknown) {
+      setNotice(error instanceof Error ? error.message : "Studio tool requires BUILD");
+      setIntent("select");
+    }
     setHover(null);
   }, [intent, matterTool, meaningTool]);
 
@@ -301,7 +462,7 @@ export function StudioApp(): React.JSX.Element {
         setNotice(null);
         return;
       }
-      if (event.key === "Enter" && intent === "meaning") {
+      if (event.key === "Enter" && intent === "meaning" && workStateRef.current === "BUILD") {
         if (meaningTool === "bearing" && bearingDraft !== null) {
           event.preventDefault();
           commitBearingDraft(bearingDraft);
@@ -325,6 +486,7 @@ export function StudioApp(): React.JSX.Element {
       }
       if (key !== "z") return;
       event.preventDefault();
+      if (!requireBuild()) return;
       if (event.shiftKey) workspace.redo();
       else workspace.undo();
       setSelection(null);
@@ -354,12 +516,14 @@ export function StudioApp(): React.JSX.Element {
   }, [snapshot, intent, matterTool, hover]);
 
   const chooseIntent = (next: StudioIntent): void => {
+    if (next !== "select" && !requireBuild()) return;
     setIntent(next);
     setNotice(null);
     if (next !== "meaning") clearMeaningDraft();
   };
 
   const chooseMatterTool = (tool: StudioMatterTool): void => {
+    if (!requireBuild()) return;
     setIntent("matter");
     setMatterTool(tool);
     clearMeaningDraft();
@@ -367,6 +531,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const chooseMeaningTool = (tool: StudioMeaningTool): void => {
+    if (!requireBuild()) return;
     setIntent("meaning");
     setMeaningTool(tool);
     meaningToolRef.current = tool;
@@ -375,6 +540,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const undo = (): void => {
+    if (!requireBuild()) return;
     if (workspaceRef.current?.undo()) {
       setSelection(null);
       clearMeaningDraft();
@@ -384,6 +550,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const redo = (): void => {
+    if (!requireBuild()) return;
     if (workspaceRef.current?.redo()) {
       setSelection(null);
       clearMeaningDraft();
@@ -403,7 +570,7 @@ export function StudioApp(): React.JSX.Element {
   const openFile = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.currentTarget.files?.[0];
     event.currentTarget.value = "";
-    if (file === undefined) return;
+    if (file === undefined || !requireBuild()) return;
     try {
       startWorkspace(await readStudioSourceFile(file));
     } catch (error: unknown) {
@@ -412,6 +579,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const assignMaterial = (materialId: string): void => {
+    if (!requireBuild()) return;
     const workspace = workspaceRef.current;
     if (workspace === null || selectedCell === null || selectedCell.materialId === materialId) return;
     try {
@@ -425,6 +593,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const removeBearing = (): void => {
+    if (!requireBuild()) return;
     const workspace = workspaceRef.current;
     const id = bearingDraft?.bearingId;
     if (workspace === null || id == null) return;
@@ -439,6 +608,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const removeTorquePatch = (): void => {
+    if (!requireBuild()) return;
     const workspace = workspaceRef.current;
     const id = torqueDraft?.patchId;
     if (workspace === null || id == null) return;
@@ -453,6 +623,7 @@ export function StudioApp(): React.JSX.Element {
   };
 
   const updateTorqueFromText = (text: string): void => {
+    if (!requireBuild()) return;
     setTorqueText(text);
     if (text.trim() === "") return;
     const effortNm = Number(text);
@@ -469,6 +640,12 @@ export function StudioApp(): React.JSX.Element {
     : primaryIssue === null
       ? ""
       : "unsupported";
+  const runtimeLive = runtimeSessionId !== null;
+  const canRun =
+    snapshot !== null &&
+    classification?.runReadiness === "READY" &&
+    workState === "BUILD" &&
+    !runtimeStarting;
 
   return (
     <main
@@ -480,6 +657,10 @@ export function StudioApp(): React.JSX.Element {
       data-composition-support={classification?.compositionSupport ?? "UNKNOWN"}
       data-run-readiness={classification?.runReadiness ?? "UNKNOWN"}
       data-torque-draft-effort={torqueDraft?.effortNm ?? ""}
+      data-work-state={workState}
+      data-runtime-activation={runtimeLive ? runtimeActivation : "NONE"}
+      data-runtime-session={runtimeSessionId ?? ""}
+      data-react-renders={renderCountRef.current}
     >
       <canvas
         ref={canvasRef}
@@ -492,8 +673,8 @@ export function StudioApp(): React.JSX.Element {
         <div className="studio-brand">ANVIL <span>STUDIO</span></div>
         {snapshot !== null && <span className="studio-workspace-state">{snapshot.dirty ? "UNSAVED" : "SAVED"}</span>}
         <div className="studio-button-row">
-          <button type="button" onClick={() => setShowFirstRun(true)}>New</button>
-          <button type="button" onClick={() => fileInputRef.current?.click()}>Open</button>
+          <button type="button" onClick={() => requireBuild() && setShowFirstRun(true)}>New</button>
+          <button type="button" onClick={() => requireBuild() && fileInputRef.current?.click()}>Open</button>
           <button type="button" onClick={save} disabled={snapshot === null}>Save</button>
           <span className="studio-separator" />
           <button type="button" onClick={undo} disabled={!snapshot?.canUndo} aria-label="Undo">↶</button>
@@ -507,6 +688,36 @@ export function StudioApp(): React.JSX.Element {
           onChange={(event) => void openFile(event)}
         />
       </section>
+
+      {snapshot !== null && (
+        <section className="studio-simulation-dock studio-island" aria-label="Simulation">
+          <span className={`studio-work-state ${workState.toLowerCase()}`}>{workState}</span>
+          {workState === "BUILD" ? (
+            <button type="button" className="run-control" onClick={() => void startRuntime()} disabled={!canRun}>
+              {runtimeStarting ? "RUN…" : "RUN"}
+            </button>
+          ) : (
+            <>
+              {workState === "RUNNING" ? (
+                <button type="button" onClick={pauseRuntime}>Pause</button>
+              ) : (
+                <>
+                  <button type="button" onClick={resumeRuntime}>Resume</button>
+                  <button type="button" onClick={stepRuntime}>Step</button>
+                </>
+              )}
+              <button
+                type="button"
+                className={runtimeActivation === "ON" ? "active activation-control" : "activation-control"}
+                onClick={() => setActivation(runtimeActivation === "OFF" ? "ON" : "OFF")}
+              >{runtimeActivation === "OFF" ? "Activate" : "Deactivate"}</button>
+              <button type="button" onClick={() => void restartRuntime()}>Restart</button>
+              <button type="button" className="stop-control" onClick={stopRuntime}>Stop</button>
+            </>
+          )}
+          {notice !== null && <span className="studio-simulation-notice">{notice}</span>}
+        </section>
+      )}
 
       {snapshot !== null && (
         <nav className="studio-intent-rail studio-island" aria-label="Intent">
@@ -666,10 +877,11 @@ export function StudioApp(): React.JSX.Element {
             {selectedMaterial !== null ? ` · ${selectedMaterial.displayColor}` : ""}
           </p>
           <p className="studio-hint">F focuses the current selection.</p>
+          {notice !== null && <p className="studio-notice">{notice}</p>}
         </section>
       )}
 
-      {showFirstRun && (
+      {showFirstRun && workState === "BUILD" && (
         <section className="studio-first-run studio-island" aria-label="New workspace">
           <div className="studio-pod-title">NEW WORKSPACE</div>
           <p>Start with empty matter or a small editable construction.</p>
