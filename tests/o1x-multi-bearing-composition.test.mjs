@@ -136,6 +136,15 @@ test("O1-X LOOP proves collective seams can change topology even when each Beari
   const bodyPairs = compiled.relations.map((relation) => [relation.bodyAId, relation.bodyBId]);
   assert.deepEqual(bodyPairs[0], bodyPairs[1], "collective loop Bearings did not resolve against one shared body pair");
   for (const relation of compiled.relations) finiteRelation(relation);
+
+  console.log(JSON.stringify({
+    probe: "O1-X/MULTI-BEARING-LOOP",
+    isolatedLower: "ALTERNATE_RIGID_BYPASS",
+    isolatedUpper: "ALTERNATE_RIGID_BYPASS",
+    composedBodyCount: compiled.physicalPlan.bodies.length,
+    composedComponents: components,
+    relationBodyPairs: bodyPairs,
+  }));
 });
 
 test("O1-X real Box3D chain keeps both Bearing anchors while no-relation control diverges", async () => {
@@ -168,8 +177,10 @@ test("O1-X real Box3D chain keeps both Bearing anchors while no-relation control
     constrained.step(60);
     control.step(60);
 
-    const constrainedError = maxValue(constrained.anchorErrorsM());
-    const controlError = maxValue(control.anchorErrorsM());
+    const constrainedErrors = constrained.anchorErrorsM();
+    const controlErrors = control.anchorErrorsM();
+    const constrainedError = maxValue(constrainedErrors);
+    const controlError = maxValue(controlErrors);
     assert.ok(
       constrainedError <= 1e-3,
       `multi-bearing constrained anchor error ${constrainedError} m exceeds 1e-3 m`,
@@ -191,6 +202,17 @@ test("O1-X real Box3D chain keeps both Bearing anchors while no-relation control
       ].every(Number.isFinite));
     }
     assert.deepEqual(fixture, sourceBefore, "O1-X runtime mutated authored fixture");
+
+    console.log(JSON.stringify({
+      probe: "O1-X/MULTI-BEARING-CHAIN-C0",
+      steps: 60,
+      bodyCount: compiled.physicalPlan.bodies.length,
+      relationCount: constrained.receipt.relationCount,
+      constrainedAnchorErrorsM: constrainedErrors,
+      maxConstrainedAnchorErrorM: constrainedError,
+      controlAnchorErrorsM: controlErrors,
+      maxControlAnchorErrorM: controlError,
+    }));
   } finally {
     constrained.dispose();
     control.dispose();
