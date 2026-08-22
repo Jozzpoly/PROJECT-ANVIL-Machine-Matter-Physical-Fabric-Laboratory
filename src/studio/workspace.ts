@@ -40,6 +40,7 @@ const FACE_OFFSETS: Readonly<Record<StudioGridFace, GridPosition>> = Object.free
   "z-": { x: 0, y: 0, z: -1 },
   "z+": { x: 0, y: 0, z: 1 },
 });
+const MAX_ID_ATTEMPTS = 10_000;
 
 function addGrid(a: GridPosition, b: GridPosition): GridPosition {
   return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
@@ -281,14 +282,14 @@ export class StudioWorkspace {
 
   commitSeedMatter(materialId: string): string {
     const preview = previewSeedMatter(this.#source, materialId);
-    const id = this.#idSource();
+    const id = this.#nextCellId();
     this.#commit(sourceWithAddedCell(this.#source, preview, id), true);
     return id;
   }
 
   commitAddMatterFromFace(cellId: string, face: StudioGridFace, materialId: string): string {
     const preview = previewAddMatterFromFace(this.#source, cellId, face, materialId);
-    const id = this.#idSource();
+    const id = this.#nextCellId();
     this.#commit(sourceWithAddedCell(this.#source, preview, id), true);
     return id;
   }
@@ -319,6 +320,23 @@ export class StudioWorkspace {
     this.#source = next;
     this.#sourceGeneration += 1;
     return true;
+  }
+
+  #nextCellId(): string {
+    const reserved = new Set<string>();
+    for (const cell of this.#source.matter.cells) reserved.add(cell.id);
+    for (const bearing of this.#source.bearings) {
+      reserved.add(bearing.endpointA.cellId);
+      reserved.add(bearing.endpointB.cellId);
+    }
+    for (const patch of this.#source.torquePatches) reserved.add(patch.target.cellId);
+
+    for (let attempt = 0; attempt < MAX_ID_ATTEMPTS; attempt += 1) {
+      const candidate = this.#idSource();
+      if (candidate.trim().length === 0) throw new Error("Studio Matter cell id source returned an empty id");
+      if (!reserved.has(candidate)) return candidate;
+    }
+    throw new Error("Studio Matter cell id source could not produce a fresh id");
   }
 
   #commit(next: StudioSourceV0, matterChanged: boolean): void {
