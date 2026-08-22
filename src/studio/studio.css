@@ -1,0 +1,365 @@
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #202327;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.studio-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #202327;
+  color: #e2e7ec;
+  font: 500 12px/1.35 Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.studio-world {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline: none;
+  cursor: default;
+}
+
+.studio-island {
+  position: absolute;
+  z-index: 5;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(28, 31, 35, 0.94);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.studio-workspace-dock {
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 6px 8px 6px 12px;
+}
+
+.studio-simulation-dock {
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  max-width: min(620px, calc(100vw - 460px));
+  padding: 6px 8px;
+}
+
+.studio-brand {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.studio-brand span,
+.studio-workspace-state,
+.studio-pod-title,
+.studio-hint {
+  color: #8f98a3;
+}
+
+.studio-workspace-state,
+.studio-work-state {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.studio-work-state {
+  min-width: 54px;
+  padding: 0 4px;
+  color: #8f98a3;
+  font-weight: 700;
+}
+
+.studio-work-state.running {
+  color: #9be8e3;
+}
+
+.studio-work-state.paused {
+  color: #d7bc68;
+}
+
+.studio-button-row,
+.studio-tool-tabs,
+.studio-axis-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.studio-island button {
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #cbd2d9;
+  cursor: pointer;
+}
+
+.studio-island button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  color: #f2f5f7;
+}
+
+.studio-island button.active {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+
+.studio-island button.run-control {
+  border-color: rgba(75, 199, 193, 0.28);
+  color: #9be8e3;
+}
+
+.studio-island button.activation-control.active {
+  border-color: rgba(242, 166, 90, 0.42);
+  background: rgba(242, 166, 90, 0.11);
+  color: #ffd0a0;
+}
+
+.studio-island button.stop-control {
+  color: #d89595;
+}
+
+.studio-simulation-notice {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 4px;
+  color: #d7bc68;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-island button.meaning-bearing.active {
+  border-color: rgba(75, 199, 193, 0.42);
+  background: rgba(75, 199, 193, 0.12);
+  color: #9be8e3;
+}
+
+.studio-island button.meaning-torque.active {
+  border-color: rgba(242, 166, 90, 0.42);
+  background: rgba(242, 166, 90, 0.12);
+  color: #ffd0a0;
+}
+
+.studio-island button.commit {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.studio-island button.bearing-commit {
+  border-color: rgba(75, 199, 193, 0.34);
+  background: rgba(75, 199, 193, 0.11);
+  color: #9be8e3;
+}
+
+.studio-island button.torque-commit {
+  border-color: rgba(242, 166, 90, 0.38);
+  background: rgba(242, 166, 90, 0.11);
+  color: #ffd0a0;
+}
+
+.studio-island button.danger-quiet {
+  color: #d89595;
+}
+
+.studio-island button:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.studio-island button.quiet {
+  color: #8f98a3;
+}
+
+.studio-separator {
+  width: 1px;
+  height: 20px;
+  margin: 0 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.studio-file-input {
+  display: none;
+}
+
+.studio-intent-rail {
+  top: 50%;
+  left: 12px;
+  display: grid;
+  gap: 4px;
+  padding: 5px;
+  transform: translateY(-50%);
+}
+
+.studio-intent-rail button {
+  min-width: 72px;
+  text-align: left;
+}
+
+.studio-context-pod {
+  left: 104px;
+  bottom: 16px;
+  width: min(340px, calc(100vw - 128px));
+  padding: 12px;
+}
+
+.studio-pod-title {
+  margin-bottom: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.studio-context-pod p,
+.studio-first-run p {
+  margin: 8px 0 0;
+  color: #b8c0c8;
+}
+
+.studio-hint {
+  font-size: 10px;
+}
+
+.studio-notice {
+  color: #d7bc68 !important;
+}
+
+.studio-issue {
+  margin-top: 10px !important;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.studio-issue.invalid {
+  color: #e58a8a !important;
+}
+
+.studio-issue.unsupported {
+  color: #b7a0d8 !important;
+}
+
+.studio-axis-row,
+.studio-commit-row {
+  margin-top: 10px;
+}
+
+.studio-effort-field {
+  display: grid;
+  grid-template-columns: auto minmax(84px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #b8c0c8;
+}
+
+.studio-effort-field input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid rgba(242, 166, 90, 0.28);
+  border-radius: 6px;
+  outline: none;
+  background: rgba(0, 0, 0, 0.18);
+  color: #ffd0a0;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+}
+
+.studio-effort-field input:focus {
+  border-color: rgba(242, 166, 90, 0.58);
+}
+
+.studio-material-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.studio-material-list button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.studio-material-swatch {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 3px;
+}
+
+.studio-first-run {
+  top: 68px;
+  left: 50%;
+  width: min(410px, calc(100vw - 32px));
+  padding: 14px;
+  transform: translateX(-50%);
+}
+
+.studio-first-run .studio-button-row {
+  margin-top: 12px;
+}
+
+@media (max-width: 1080px) {
+  .studio-simulation-dock {
+    top: 62px;
+    right: 12px;
+    max-width: calc(100vw - 116px);
+  }
+}
+
+@media (max-width: 760px) {
+  .studio-workspace-dock {
+    max-width: calc(100vw - 24px);
+    flex-wrap: wrap;
+  }
+
+  .studio-simulation-dock {
+    top: auto;
+    right: 12px;
+    bottom: 12px;
+    left: 96px;
+    max-width: none;
+    flex-wrap: wrap;
+  }
+
+  .studio-simulation-notice {
+    flex-basis: 100%;
+  }
+
+  .studio-context-pod {
+    left: 96px;
+    bottom: 84px;
+  }
+}

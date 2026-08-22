@@ -2,6 +2,6 @@
   "schema": "anvil-owner-artifact-config/v1",
   "project": "PROJECT ANVIL / Physical Fabric Laboratory",
   "role": "browser-laboratory",
-  "entryPath": "/",
+  "entryPath": "/?studio=1",
   "artifactName": "anvil-browser-laboratory"
 }
