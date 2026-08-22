@@ -103,6 +103,37 @@ test("Studio material assignment is authored history and Save/Open persists sour
   assert.equal(snapshot.dirty, false);
 });
 
+test("Studio reopened workspace continues authoring with fresh persistent cell identity", () => {
+  const workspace = new StudioWorkspace(createEditableStarterSource());
+  const firstId = workspace.commitAddMatterFromFace("starter:b3", "x+", "studio:alloy");
+  assert.equal(firstId, "studio-cell:1");
+
+  const reopenedSource = parseStudioSource(serializeStudioSource(workspace.snapshot().source));
+  const reopened = new StudioWorkspace(reopenedSource);
+  const secondId = reopened.commitAddMatterFromFace(firstId, "x+", "studio:alloy");
+  assert.equal(secondId, "studio-cell:2");
+  const ids = reopened.snapshot().source.matter.cells.map((cell) => cell.id);
+  assert.equal(new Set(ids).size, ids.length, "reopen reused an existing authored cell identity");
+});
+
+test("Studio new Matter identity never captures a dangling local-meaning target after reopen", () => {
+  const source = createEmptyStudioSource();
+  const dangling = {
+    ...source,
+    bearings: [
+      {
+        id: "bearing:dangling",
+        endpointA: { cellId: "studio-cell:1", face: "x+" },
+        endpointB: { cellId: "missing-peer", face: "x-" },
+        freeAxis: "z",
+      },
+    ],
+  };
+  const workspace = new StudioWorkspace(dangling);
+  const cellId = workspace.commitSeedMatter("studio:alloy");
+  assert.equal(cellId, "studio-cell:2", "fresh Matter accidentally rebound dangling authored meaning");
+});
+
 test("Studio parser fails closed on malformed structure but preserves structurally valid dangling intent", () => {
   const source = createEditableStarterSource();
   const dangling = {
