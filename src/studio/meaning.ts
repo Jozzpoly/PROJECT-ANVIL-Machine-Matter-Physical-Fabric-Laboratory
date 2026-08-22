@@ -3,6 +3,7 @@ import type {
   BearingEndpoint,
   BearingMark,
 } from "../experiments/anvil-02-bearing.js";
+import type { TorquePatch } from "../experiments/anvil-06-torque-patch.js";
 import type { StudioGridFace, StudioSourceV0 } from "./workspace.js";
 
 export interface StudioBearingTarget {
@@ -10,6 +11,12 @@ export interface StudioBearingTarget {
   readonly endpointB: BearingEndpoint;
   readonly legalAxes: readonly [BearingAxis, BearingAxis];
   readonly existingBearings: readonly BearingMark[];
+}
+
+export interface StudioTorqueTarget {
+  readonly target: BearingEndpoint;
+  readonly bearing: BearingMark;
+  readonly existingPatches: readonly TorquePatch[];
 }
 
 const FACE_OFFSET: Readonly<Record<StudioGridFace, readonly [number, number, number]>> = Object.freeze({
@@ -38,6 +45,9 @@ const TANGENT_AXES: Readonly<Record<StudioGridFace, readonly [BearingAxis, Beari
   "z-": ["x", "y"],
   "z+": ["x", "y"],
 });
+
+const TORQUE_NM_PER_PIXEL = 1;
+const TORQUE_FINE_SCALE = 0.1;
 
 function sameEndpoint(a: BearingEndpoint, b: BearingEndpoint): boolean {
   return a.cellId === b.cellId && a.face === b.face;
@@ -82,4 +92,38 @@ export function resolveBearingTarget(
       sameSeam(endpointA, endpointB, bearing.endpointA, bearing.endpointB)
     ),
   };
+}
+
+export function resolveTorqueTarget(
+  source: StudioSourceV0,
+  cellId: string,
+  face: StudioGridFace,
+): StudioTorqueTarget | null {
+  const target: BearingEndpoint = { cellId, face };
+  if (!source.matter.cells.some((cell) => cell.id === cellId)) return null;
+
+  const bearings = source.bearings.filter((bearing) =>
+    sameEndpoint(target, bearing.endpointA) || sameEndpoint(target, bearing.endpointB)
+  );
+  if (bearings.length !== 1) return null;
+  const bearing = bearings[0];
+  if (bearing === undefined) return null;
+
+  return {
+    target,
+    bearing,
+    existingPatches: source.torquePatches.filter((patch) => sameEndpoint(patch.target, target)),
+  };
+}
+
+export function applyTorqueDraftDrag(
+  currentEffortNm: number,
+  deltaPixels: number,
+  fineAdjustment: boolean,
+): number {
+  if (!Number.isFinite(currentEffortNm) || !Number.isFinite(deltaPixels)) {
+    throw new Error("Studio Torque draft drag requires finite values");
+  }
+  const scale = TORQUE_NM_PER_PIXEL * (fineAdjustment ? TORQUE_FINE_SCALE : 1);
+  return currentEffortNm + deltaPixels * scale;
 }
