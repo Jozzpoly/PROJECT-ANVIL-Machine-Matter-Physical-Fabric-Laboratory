@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import type { BearingAxis } from "../experiments/anvil-02-bearing.js";
+import {
+  BreakLabRuntimeSession,
+  classifyBreakLabSource,
+  type BreakLabClassification,
+} from "./break-lab.js";
 import { classifyStudioSource, type StudioClassification } from "./compile.js";
 import { resolveBearingTarget, resolveTorqueTarget } from "./meaning.js";
 import {
@@ -28,6 +33,8 @@ import {
 
 type StudioIntent = "select" | "matter" | "meaning";
 type StudioWorkState = "BUILD" | "RUNNING" | "PAUSED";
+type StudioRuntimeMode = "STANDARD" | "BREAK";
+type ActiveStudioRuntime = StudioRuntimeSession | BreakLabRuntimeSession;
 
 interface StudioBearingDraft extends StudioBearingDraftVisual {
   readonly bearingId: string | null;
@@ -46,7 +53,8 @@ export function StudioApp(): React.JSX.Element {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const workspaceRef = useRef<StudioWorkspace | null>(null);
   const viewportRef = useRef<StudioViewport | null>(null);
-  const runtimeRef = useRef<StudioRuntimeSession | null>(null);
+  const runtimeRef = useRef<ActiveStudioRuntime | null>(null);
+  const runtimeModeRef = useRef<StudioRuntimeMode | null>(null);
   const runtimeIdSourceRef = useRef(createStudioRuntimeIdSource());
   const runtimeStartingRef = useRef(false);
   const workStateRef = useRef<StudioWorkState>("BUILD");
@@ -57,6 +65,7 @@ export function StudioApp(): React.JSX.Element {
 
   const [snapshot, setSnapshot] = useState<StudioWorkspaceSnapshot | null>(null);
   const [classification, setClassification] = useState<StudioClassification | null>(null);
+  const [breakClassification, setBreakClassification] = useState<BreakLabClassification | null>(null);
   const [classificationFault, setClassificationFault] = useState<string | null>(null);
   const [showFirstRun, setShowFirstRun] = useState(true);
   const [intent, setIntent] = useState<StudioIntent>("select");
@@ -69,6 +78,7 @@ export function StudioApp(): React.JSX.Element {
   const [hover, setHover] = useState<StudioViewportHit | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [workState, setWorkState] = useState<StudioWorkState>("BUILD");
+  const [runtimeMode, setRuntimeMode] = useState<StudioRuntimeMode | null>(null);
   const [runtimeActivation, setRuntimeActivation] = useState<StudioRuntimeActivation>("OFF");
   const [runtimeSessionId, setRuntimeSessionId] = useState<string | null>(null);
   const [runtimeStarting, setRuntimeStarting] = useState(false);
@@ -78,6 +88,11 @@ export function StudioApp(): React.JSX.Element {
   const setWorkStateValue = (next: StudioWorkState): void => {
     workStateRef.current = next;
     setWorkState(next);
+  };
+
+  const setRuntimeModeValue = (next: StudioRuntimeMode | null): void => {
+    runtimeModeRef.current = next;
+    setRuntimeMode(next);
   };
 
   const requireBuild = (): boolean => {
@@ -91,11 +106,13 @@ export function StudioApp(): React.JSX.Element {
     if (workspace === null) {
       setSnapshot(null);
       setClassification(null);
+      setBreakClassification(null);
       setClassificationFault(null);
       return;
     }
     const next = workspace.snapshot();
     setSnapshot(next);
+    setBreakClassification(classifyBreakLabSource(next.source));
     try {
       setClassification(classifyStudioSource(next.source, next.sourceGeneration));
       setClassificationFault(null);
@@ -177,6 +194,7 @@ export function StudioApp(): React.JSX.Element {
     viewportRef.current?.detachRuntime();
     runtimeRef.current = null;
     runtime?.dispose();
+    setRuntimeModeValue(null);
     setWorkStateValue("BUILD");
     setRuntimeActivation("OFF");
     setRuntimeSessionId(null);
@@ -223,13 +241,70 @@ export function StudioApp(): React.JSX.Element {
       }
       viewport.attachRuntime(runtime);
       runtimeRef.current = runtime;
+      setRuntimeModeValue("STANDARD");
       setRuntimeSessionId(runtime.sessionId);
       setRuntimeActivation(runtime.activation);
       setWorkStateValue("RUNNING");
       runtime = null;
     } catch (error: unknown) {
       runtime?.dispose();
+      setRuntimeModeValue(null);
       setNotice(error instanceof Error ? error.message : "Studio could not create the runtime session.");
+      setWorkStateValue("BUILD");
+      setRuntimeActivation("OFF");
+      setRuntimeSessionId(null);
+    } finally {
+      runtimeStartingRef.current = false;
+      setRuntimeStarting(false);
+    }
+  };
+
+  const startBreakRuntime = async (): Promise<void> => {
+    if (runtimeStartingRef.current || runtimeRef.current !== null || workStateRef.current !== "BUILD") return;
+    const workspace = workspaceRef.current;
+    const viewport = viewportRef.current;
+    if (workspace === null || viewport === null) return;
+
+    const current = workspace.snapshot();
+    const currentBreak = classifyBreakLabSource(current.source);
+    setBreakClassification(currentBreak);
+    if (currentBreak.eligibility !== "ELIGIBLE" || currentBreak.compilation === null) {
+      setNotice(`BREAK RUN unavailable · ${currentBreak.reason}`);
+      return;
+    }
+
+    runtimeStartingRef.current = true;
+    setRuntimeStarting(true);
+    clearMeaningDraft();
+    setIntent("select");
+    setHover(null);
+    setNotice(null);
+
+    let runtime: BreakLabRuntimeSession | null = null;
+    try {
+      runtime = await BreakLabRuntimeSession.create(
+        current.source,
+        current.sourceGeneration,
+        runtimeIdSourceRef.current,
+      );
+      const latest = workspace.snapshot();
+      if (latest.sourceGeneration !== current.sourceGeneration) {
+        throw new Error("Authored source changed while Break Lab was creating the runtime session");
+      }
+      // BreakLabRuntimeSession deliberately satisfies the viewport's solver-neutral
+      // runtime shape. The cast stays local to this disposable experiment boundary.
+      viewport.attachRuntime(runtime as unknown as StudioRuntimeSession);
+      runtimeRef.current = runtime;
+      setRuntimeModeValue("BREAK");
+      setRuntimeSessionId(runtime.sessionId);
+      setRuntimeActivation(runtime.activation);
+      setWorkStateValue("RUNNING");
+      setNotice("BREAK LAB · experimental multi-Bearing realization");
+      runtime = null;
+    } catch (error: unknown) {
+      runtime?.dispose();
+      setRuntimeModeValue(null);
+      setNotice(error instanceof Error ? `BREAK LAB FAULT · ${error.message}` : "BREAK LAB FAULT");
       setWorkStateValue("BUILD");
       setRuntimeActivation("OFF");
       setRuntimeSessionId(null);
@@ -264,8 +339,10 @@ export function StudioApp(): React.JSX.Element {
 
   const restartRuntime = async (): Promise<void> => {
     if (runtimeRef.current === null || runtimeStartingRef.current) return;
+    const mode = runtimeModeRef.current;
     disposeRuntimeToBuild();
-    await startRuntime();
+    if (mode === "BREAK") await startBreakRuntime();
+    else await startRuntime();
   };
 
   const setActivation = (value: StudioRuntimeActivation): void => {
@@ -396,6 +473,7 @@ export function StudioApp(): React.JSX.Element {
         viewportRef.current?.detachRuntime();
         runtimeRef.current = null;
         activeRuntime?.dispose();
+        setRuntimeModeValue(null);
         setWorkStateValue("BUILD");
         setRuntimeActivation("OFF");
         setRuntimeSessionId(null);
@@ -406,6 +484,7 @@ export function StudioApp(): React.JSX.Element {
     return () => {
       const activeRuntime = runtimeRef.current;
       runtimeRef.current = null;
+      runtimeModeRef.current = null;
       activeRuntime?.dispose();
       viewportRef.current = null;
       viewport.dispose();
@@ -641,9 +720,15 @@ export function StudioApp(): React.JSX.Element {
       ? ""
       : "unsupported";
   const runtimeLive = runtimeSessionId !== null;
+  const breakCandidate = (snapshot?.source.bearings.length ?? 0) >= 2;
   const canRun =
     snapshot !== null &&
     classification?.runReadiness === "READY" &&
+    workState === "BUILD" &&
+    !runtimeStarting;
+  const canBreakRun =
+    snapshot !== null &&
+    breakClassification?.eligibility === "ELIGIBLE" &&
     workState === "BUILD" &&
     !runtimeStarting;
 
@@ -656,8 +741,10 @@ export function StudioApp(): React.JSX.Element {
       data-authored-validity={classification?.authoredValidity ?? "UNKNOWN"}
       data-composition-support={classification?.compositionSupport ?? "UNKNOWN"}
       data-run-readiness={classification?.runReadiness ?? "UNKNOWN"}
+      data-break-lab-eligibility={breakClassification?.eligibility ?? "INELIGIBLE"}
       data-torque-draft-effort={torqueDraft?.effortNm ?? ""}
       data-work-state={workState}
+      data-runtime-mode={runtimeMode ?? "NONE"}
       data-runtime-activation={runtimeLive ? runtimeActivation : "NONE"}
       data-runtime-session={runtimeSessionId ?? ""}
       data-react-renders={renderCountRef.current}
@@ -691,11 +778,24 @@ export function StudioApp(): React.JSX.Element {
 
       {snapshot !== null && (
         <section className="studio-simulation-dock studio-island" aria-label="Simulation">
-          <span className={`studio-work-state ${workState.toLowerCase()}`}>{workState}</span>
+          <span className={`studio-work-state ${workState.toLowerCase()}`}>
+            {workState}{runtimeMode === "BREAK" ? " · BREAK" : ""}
+          </span>
           {workState === "BUILD" ? (
-            <button type="button" className="run-control" onClick={() => void startRuntime()} disabled={!canRun}>
-              {runtimeStarting ? "RUN…" : "RUN"}
-            </button>
+            <>
+              <button type="button" className="run-control" onClick={() => void startRuntime()} disabled={!canRun}>
+                {runtimeStarting ? "RUN…" : "RUN"}
+              </button>
+              {breakCandidate && (
+                <button
+                  type="button"
+                  className="break-run-control"
+                  onClick={() => void startBreakRuntime()}
+                  disabled={!canBreakRun}
+                  title={breakClassification?.reason ?? "Break Lab is not available for this source"}
+                >{runtimeStarting ? "BREAK…" : "BREAK RUN"}</button>
+              )}
+            </>
           ) : (
             <>
               {workState === "RUNNING" ? (
@@ -817,11 +917,11 @@ export function StudioApp(): React.JSX.Element {
                   ))}
                 </div>
                 <div className="studio-button-row studio-commit-row">
-                  <button type="button" className="commit bearing-commit" onClick={() => commitBearingDraft(bearingDraft)}>Commit</button>
+                  <button type="button" className="commit bearing-commit" onClick={() => commitBearingDraft(bearingDraft)}>Commit · Enter</button>
                   <button type="button" onClick={clearMeaningDraft}>Cancel</button>
                   {bearingDraft.bearingId !== null && <button type="button" className="danger-quiet" onClick={removeBearing}>Remove</button>}
                 </div>
-                <p className="studio-hint">Enter commits · Esc cancels</p>
+                <p className="studio-hint">Esc cancels</p>
               </>
             )
           )}
@@ -854,11 +954,11 @@ export function StudioApp(): React.JSX.Element {
                     className="commit torque-commit"
                     disabled={!torqueNumericValid}
                     onClick={() => commitTorqueDraft({ ...torqueDraft, effortNm: torqueNumericValue })}
-                  >Commit</button>
+                  >Commit · Enter</button>
                   <button type="button" onClick={clearMeaningDraft}>Cancel</button>
                   {torqueDraft.patchId !== null && <button type="button" className="danger-quiet" onClick={removeTorquePatch}>Remove</button>}
                 </div>
-                <p className="studio-hint">Enter commits · Esc cancels · crossing zero reverses direction</p>
+                <p className="studio-hint">Esc cancels · crossing zero reverses direction</p>
               </>
             )
           )}
