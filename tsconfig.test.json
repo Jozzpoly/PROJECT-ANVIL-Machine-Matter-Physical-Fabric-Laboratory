@@ -21,6 +21,8 @@
     "src/studio/meaning.ts",
     "src/studio/runtime.ts",
     "src/studio/o1x-representation.ts",
-    "src/studio/break-lab.ts"
+    "src/studio/break-lab.ts",
+    "src/studio/interaction-bandwidth.ts",
+    "src/studio/interaction-break-runtime.ts"
   ]
 }

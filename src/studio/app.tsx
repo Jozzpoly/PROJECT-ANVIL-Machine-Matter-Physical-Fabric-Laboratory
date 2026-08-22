@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import type { BearingAxis } from "../experiments/anvil-02-bearing.js";
 import {
-  BreakLabRuntimeSession,
   classifyBreakLabSource,
   type BreakLabClassification,
 } from "./break-lab.js";
 import { classifyStudioSource, type StudioClassification } from "./compile.js";
+import { InteractionBreakRuntimeSession } from "./interaction-break-runtime.js";
 import { resolveBearingTarget, resolveTorqueTarget } from "./meaning.js";
 import {
   StudioRuntimeSession,
@@ -34,7 +34,15 @@ import {
 type StudioIntent = "select" | "matter" | "meaning";
 type StudioWorkState = "BUILD" | "RUNNING" | "PAUSED";
 type StudioRuntimeMode = "STANDARD" | "BREAK";
-type ActiveStudioRuntime = StudioRuntimeSession | BreakLabRuntimeSession;
+type StudioLens = "surface" | "cells" | "meaning";
+type ActiveStudioRuntime = StudioRuntimeSession | InteractionBreakRuntimeSession;
+
+interface StudioAuthoringContext {
+  readonly intent: StudioIntent;
+  readonly matterTool: StudioMatterTool;
+  readonly meaningTool: StudioMeaningTool;
+  readonly lens: StudioLens;
+}
 
 interface StudioBearingDraft extends StudioBearingDraftVisual {
   readonly bearingId: string | null;
@@ -48,6 +56,11 @@ interface StudioTorqueDraft extends StudioTorqueDraftVisual {
 const EMPTY_PREVIEW = createEmptyStudioSource();
 const DEFAULT_TORQUE_EFFORT_NM = 100;
 
+function isTextEntryTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target.isContentEditable;
+}
+
 export function StudioApp(): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +71,7 @@ export function StudioApp(): React.JSX.Element {
   const runtimeIdSourceRef = useRef(createStudioRuntimeIdSource());
   const runtimeStartingRef = useRef(false);
   const workStateRef = useRef<StudioWorkState>("BUILD");
+  const preRunContextRef = useRef<StudioAuthoringContext | null>(null);
   const activeMaterialRef = useRef("studio:alloy");
   const meaningToolRef = useRef<StudioMeaningTool>("bearing");
   const renderCountRef = useRef(0);
@@ -93,6 +107,35 @@ export function StudioApp(): React.JSX.Element {
   const setRuntimeModeValue = (next: StudioRuntimeMode | null): void => {
     runtimeModeRef.current = next;
     setRuntimeMode(next);
+  };
+
+  const currentLens = (): StudioLens => {
+    const value = canvasRef.current?.dataset.o1xLens;
+    return value === "cells" || value === "meaning" ? value : "surface";
+  };
+
+  const captureAuthoringContext = (): void => {
+    if (preRunContextRef.current !== null) return;
+    preRunContextRef.current = {
+      intent,
+      matterTool,
+      meaningTool,
+      lens: currentLens(),
+    };
+  };
+
+  const restoreAuthoringContext = (): void => {
+    const context = preRunContextRef.current;
+    if (context === null) return;
+    preRunContextRef.current = null;
+    setIntent(context.intent);
+    setMatterTool(context.matterTool);
+    setMeaningTool(context.meaningTool);
+    meaningToolRef.current = context.meaningTool;
+    requestAnimationFrame(() => {
+      const dock = canvasRef.current?.parentElement?.querySelector<HTMLElement>("[data-o1x-lens-dock='true']");
+      dock?.querySelector<HTMLButtonElement>(`button[data-lens='${context.lens}']`)?.click();
+    });
   };
 
   const requireBuild = (): boolean => {
@@ -140,6 +183,7 @@ export function StudioApp(): React.JSX.Element {
 
   const startWorkspace = (source: ReturnType<typeof createEmptyStudioSource>): void => {
     if (!requireBuild()) return;
+    preRunContextRef.current = null;
     workspaceRef.current = new StudioWorkspace(source);
     setSelection(null);
     setHover(null);
@@ -189,7 +233,7 @@ export function StudioApp(): React.JSX.Element {
     }
   };
 
-  const disposeRuntimeToBuild = (): void => {
+  const disposeRuntimeToBuild = (restoreContext = true): void => {
     const runtime = runtimeRef.current;
     viewportRef.current?.detachRuntime();
     runtimeRef.current = null;
@@ -198,6 +242,7 @@ export function StudioApp(): React.JSX.Element {
     setWorkStateValue("BUILD");
     setRuntimeActivation("OFF");
     setRuntimeSessionId(null);
+    if (restoreContext) restoreAuthoringContext();
   };
 
   const startRuntime = async (): Promise<void> => {
@@ -220,6 +265,7 @@ export function StudioApp(): React.JSX.Element {
       return;
     }
 
+    captureAuthoringContext();
     runtimeStartingRef.current = true;
     setRuntimeStarting(true);
     clearMeaningDraft();
@@ -253,6 +299,7 @@ export function StudioApp(): React.JSX.Element {
       setWorkStateValue("BUILD");
       setRuntimeActivation("OFF");
       setRuntimeSessionId(null);
+      restoreAuthoringContext();
     } finally {
       runtimeStartingRef.current = false;
       setRuntimeStarting(false);
@@ -273,6 +320,7 @@ export function StudioApp(): React.JSX.Element {
       return;
     }
 
+    captureAuthoringContext();
     runtimeStartingRef.current = true;
     setRuntimeStarting(true);
     clearMeaningDraft();
@@ -280,26 +328,24 @@ export function StudioApp(): React.JSX.Element {
     setHover(null);
     setNotice(null);
 
-    let runtime: BreakLabRuntimeSession | null = null;
+    let runtime: InteractionBreakRuntimeSession | null = null;
     try {
-      runtime = await BreakLabRuntimeSession.create(
+      runtime = await InteractionBreakRuntimeSession.create(
         current.source,
         current.sourceGeneration,
         runtimeIdSourceRef.current,
       );
       const latest = workspace.snapshot();
       if (latest.sourceGeneration !== current.sourceGeneration) {
-        throw new Error("Authored source changed while Break Lab was creating the runtime session");
+        throw new Error("Authored source changed while Interaction Break Lab was creating the runtime session");
       }
-      // BreakLabRuntimeSession deliberately satisfies the viewport's solver-neutral
-      // runtime shape. The cast stays local to this disposable experiment boundary.
-      viewport.attachRuntime(runtime as unknown as StudioRuntimeSession);
+      viewport.attachRuntime(runtime);
       runtimeRef.current = runtime;
       setRuntimeModeValue("BREAK");
       setRuntimeSessionId(runtime.sessionId);
       setRuntimeActivation(runtime.activation);
       setWorkStateValue("RUNNING");
-      setNotice("BREAK LAB · experimental multi-Bearing realization");
+      setNotice("BREAK LAB · LMB drag body · MMB orbit · wheel zoom");
       runtime = null;
     } catch (error: unknown) {
       runtime?.dispose();
@@ -308,6 +354,7 @@ export function StudioApp(): React.JSX.Element {
       setWorkStateValue("BUILD");
       setRuntimeActivation("OFF");
       setRuntimeSessionId(null);
+      restoreAuthoringContext();
     } finally {
       runtimeStartingRef.current = false;
       setRuntimeStarting(false);
@@ -333,14 +380,14 @@ export function StudioApp(): React.JSX.Element {
 
   const stopRuntime = (): void => {
     if (runtimeRef.current === null) return;
-    disposeRuntimeToBuild();
+    disposeRuntimeToBuild(true);
     setNotice(null);
   };
 
   const restartRuntime = async (): Promise<void> => {
     if (runtimeRef.current === null || runtimeStartingRef.current) return;
     const mode = runtimeModeRef.current;
-    disposeRuntimeToBuild();
+    disposeRuntimeToBuild(false);
     if (mode === "BREAK") await startBreakRuntime();
     else await startRuntime();
   };
@@ -351,7 +398,7 @@ export function StudioApp(): React.JSX.Element {
     try {
       runtime.setActivation(value);
       setRuntimeActivation(runtime.activation);
-      setNotice(null);
+      setNotice(runtimeModeRef.current === "BREAK" ? "BREAK LAB · LMB drag body · MMB orbit · wheel zoom" : null);
     } catch (error: unknown) {
       setNotice(error instanceof Error ? error.message : "Activation change failed");
     }
@@ -477,6 +524,7 @@ export function StudioApp(): React.JSX.Element {
         setWorkStateValue("BUILD");
         setRuntimeActivation("OFF");
         setRuntimeSessionId(null);
+        restoreAuthoringContext();
         setNotice(`RUNTIME FAULT · ${message}`);
       },
     });
@@ -485,6 +533,7 @@ export function StudioApp(): React.JSX.Element {
       const activeRuntime = runtimeRef.current;
       runtimeRef.current = null;
       runtimeModeRef.current = null;
+      preRunContextRef.current = null;
       activeRuntime?.dispose();
       viewportRef.current = null;
       viewport.dispose();
@@ -553,6 +602,33 @@ export function StudioApp(): React.JSX.Element {
           return;
         }
       }
+
+      if (
+        workspace !== null &&
+        workStateRef.current === "BUILD" &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        !isTextEntryTarget(event.target)
+      ) {
+        const quick = event.key.toLowerCase();
+        if (quick === "a") {
+          event.preventDefault();
+          chooseMatterTool("add");
+          return;
+        }
+        if (quick === "b") {
+          event.preventDefault();
+          chooseMeaningTool("bearing");
+          return;
+        }
+        if (quick === "t") {
+          event.preventDefault();
+          chooseMeaningTool("torque");
+          return;
+        }
+      }
+
       if (workspace === null || !event.ctrlKey) return;
       const key = event.key.toLowerCase();
       if (key === "s") {
@@ -575,7 +651,7 @@ export function StudioApp(): React.JSX.Element {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [bearingDraft, torqueDraft, torqueNumericValid, torqueNumericValue, intent, meaningTool]);
+  }, [bearingDraft, torqueDraft, torqueNumericValid, torqueNumericValue, intent, meaningTool, matterTool]);
 
   const selectedCell = useMemo(
     () => snapshot?.source.matter.cells.find((cell) => cell.id === selection) ?? null,
@@ -742,6 +818,8 @@ export function StudioApp(): React.JSX.Element {
       data-composition-support={classification?.compositionSupport ?? "UNKNOWN"}
       data-run-readiness={classification?.runReadiness ?? "UNKNOWN"}
       data-break-lab-eligibility={breakClassification?.eligibility ?? "INELIGIBLE"}
+      data-authoring-intent={intent}
+      data-authoring-tool={intent === "matter" ? matterTool : intent === "meaning" ? meaningTool : "select"}
       data-torque-draft-effort={torqueDraft?.effortNm ?? ""}
       data-work-state={workState}
       data-runtime-mode={runtimeMode ?? "NONE"}
@@ -815,6 +893,9 @@ export function StudioApp(): React.JSX.Element {
               <button type="button" className="stop-control" onClick={stopRuntime}>Stop</button>
             </>
           )}
+          {runtimeMode === "BREAK" && workState !== "BUILD" && (
+            <span className="studio-runtime-hint">LMB drag body · MMB orbit · wheel zoom · Shift+MMB pan</span>
+          )}
           {notice !== null && <span className="studio-simulation-notice">{notice}</span>}
         </section>
       )}
@@ -834,7 +915,7 @@ export function StudioApp(): React.JSX.Element {
           <button
             type="button"
             className={intent === "meaning" ? "active" : ""}
-            onClick={() => chooseMeaningTool("bearing")}
+            onClick={() => chooseIntent("meaning")}
           >Meaning</button>
         </nav>
       )}
@@ -843,7 +924,7 @@ export function StudioApp(): React.JSX.Element {
         <section className="studio-context-pod studio-island" aria-label="Matter tools">
           <div className="studio-pod-title">MATTER</div>
           <div className="studio-tool-tabs">
-            <button type="button" className={matterTool === "add" ? "active" : ""} onClick={() => chooseMatterTool("add")}>Add</button>
+            <button type="button" className={matterTool === "add" ? "active" : ""} onClick={() => chooseMatterTool("add")}>Add · A</button>
             <button type="button" className={matterTool === "remove" ? "active" : ""} onClick={() => chooseMatterTool("remove")}>Remove</button>
             <button type="button" className={matterTool === "material" ? "active" : ""} onClick={() => chooseMatterTool("material")}>Material</button>
           </div>
@@ -892,12 +973,12 @@ export function StudioApp(): React.JSX.Element {
               type="button"
               className={meaningTool === "bearing" ? "active meaning-bearing" : "meaning-bearing"}
               onClick={() => chooseMeaningTool("bearing")}
-            >Bearing</button>
+            >Bearing · B</button>
             <button
               type="button"
               className={meaningTool === "torque" ? "active meaning-torque" : "meaning-torque"}
               onClick={() => chooseMeaningTool("torque")}
-            >Torque</button>
+            >Torque · T</button>
           </div>
 
           {meaningTool === "bearing" && (

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { applyTorqueDraftDrag } from "../meaning.js";
-import type { StudioRuntimeFrame, StudioRuntimeSession } from "../runtime.js";
+import type { Vec3 } from "../../model.js";
+import type { StudioRuntimeFrame, StudioRuntimePlan } from "../runtime.js";
 import {
   createEmptyStudioSource,
   previewAddMatterFromFace,
@@ -28,6 +29,19 @@ export type StudioAddRequest =
   | { readonly kind: "seed" }
   | { readonly kind: "face"; readonly cellId: string; readonly face: StudioGridFace };
 
+export interface StudioViewportRuntime {
+  readonly sessionId: string;
+  readonly sourceGeneration: number;
+  readonly plan: StudioRuntimePlan;
+  frame(): StudioRuntimeFrame;
+  step(stepCount?: number): StudioRuntimeFrame;
+  beginHandGrab?(planBodyId: string, worldPoint: Vec3): void;
+  updateHandTarget?(targetWorld: Vec3): void;
+  endHandGrab?(): void;
+  handAnchorWorld?(): Vec3 | null;
+  handTargetWorld?(): Vec3 | null;
+}
+
 export interface StudioViewportCallbacks {
   readonly onSelect: (cellId: string | null) => void;
   readonly onHover: (hit: StudioViewportHit | null) => void;
@@ -54,7 +68,13 @@ interface TorqueDrag {
   effortNm: number;
 }
 
-type ActiveDrag = ViewDrag | TorqueDrag;
+interface RuntimeHandDrag {
+  readonly pointerId: number;
+  readonly mode: "hand";
+  readonly plane: THREE.Plane;
+}
+
+type ActiveDrag = ViewDrag | TorqueDrag | RuntimeHandDrag;
 
 const INITIAL_CAMERA = new THREE.Vector3(5.5, 4.25, 6.5);
 const MIN_DISTANCE = 1.25;
@@ -83,6 +103,10 @@ function faceFromNormal(normal: THREE.Vector3): StudioGridFace {
 
 function vector3(value: { readonly x: number; readonly y: number; readonly z: number }): THREE.Vector3 {
   return new THREE.Vector3(value.x, value.y, value.z);
+}
+
+function vec3(value: THREE.Vector3): Vec3 {
+  return { x: value.x, y: value.y, z: value.z };
 }
 
 function quaternion(value: { readonly x: number; readonly y: number; readonly z: number; readonly w: number }): THREE.Quaternion {
@@ -122,7 +146,7 @@ export class StudioViewport {
   #removeHelper: THREE.BoxHelper | null = null;
   #hoverKey: string | null = null;
   #drag: ActiveDrag | null = null;
-  #runtime: StudioRuntimeSession | null = null;
+  #runtime: StudioViewportRuntime | null = null;
   #runtimeRunning = false;
   #runtimeLastTimestamp: number | null = null;
   #runtimeAccumulatorMs = 0;
@@ -209,7 +233,7 @@ export class StudioViewport {
     this.#meaningPresentation.setTorqueDraft(draft);
   }
 
-  attachRuntime(runtime: StudioRuntimeSession): void {
+  attachRuntime(runtime: StudioViewportRuntime): void {
     if (this.#runtime !== null) throw new Error("Studio viewport already owns a live runtime session");
     this.#clearStopGhost();
     this.clearDraft();
@@ -222,6 +246,7 @@ export class StudioViewport {
     this.#runtimeAccumulatorMs = 0;
     this.#runtimeStepCount = 0;
     this.#canvas.dataset.runtimeFrames = "0";
+    this.#canvas.dataset.runtimeHand = runtime.beginHandGrab === undefined ? "unavailable" : "ready";
     const frame = runtime.frame();
     this.#meaningPresentation.startRuntime(runtime.plan, frame);
     this.#applyRuntimeFrame(frame);
@@ -248,12 +273,14 @@ export class StudioViewport {
 
   detachRuntime(showGhost = true): void {
     if (this.#runtime === null) return;
+    this.#endRuntimeHand();
     if (showGhost) this.#beginStopGhost();
     this.#runtime = null;
     this.#runtimeRunning = false;
     this.#runtimeLastTimestamp = null;
     this.#runtimeAccumulatorMs = 0;
     delete this.#canvas.dataset.runtimeFrames;
+    delete this.#canvas.dataset.runtimeHand;
     this.#meaningPresentation.stopRuntime();
     this.#lensPresentation.setRuntimeActive(false);
     this.#rebuildMatter();
@@ -273,6 +300,7 @@ export class StudioViewport {
   dispose(): void {
     if (this.#disposed) return;
     this.#disposed = true;
+    this.#endRuntimeHand();
     cancelAnimationFrame(this.#frame);
     this.#resizeObserver.disconnect();
     this.#canvas.removeEventListener("pointerdown", this.#onPointerDown);
@@ -306,6 +334,28 @@ export class StudioViewport {
   readonly #onPointerDown = (event: PointerEvent): void => {
     if (event.button === 0) {
       this.#emitInput("semantic");
+      const runtime = this.#runtime;
+      if (runtime !== null && runtime.beginHandGrab !== undefined) {
+        const picked = this.#pickMatterIntersection(event);
+        if (picked !== null) {
+          const planBodyId = runtime.plan.cellToBody[picked.hit.cellId];
+          if (planBodyId !== undefined) {
+            event.preventDefault();
+            runtime.beginHandGrab(planBodyId, vec3(picked.point));
+            const viewNormal = this.#camera.getWorldDirection(new THREE.Vector3());
+            this.#drag = {
+              pointerId: event.pointerId,
+              mode: "hand",
+              plane: new THREE.Plane().setFromNormalAndCoplanarPoint(viewNormal, picked.point),
+            };
+            this.#canvas.dataset.runtimeHand = "active";
+            this.#canvas.setPointerCapture(event.pointerId);
+            this.#emitInput("hand");
+            return;
+          }
+        }
+      }
+
       if (this.#tool === "torque") {
         const effortNm = this.#meaningPresentation.torqueDraftEffortNm();
         if (effortNm !== null && this.#pickTorqueHandle(event)) {
@@ -372,6 +422,15 @@ export class StudioViewport {
   readonly #onPointerMove = (event: PointerEvent): void => {
     const drag = this.#drag;
     if (drag !== null && drag.pointerId === event.pointerId) {
+      if (drag.mode === "hand") {
+        const runtime = this.#runtime;
+        if (runtime?.updateHandTarget !== undefined && this.#setRayFromPointer(event)) {
+          const target = this.#raycaster.ray.intersectPlane(drag.plane, new THREE.Vector3());
+          if (target !== null) runtime.updateHandTarget(vec3(target));
+        }
+        return;
+      }
+
       const dx = event.clientX - drag.x;
       drag.x = event.clientX;
       if (drag.mode === "torque") {
@@ -391,6 +450,7 @@ export class StudioViewport {
 
   readonly #onPointerUp = (event: PointerEvent): void => {
     if (this.#drag?.pointerId !== event.pointerId) return;
+    if (this.#drag.mode === "hand") this.#endRuntimeHand();
     this.#drag = null;
     if (this.#canvas.hasPointerCapture(event.pointerId)) this.#canvas.releasePointerCapture(event.pointerId);
   };
@@ -439,13 +499,20 @@ export class StudioViewport {
     return this.#lensPresentation.pickMeaning(this.#raycaster, tool);
   }
 
-  #pickMatter(event: PointerEvent): StudioViewportHit | null {
+  #pickMatterIntersection(event: PointerEvent): { readonly hit: StudioViewportHit; readonly point: THREE.Vector3 } | null {
     if (!this.#setRayFromPointer(event)) return null;
     const intersection = this.#raycaster.intersectObjects(this.#cellMeshes, false)[0];
     if (intersection === undefined || intersection.face == null) return null;
     const cellId = (intersection.object.userData.cellId as string | undefined) ?? null;
     if (cellId === null) return null;
-    return { cellId, face: faceFromNormal(intersection.face.normal) };
+    return {
+      hit: { cellId, face: faceFromNormal(intersection.face.normal) },
+      point: intersection.point.clone(),
+    };
+  }
+
+  #pickMatter(event: PointerEvent): StudioViewportHit | null {
+    return this.#pickMatterIntersection(event)?.hit ?? null;
   }
 
   #pickGhost(event: PointerEvent): boolean {
@@ -457,6 +524,18 @@ export class StudioViewport {
   #pickTorqueHandle(event: PointerEvent): boolean {
     if (!this.#setRayFromPointer(event)) return false;
     return this.#meaningPresentation.hitTorqueHandle(this.#raycaster);
+  }
+
+  #endRuntimeHand(): void {
+    const runtime = this.#runtime;
+    if (runtime?.endHandGrab !== undefined) {
+      try {
+        runtime.endHandGrab();
+      } catch {
+        // Runtime teardown may already have disposed the transient hand state.
+      }
+    }
+    if (runtime !== null && runtime.beginHandGrab !== undefined) this.#canvas.dataset.runtimeHand = "ready";
   }
 
   #setHover(hit: StudioViewportHit | null): void {
@@ -655,6 +734,7 @@ export class StudioViewport {
   }
 
   #handleRuntimeFault(error: unknown): void {
+    this.#endRuntimeHand();
     this.#runtimeRunning = false;
     this.#runtimeLastTimestamp = null;
     this.#runtimeAccumulatorMs = 0;
@@ -727,7 +807,7 @@ export class StudioViewport {
     this.#camera.updateProjectionMatrix();
   }
 
-  #emitInput(channel: "semantic" | "orbit" | "pan" | "zoom" | "focus"): void {
+  #emitInput(channel: "semantic" | "orbit" | "pan" | "zoom" | "focus" | "hand"): void {
     this.#canvas.dispatchEvent(
       new CustomEvent("anvil-studio-input", {
         detail: { channel },
