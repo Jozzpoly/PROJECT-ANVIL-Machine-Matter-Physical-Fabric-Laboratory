@@ -34,7 +34,7 @@ export interface StudioViewportCallbacks {
   readonly onRemove: (cellId: string) => void;
   readonly onMeaningTarget: (hit: StudioViewportHit) => void;
   readonly onTorqueDraftEffort: (effortNm: number) => void;
-  readonly onRuntimeFault: (message: string) => void;
+  readonly onRuntimeFault?: (message: string) => void;
 }
 
 type ViewDragMode = "orbit" | "pan";
@@ -575,7 +575,7 @@ export class StudioViewport {
     this.#runtimeRunning = false;
     this.#runtimeLastTimestamp = null;
     this.#runtimeAccumulatorMs = 0;
-    this.#callbacks.onRuntimeFault(error instanceof Error ? error.message : "Studio runtime fault");
+    this.#callbacks.onRuntimeFault?.(error instanceof Error ? error.message : "Studio runtime fault");
   }
 
   #advanceRuntime(timestamp: number): void {
