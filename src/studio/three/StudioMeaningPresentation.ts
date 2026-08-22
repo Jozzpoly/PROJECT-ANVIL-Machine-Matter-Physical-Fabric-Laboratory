@@ -6,6 +6,7 @@ import type {
 } from "../../experiments/anvil-02-bearing.js";
 import type { TorquePatch } from "../../experiments/anvil-06-torque-patch.js";
 import { resolveBearingTarget, resolveTorqueTarget } from "../meaning.js";
+import type { StudioRuntimeFrame, StudioRuntimePlan } from "../runtime.js";
 import type { StudioGridFace, StudioSourceV0 } from "../workspace.js";
 
 export interface StudioBearingDraftVisual {
@@ -32,6 +33,8 @@ const TORQUE_COLOR = 0xf2a65a;
 const TORQUE_DRAFT_COLOR = 0xffbf78;
 const TORQUE_HOVER_COLOR = 0xf2a65a;
 const INVALID_COLOR = 0xe56a6a;
+const RUNTIME_BEARING_COLOR = 0x9ff5ef;
+const RUNTIME_TORQUE_COLOR = 0xffbf78;
 
 function axisVector(axis: BearingAxis): THREE.Vector3 {
   if (axis === "x") return new THREE.Vector3(1, 0, 0);
@@ -110,19 +113,45 @@ function faceTangents(normal: THREE.Vector3): readonly [THREE.Vector3, THREE.Vec
   return [first, second];
 }
 
+function runtimeQuaternion(rotation: { readonly x: number; readonly y: number; readonly z: number; readonly w: number }): THREE.Quaternion {
+  return new THREE.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+}
+
+function runtimeVector(value: { readonly x: number; readonly y: number; readonly z: number }): THREE.Vector3 {
+  return new THREE.Vector3(value.x, value.y, value.z);
+}
+
+function setLineEndpoints(line: THREE.Line, a: THREE.Vector3, b: THREE.Vector3): void {
+  const position = line.geometry.getAttribute("position");
+  if (!(position instanceof THREE.BufferAttribute) || position.count < 2) {
+    throw new Error("Studio runtime line geometry lost its two endpoints");
+  }
+  position.setXYZ(0, a.x, a.y, a.z);
+  position.setXYZ(1, b.x, b.y, b.z);
+  position.needsUpdate = true;
+  line.geometry.computeBoundingSphere();
+}
+
 export class StudioMeaningPresentation {
   readonly group = new THREE.Group();
   readonly #persistent = new THREE.Group();
   readonly #hover = new THREE.Group();
   readonly #draft = new THREE.Group();
+  readonly #runtime = new THREE.Group();
   #source: StudioSourceV0;
   #bearingDraft: StudioBearingDraftVisual | null = null;
   #torqueDraft: StudioTorqueDraftVisual | null = null;
   #torqueHandle: THREE.Mesh | null = null;
+  #runtimePlan: StudioRuntimePlan | null = null;
+  #runtimeBearingRing: THREE.Mesh | null = null;
+  #runtimeBearingAxis: THREE.Line | null = null;
+  #runtimeTorquePatch: THREE.Mesh | null = null;
+  #runtimeTorqueArrow: THREE.ArrowHelper | null = null;
 
   constructor(source: StudioSourceV0) {
     this.#source = source;
-    this.group.add(this.#persistent, this.#hover, this.#draft);
+    this.#runtime.visible = false;
+    this.group.add(this.#persistent, this.#hover, this.#draft, this.#runtime);
     this.#rebuildPersistent();
   }
 
@@ -172,6 +201,144 @@ export class StudioMeaningPresentation {
     this.#addFacePreview(this.#hover, point, target.target.face, TORQUE_HOVER_COLOR);
   }
 
+  startRuntime(plan: StudioRuntimePlan, frame: StudioRuntimeFrame): void {
+    this.clearTransient();
+    this.#runtimePlan = plan;
+    disposeObjectTree(this.#runtime);
+    this.#runtimeBearingRing = null;
+    this.#runtimeBearingAxis = null;
+    this.#runtimeTorquePatch = null;
+    this.#runtimeTorqueArrow = null;
+
+    const size = this.#source.matter.cellSizeM;
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(size * 0.25, Math.max(size * 0.022, 0.007), 10, 40),
+      new THREE.MeshBasicMaterial({ color: RUNTIME_BEARING_COLOR, depthWrite: false }),
+    );
+    ring.renderOrder = 8;
+    this.#runtime.add(ring);
+    this.#runtimeBearingRing = ring;
+
+    const axisGeometry = new THREE.BufferGeometry();
+    axisGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
+    const axisLine = new THREE.Line(
+      axisGeometry,
+      new THREE.LineBasicMaterial({ color: RUNTIME_BEARING_COLOR }),
+    );
+    axisLine.renderOrder = 8;
+    this.#runtime.add(axisLine);
+    this.#runtimeBearingAxis = axisLine;
+
+    const patch = new THREE.Mesh(
+      new THREE.PlaneGeometry(size * 0.38, size * 0.38),
+      new THREE.MeshBasicMaterial({
+        color: RUNTIME_TORQUE_COLOR,
+        transparent: true,
+        opacity: 0.28,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    patch.renderOrder = 9;
+    this.#runtime.add(patch);
+    this.#runtimeTorquePatch = patch;
+
+    const arrow = new THREE.ArrowHelper(
+      new THREE.Vector3(1, 0, 0),
+      new THREE.Vector3(),
+      size * 0.46,
+      RUNTIME_TORQUE_COLOR,
+      size * 0.13,
+      size * 0.075,
+    );
+    setMaterialOpacity(arrow.line.material, 0.28);
+    setMaterialOpacity(arrow.cone.material, 0.28);
+    arrow.renderOrder = 9;
+    this.#runtime.add(arrow);
+    this.#runtimeTorqueArrow = arrow;
+
+    this.#persistent.visible = false;
+    this.#hover.visible = false;
+    this.#draft.visible = false;
+    this.#runtime.visible = true;
+    this.updateRuntime(frame);
+  }
+
+  updateRuntime(frame: StudioRuntimeFrame): void {
+    const plan = this.#runtimePlan;
+    const ring = this.#runtimeBearingRing;
+    const axisLine = this.#runtimeBearingAxis;
+    const patchMesh = this.#runtimeTorquePatch;
+    const arrow = this.#runtimeTorqueArrow;
+    if (plan === null || ring === null || axisLine === null || patchMesh === null || arrow === null) {
+      throw new Error("Studio runtime meaning presentation is not initialized");
+    }
+
+    const bodies = new Map(frame.bodies.map((body) => [body.planBodyId, body] as const));
+    const bodyA = bodies.get(plan.bearing.bodyAId);
+    if (bodyA === undefined) throw new Error("Studio runtime Bearing manifestation lost body A");
+    const bodyRotation = runtimeQuaternion(bodyA.rotation);
+    const bearingPivot = runtimeVector(plan.bearing.localAnchorA)
+      .applyQuaternion(bodyRotation)
+      .add(runtimeVector(bodyA.position));
+    const bearingAxis = runtimeVector(plan.bearing.localAxisA).applyQuaternion(bodyRotation).normalize();
+
+    ring.position.copy(bearingPivot);
+    orientNormal(ring, bearingAxis);
+    const axisHalf = this.#source.matter.cellSizeM * 0.44;
+    setLineEndpoints(
+      axisLine,
+      bearingPivot.clone().addScaledVector(bearingAxis, -axisHalf),
+      bearingPivot.clone().addScaledVector(bearingAxis, axisHalf),
+    );
+
+    const targetCell = this.#source.matter.cells.find((cell) => cell.id === plan.torque.target.cellId);
+    if (targetCell === undefined) throw new Error("Studio runtime TorquePatch manifestation lost target cell");
+    const targetBodyId = plan.cellToBody[targetCell.id];
+    if (targetBodyId === undefined) throw new Error("Studio runtime TorquePatch target lost body provenance");
+    const targetBody = bodies.get(targetBodyId);
+    const planBody = plan.bodies.find((candidate) => candidate.planBodyId === targetBodyId);
+    if (targetBody === undefined || planBody === undefined) {
+      throw new Error("Studio runtime TorquePatch manifestation lost target body");
+    }
+
+    const targetRotation = runtimeQuaternion(targetBody.rotation);
+    const authoredFacePoint = cellCenter(targetCell.grid, this.#source.matter.cellSizeM)
+      .addScaledVector(faceVector(plan.torque.target.face), this.#source.matter.cellSizeM * 0.5);
+    const localFacePoint = authoredFacePoint.sub(runtimeVector(planBody.centerOfMassWorld));
+    const runtimeFacePoint = localFacePoint.applyQuaternion(targetRotation).add(runtimeVector(targetBody.position));
+    const runtimeNormal = faceVector(plan.torque.target.face).applyQuaternion(targetRotation).normalize();
+    const runtimeDirection = bearingAxis.clone().multiplyScalar(plan.torque.effortNm < 0 ? -1 : 1);
+    const size = this.#source.matter.cellSizeM;
+    const surfacePoint = runtimeFacePoint.clone().addScaledVector(runtimeNormal, size * 0.014);
+
+    patchMesh.position.copy(surfacePoint);
+    orientNormal(patchMesh, runtimeNormal);
+    const arrowOrigin = surfacePoint.clone().addScaledVector(runtimeNormal, size * 0.08);
+    arrow.position.copy(arrowOrigin);
+    arrow.setDirection(runtimeDirection.normalize());
+    arrow.setLength(size * 0.46, size * 0.13, size * 0.075);
+
+    const torqueOpacity = frame.activation === "ON" ? 0.92 : 0.28;
+    setMaterialOpacity(patchMesh.material, torqueOpacity);
+    setMaterialOpacity(arrow.line.material, torqueOpacity);
+    setMaterialOpacity(arrow.cone.material, torqueOpacity);
+  }
+
+  stopRuntime(): void {
+    this.#runtimePlan = null;
+    disposeObjectTree(this.#runtime);
+    this.#runtimeBearingRing = null;
+    this.#runtimeBearingAxis = null;
+    this.#runtimeTorquePatch = null;
+    this.#runtimeTorqueArrow = null;
+    this.#runtime.visible = false;
+    this.#persistent.visible = true;
+    this.#hover.visible = true;
+    this.#draft.visible = true;
+    this.#rebuildPersistent();
+  }
+
   clearTransient(): void {
     disposeObjectTree(this.#hover);
     this.#bearingDraft = null;
@@ -183,7 +350,9 @@ export class StudioMeaningPresentation {
     disposeObjectTree(this.#persistent);
     disposeObjectTree(this.#hover);
     disposeObjectTree(this.#draft);
+    disposeObjectTree(this.#runtime);
     this.#torqueHandle = null;
+    this.#runtimePlan = null;
     this.group.removeFromParent();
   }
 
@@ -269,12 +438,15 @@ export class StudioMeaningPresentation {
     group.add(ring);
 
     const half = size * 0.42;
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints([
-      pivot.clone().addScaledVector(axis, -half),
-      pivot.clone().addScaledVector(axis, half),
-    ]);
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
     const lineMaterial = new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity });
     const line = new THREE.Line(lineGeometry, lineMaterial);
+    setLineEndpoints(
+      line,
+      pivot.clone().addScaledVector(axis, -half),
+      pivot.clone().addScaledVector(axis, half),
+    );
     line.renderOrder = 4;
     group.add(line);
   }
