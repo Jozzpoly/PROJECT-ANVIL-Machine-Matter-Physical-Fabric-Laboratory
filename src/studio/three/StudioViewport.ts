@@ -6,9 +6,14 @@ import {
   type StudioGridFace,
   type StudioSourceV0,
 } from "../workspace.js";
+import {
+  StudioMeaningPresentation,
+  type StudioBearingDraftVisual,
+} from "./StudioMeaningPresentation.js";
 
 export type StudioMatterTool = "add" | "remove" | "material";
-export type StudioViewportTool = "select" | StudioMatterTool;
+export type StudioMeaningTool = "bearing" | "torque";
+export type StudioViewportTool = "select" | StudioMatterTool | StudioMeaningTool;
 
 export interface StudioViewportHit {
   readonly cellId: string;
@@ -24,6 +29,7 @@ export interface StudioViewportCallbacks {
   readonly onHover: (hit: StudioViewportHit | null) => void;
   readonly onAdd: (request: StudioAddRequest) => void;
   readonly onRemove: (cellId: string) => void;
+  readonly onMeaningTarget: (hit: StudioViewportHit) => void;
 }
 
 type DragMode = "orbit" | "pan";
@@ -74,6 +80,7 @@ export class StudioViewport {
     depthWrite: false,
   });
   readonly #resizeObserver: ResizeObserver;
+  readonly #meaningPresentation: StudioMeaningPresentation;
   #source: StudioSourceV0 = createEmptyStudioSource();
   #tool: StudioViewportTool = "select";
   #selection: string | null = null;
@@ -111,7 +118,8 @@ export class StudioViewport {
     const key = new THREE.DirectionalLight(0xffffff, 2.2);
     key.position.set(5, 8, 6);
     const grid = new THREE.GridHelper(40, 40, 0x545c66, 0x30353b);
-    this.#scene.add(hemisphere, key, grid, this.#matterGroup);
+    this.#meaningPresentation = new StudioMeaningPresentation(this.#source);
+    this.#scene.add(hemisphere, key, grid, this.#matterGroup, this.#meaningPresentation.group);
 
     this.#resizeObserver = new ResizeObserver(() => this.#resize());
     this.#resizeObserver.observe(canvas);
@@ -124,6 +132,7 @@ export class StudioViewport {
   setSource(source: StudioSourceV0): void {
     this.#source = source;
     this.#rebuildMatter();
+    this.#meaningPresentation.setSource(source);
     this.#setHover(null);
     this.#refreshDraftOverlay();
     this.#refreshSelection();
@@ -140,10 +149,15 @@ export class StudioViewport {
     this.#refreshSelection();
   }
 
+  setBearingDraft(draft: StudioBearingDraftVisual | null): void {
+    this.#meaningPresentation.setBearingDraft(draft);
+  }
+
   clearDraft(): void {
     this.#setHover(null);
     this.#removeGhost();
     this.#removeRemoveHelper();
+    this.#meaningPresentation.clearTransient();
     this.#refreshDraftOverlay();
   }
 
@@ -161,6 +175,7 @@ export class StudioViewport {
     this.#removeGhost();
     this.#removeRemoveHelper();
     this.#selectionHelper?.geometry.dispose();
+    this.#meaningPresentation.dispose();
     this.#cellGeometry.dispose();
     this.#ghostMaterial.dispose();
     for (const material of this.#cellMaterials) material.dispose();
@@ -201,6 +216,10 @@ export class StudioViewport {
       }
       if (this.#tool === "remove") {
         if (hit !== null) this.#callbacks.onRemove(hit.cellId);
+        return;
+      }
+      if (this.#tool === "bearing" || this.#tool === "torque") {
+        if (hit !== null) this.#callbacks.onMeaningTarget(hit);
         return;
       }
       this.#callbacks.onSelect(hit?.cellId ?? null);
@@ -295,6 +314,10 @@ export class StudioViewport {
     }
     this.#removeGhost();
     this.#removeRemoveHelper();
+    this.#meaningPresentation.setHover(
+      hit,
+      this.#tool === "bearing" || this.#tool === "torque" ? this.#tool : null,
+    );
 
     if (this.#tool === "add") {
       if (this.#source.matter.cells.length === 0) {
