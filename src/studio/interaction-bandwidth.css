@@ -1,0 +1,5 @@
+/* O1-X Interaction Bandwidth v0: while the dedicated runtime hint is visible,
+   suppress the generic simulation notice so physical-hand guidance is not duplicated. */
+.studio-runtime-hint + .studio-simulation-notice {
+  display: none;
+}
