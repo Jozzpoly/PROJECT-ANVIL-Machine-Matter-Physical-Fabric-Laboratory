@@ -74,7 +74,10 @@ test("Interaction Bandwidth keeps authoring context while Runtime Hand, zoom and
   await expect(studio).toHaveAttribute("data-work-state", "RUNNING");
   await expect(canvas).toHaveAttribute("data-runtime-hand", "ready");
   await expect(canvas).toHaveAttribute("data-o1x-lens", "surface");
-  await expect(simulation.getByText(/LMB drag body/)).toBeVisible();
+  const runtimeHint = simulation.locator(".studio-runtime-hint");
+  await expect(runtimeHint).toHaveText("LMB drag body · MMB orbit · wheel zoom · Shift+MMB pan");
+  await expect(runtimeHint).toBeVisible();
+  await expect(simulation.locator(".studio-simulation-notice")).toBeHidden();
   await expect.poll(async () => Number(await canvas.getAttribute("data-runtime-frames"))).toBeGreaterThan(0);
 
   // Frozen initial camera projection for starter:b3 center (1.25, 0.25, 0.25)
