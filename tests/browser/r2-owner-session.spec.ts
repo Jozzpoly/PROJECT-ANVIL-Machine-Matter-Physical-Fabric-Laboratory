@@ -60,21 +60,33 @@ test("R2 synthetic Owner session builds, breaks, partially runs, repairs and kee
   await expect(studio).toHaveAttribute("data-bearings", "0");
   await expect(studio).toHaveAttribute("data-torques", "0");
 
-  // One real drag grows a useful arm in one authored transaction.
-  const extrusionStart = await point(canvas, 642, 383);
+  // One real drag grows a useful arm in one authored transaction. The point is the
+  // actually visible x- face of the seed, not the projected centre of a hidden backface.
+  const extrusionStart = await point(canvas, 554, 419);
+  const extrusionEnd = await point(canvas, 20, 635);
   await page.mouse.move(extrusionStart.x, extrusionStart.y);
   await page.mouse.down({ button: "left" });
-  await page.mouse.move(980, 250, { steps: 14 });
+  await page.mouse.move(extrusionEnd.x, extrusionEnd.y, { steps: 14 });
   await page.mouse.up({ button: "left" });
   await expect(studio).toHaveAttribute("data-cells", "7");
 
+  // Focus the now-long arm once. All following frozen points refer to this explicit
+  // camera state, which keeps the whole authored arm visible.
+  await page.keyboard.press("f");
+
+  // Shared interfaces after focus: x=0, -0.5, -1.0 respectively.
+  const seam1 = { x: 671, y: 371 };
+  const seam2 = { x: 644, y: 382 };
+  const seam3 = { x: 615, y: 394 };
+  const farFace = { x: 480, y: 449 }; // exposed x- face at x=-3
+
   // Three one-shot Bearings and three one-shot Torques. No persistent mode hierarchy.
-  await oneShotMeaning(page, canvas, "b", 642, 383);
-  await oneShotMeaning(page, canvas, "b", 716, 353);
-  await oneShotMeaning(page, canvas, "b", 779, 328);
-  await oneShotMeaning(page, canvas, "t", 642, 383);
-  await oneShotMeaning(page, canvas, "t", 716, 353);
-  await oneShotMeaning(page, canvas, "t", 779, 328);
+  await oneShotMeaning(page, canvas, "b", seam1.x, seam1.y);
+  await oneShotMeaning(page, canvas, "b", seam2.x, seam2.y);
+  await oneShotMeaning(page, canvas, "b", seam3.x, seam3.y);
+  await oneShotMeaning(page, canvas, "t", seam1.x, seam1.y);
+  await oneShotMeaning(page, canvas, "t", seam2.x, seam2.y);
+  await oneShotMeaning(page, canvas, "t", seam3.x, seam3.y);
   await expect(studio).toHaveAttribute("data-bearings", "3");
   await expect(studio).toHaveAttribute("data-torques", "3");
   await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
@@ -84,11 +96,11 @@ test("R2 synthetic Owner session builds, breaks, partially runs, repairs and kee
   await page.getByRole("button", { name: "RUN", exact: true }).click();
   await expect(studio).toHaveAttribute("data-runtime", "running");
   await expect(studio).toHaveAttribute("data-run-disabled", "false");
-  const grab = await point(canvas, 958, 255);
+  const grab = await point(canvas, farFace.x, farFace.y);
   await page.mouse.move(grab.x, grab.y);
   await page.mouse.down({ button: "left" });
   await expect(studio).toHaveAttribute("data-hand", "active");
-  await page.mouse.move(grab.x + 65, grab.y - 42, { steps: 8 });
+  await page.mouse.move(grab.x - 65, grab.y + 42, { steps: 8 });
   await page.waitForTimeout(120);
   await page.mouse.up({ button: "left" });
   await expect(studio).toHaveAttribute("data-hand", "ready");
@@ -97,7 +109,7 @@ test("R2 synthetic Owner session builds, breaks, partially runs, repairs and kee
   await expect(studio).toHaveAttribute("data-source-generation", generationBeforeFirstRun ?? "");
 
   // Exact-delete one Bearing. Its Torque remains authored and becomes local unresolved evidence.
-  await clickCanvas(page, canvas, 642, 383);
+  await clickCanvas(page, canvas, seam1.x, seam1.y);
   await expect(context).toBeVisible();
   await context.locator('[data-bearing="bearing:1"] [data-delete-bearing="bearing:1"]').click();
   await expect(studio).toHaveAttribute("data-bearings", "2");
@@ -114,33 +126,34 @@ test("R2 synthetic Owner session builds, breaks, partially runs, repairs and kee
   await expect(studio).toHaveAttribute("data-source-generation", generationBeforePartial ?? "");
 
   // Rebind an existing Bearing onto the orphaned interface, preserving its own ID.
-  await clickCanvas(page, canvas, 716, 353);
+  await clickCanvas(page, canvas, seam2.x, seam2.y);
   await context.locator('[data-bearing="bearing:2"] [data-rebind-bearing="bearing:2"]').click();
   await expect(studio).toHaveAttribute("data-intent", "rebind-bearing");
-  await clickCanvas(page, canvas, 642, 383);
+  await clickCanvas(page, canvas, seam1.x, seam1.y);
   await expect(studio).toHaveAttribute("data-intent", "neutral");
 
-  // The Torque left at the old interface remains authored. Retarget it explicitly.
-  await clickCanvas(page, canvas, 716, 353);
+  // Torque:2 stayed on seam2 when its Bearing moved. Retarget it explicitly to seam1.
+  await clickCanvas(page, canvas, seam2.x, seam2.y);
   await context.locator('[data-torque="torque:2"] [data-retarget-torque="torque:2"]').click();
   await expect(studio).toHaveAttribute("data-intent", "retarget-torque");
-  await clickCanvas(page, canvas, 642, 383);
+  await clickCanvas(page, canvas, seam1.x, seam1.y);
   await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
 
   // Exact Matter delete → Undo → Redo → continue building. No cleanup workflow appears.
   await clickCanvas(page, canvas, 400, 650); // close the context island without authoring.
-  await clickCanvas(page, canvas, 958, 255, { alt: true });
+  await clickCanvas(page, canvas, farFace.x, farFace.y, { alt: true });
   await expect(studio).toHaveAttribute("data-cells", "6");
   await page.keyboard.press("Control+z");
   await expect(studio).toHaveAttribute("data-cells", "7");
   await page.keyboard.press("Control+Shift+z");
   await expect(studio).toHaveAttribute("data-cells", "6");
-  await clickCanvas(page, canvas, 922, 270);
+  // After redo the exposed x- face moved from x=-3 to x=-2.5.
+  await clickCanvas(page, canvas, 517, 434);
   await expect(studio).toHaveAttribute("data-cells", "7");
 
   // Deliberately author a conflicting Bearing on an occupied seam. It remains authored;
   // the independent part still runs and RUN is never disabled.
-  await oneShotMeaning(page, canvas, "b", 642, 383);
+  await oneShotMeaning(page, canvas, "b", seam1.x, seam1.y);
   await expect(studio).toHaveAttribute("data-bearings", "3");
   await expect(studio).toHaveAttribute("data-quality", "PARTIAL");
   await expect(studio).toHaveAttribute("data-run-disabled", "false");
@@ -149,10 +162,10 @@ test("R2 synthetic Owner session builds, breaks, partially runs, repairs and kee
   await expect(studio).toHaveAttribute("data-runtime", "running");
 
   // Camera and Hand coexist in the live partial world.
-  const finalGrab = await point(canvas, 958, 255);
+  const finalGrab = await point(canvas, farFace.x, farFace.y);
   await page.mouse.move(finalGrab.x, finalGrab.y);
   await page.mouse.down({ button: "left" });
-  await page.mouse.move(finalGrab.x + 45, finalGrab.y - 30, { steps: 6 });
+  await page.mouse.move(finalGrab.x - 45, finalGrab.y + 30, { steps: 6 });
   await page.mouse.up({ button: "left" });
   await page.mouse.wheel(0, -140);
   await page.mouse.move(650, 500);
