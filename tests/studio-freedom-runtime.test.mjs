@@ -31,7 +31,7 @@ function makeTwoBearingSource({ torques = true } = {}) {
   return { workspace, left, right };
 }
 
-test("FREEDOM-FIRST partial authored meaning cannot globally block a realizable Box3D world", async () => {
+test("OWNER-AUTHORITY one invalid local meaning cannot globally block a realizable Box3D world", async () => {
   const workspace = new FreedomWorkspace(createFreedomStarterSource());
   const left = workspace.addBearing(
     { cellId: "starter:a", face: "x+" },
@@ -66,7 +66,65 @@ test("FREEDOM-FIRST partial authored meaning cannot globally block a realizable 
   }
 });
 
-test("FREEDOM-FIRST one runtime composes multiple Bearings and multiple TorquePatches", async () => {
+test("OWNER-AUTHORITY exact Bearing delete preserves orphan source while independent Box3D realization still runs", async () => {
+  const { workspace, left, right } = makeTwoBearingSource({ torques: false });
+  const orphanedTorque = workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, 80);
+  const liveTorque = workspace.addTorquePatch({ cellId: "starter:c", face: "x-" }, -25);
+  workspace.removeBearing(left);
+  const snapshot = workspace.snapshot();
+  const authoredBefore = canonical(snapshot.source);
+
+  assert.equal(snapshot.source.torquePatches.some((patch) => patch.id === orphanedTorque), true);
+  assert.equal(snapshot.source.torquePatches.some((patch) => patch.id === liveTorque), true);
+
+  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  try {
+    assert.equal(runtime.receipt.quality, "PARTIAL");
+    assert.equal(runtime.receipt.jointCount, 1);
+    assert.equal(runtime.receipt.torqueCount, 1);
+    assert.equal(
+      runtime.receipt.diagnostics.some((entry) => entry.sourceId === orphanedTorque && entry.code === "UNRESOLVED_TARGET"),
+      true,
+    );
+    runtime.setForcesEnabled(true);
+    runtime.step(60);
+    assert.ok(Math.abs(runtime.relativeAngularSpeedRadps(right)) > 0.05, "independent Bearing failed after exact delete orphaning");
+    assert.ok(maxValue(runtime.anchorErrorsM()) < 0.003, "exact-delete partial runtime lost Bearing anchors");
+    assert.equal(canonical(snapshot.source), authoredBefore, "runtime rewrote orphaned authored source");
+  } finally {
+    runtime.dispose();
+  }
+});
+
+test("OWNER-AUTHORITY exact Matter delete preserves orphan meanings while independent Box3D realization still runs", async () => {
+  const { workspace, right } = makeTwoBearingSource({ torques: false });
+  const orphanedTorque = workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, 60);
+  workspace.addTorquePatch({ cellId: "starter:c", face: "x-" }, -20);
+  workspace.removeMatter("starter:a");
+  const snapshot = workspace.snapshot();
+  const authoredBefore = canonical(snapshot.source);
+
+  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  try {
+    assert.equal(runtime.receipt.quality, "PARTIAL");
+    assert.equal(runtime.receipt.jointCount, 1);
+    assert.equal(runtime.receipt.torqueCount, 1);
+    assert.equal(runtime.receipt.diagnostics.some((entry) => entry.code === "INVALID_LOCALITY"), true);
+    assert.equal(
+      runtime.receipt.diagnostics.some((entry) => entry.sourceId === orphanedTorque && entry.code === "UNRESOLVED_TARGET"),
+      true,
+    );
+    runtime.setForcesEnabled(true);
+    runtime.step(60);
+    assert.ok(Math.abs(runtime.relativeAngularSpeedRadps(right)) > 0.05, "unrelated realization was blocked by removed Matter orphaning");
+    assert.ok(maxValue(runtime.anchorErrorsM()) < 0.003);
+    assert.equal(canonical(snapshot.source), authoredBefore, "runtime mutated exact-delete Matter source");
+  } finally {
+    runtime.dispose();
+  }
+});
+
+test("OWNER-AUTHORITY one runtime composes multiple Bearings and multiple TorquePatches", async () => {
   const { workspace, left, right } = makeTwoBearingSource();
   const snapshot = workspace.snapshot();
   const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
@@ -94,7 +152,7 @@ test("FREEDOM-FIRST one runtime composes multiple Bearings and multiple TorquePa
   }
 });
 
-test("FREEDOM-FIRST Runtime Hand directly moves the live mechanism in the same runtime", async () => {
+test("OWNER-AUTHORITY Runtime Hand directly moves the live mechanism in the same runtime", async () => {
   const { workspace } = makeTwoBearingSource({ torques: false });
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
@@ -120,7 +178,7 @@ test("FREEDOM-FIRST Runtime Hand directly moves the live mechanism in the same r
   }
 });
 
-test("FREEDOM-FIRST fresh runtime forgets prior physical pose and transient Hand state", async () => {
+test("OWNER-AUTHORITY fresh runtime forgets prior physical pose and transient Hand state", async () => {
   const { workspace } = makeTwoBearingSource({ torques: false });
   const snapshot = workspace.snapshot();
   const first = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
