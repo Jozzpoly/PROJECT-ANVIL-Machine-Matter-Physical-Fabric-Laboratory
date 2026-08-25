@@ -265,6 +265,27 @@ export class FreedomWorkspace {
     return id;
   }
 
+  rebindBearing(
+    bearingId: string,
+    endpointA: BearingEndpoint,
+    endpointB: BearingEndpoint,
+    freeAxis?: BearingAxis,
+  ): void {
+    const bearing = requireBearing(this.#source, bearingId);
+    const next = cloneFreedomSource(this.#source);
+    this.#commit({
+      ...next,
+      bearings: next.bearings.map((candidate) => candidate.id === bearingId
+        ? {
+            ...candidate,
+            endpointA: cloneEndpoint(endpointA),
+            endpointB: cloneEndpoint(endpointB),
+            freeAxis: freeAxis ?? bearing.freeAxis,
+          }
+        : candidate),
+    });
+  }
+
   addTorquePatch(target: BearingEndpoint, effortNm: number): string {
     if (!Number.isFinite(effortNm)) throw new Error("Torque effort must be finite");
     const id = nextId("torque", new Set(this.#source.torquePatches.map((patch) => patch.id)));
@@ -283,6 +304,17 @@ export class FreedomWorkspace {
     });
   }
 
+  retargetTorquePatch(patchId: string, target: BearingEndpoint): void {
+    requirePatch(this.#source, patchId);
+    const next = cloneFreedomSource(this.#source);
+    this.#commit({
+      ...next,
+      torquePatches: next.torquePatches.map((patch) => patch.id === patchId
+        ? { ...patch, target: cloneEndpoint(target) }
+        : patch),
+    });
+  }
+
   removeTorquePatch(patchId: string): RemovalReceipt {
     requirePatch(this.#source, patchId);
     const next = cloneFreedomSource(this.#source);
@@ -290,7 +322,19 @@ export class FreedomWorkspace {
     return { removedMatterIds: [], removedBearingIds: [], removedTorquePatchIds: [patchId] };
   }
 
+  /** Exact delete: remove only the authored Bearing explicitly named by the Owner. */
   removeBearing(bearingId: string): RemovalReceipt {
+    requireBearing(this.#source, bearingId);
+    const next = cloneFreedomSource(this.#source);
+    this.#commit({
+      ...next,
+      bearings: next.bearings.filter((candidate) => candidate.id !== bearingId),
+    });
+    return { removedMatterIds: [], removedBearingIds: [bearingId], removedTorquePatchIds: [] };
+  }
+
+  /** Explicit destructive operation: remove a Bearing and Torque meanings currently anchored to its endpoints. */
+  removeBearingWithDependents(bearingId: string): RemovalReceipt {
     const bearing = requireBearing(this.#source, bearingId);
     const dependentTorquePatchIds = this.#source.torquePatches
       .filter((patch) => patchDependsOnBearing(patch, bearing))
@@ -309,7 +353,19 @@ export class FreedomWorkspace {
     };
   }
 
+  /** Exact delete: remove only the authored Matter explicitly named by the Owner. */
   removeMatter(cellId: string): RemovalReceipt {
+    requireCell(this.#source, cellId);
+    const next = cloneFreedomSource(this.#source);
+    this.#commit({
+      ...next,
+      matter: { ...next.matter, cells: next.matter.cells.filter((cell) => cell.id !== cellId) },
+    });
+    return { removedMatterIds: [cellId], removedBearingIds: [], removedTorquePatchIds: [] };
+  }
+
+  /** Explicit destructive operation: remove Matter plus meanings that directly lose that local referent. */
+  removeMatterWithDependents(cellId: string): RemovalReceipt {
     requireCell(this.#source, cellId);
     const removedBearings = this.#source.bearings.filter(
       (bearing) => bearing.endpointA.cellId === cellId || bearing.endpointB.cellId === cellId,
