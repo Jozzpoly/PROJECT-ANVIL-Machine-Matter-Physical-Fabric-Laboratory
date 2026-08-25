@@ -9,7 +9,7 @@ import {
   createFreedomStarterSource,
   type FreedomSnapshot,
 } from "../studio-recovery/source.js";
-import { R2WorldCanvas, type R2InterfaceHit, type R2MatterHit, type R2WorldHit } from "./world.js";
+import { R2WorldCanvas, type R2InterfaceHit, type R2MatterHit } from "./world.js";
 
 type R2Intent =
   | { readonly kind: "neutral" }
@@ -33,8 +33,9 @@ interface R2Telemetry {
   inputChannels: Set<string>;
 }
 
-const root = document.querySelector<HTMLElement>("#app");
-if (root === null) throw new Error("R2 Studio requires #app");
+const appRoot = document.querySelector<HTMLElement>("#app");
+if (appRoot === null) throw new Error("R2 Studio requires #app");
+const root: HTMLElement = appRoot;
 
 root.innerHTML = `
   <main class="r2-studio" data-runtime="build" data-intent="neutral" data-run-disabled="false">
@@ -59,20 +60,22 @@ root.innerHTML = `
   </main>
 `;
 
-const shell = root.querySelector<HTMLElement>(".r2-studio");
-const canvas = root.querySelector<HTMLCanvasElement>("[data-r2-world]");
-const contextPod = root.querySelector<HTMLElement>("[data-r2-context]");
-const intentPod = root.querySelector<HTMLElement>("[data-r2-intent]");
-const receiptPod = root.querySelector<HTMLElement>("[data-r2-receipt]");
-const seedButton = root.querySelector<HTMLButtonElement>("[data-action=seed]");
-const runButton = root.querySelector<HTMLButtonElement>("[data-action=run]");
-const forcesButton = root.querySelector<HTMLButtonElement>("[data-action=forces]");
-const restartButton = root.querySelector<HTMLButtonElement>("[data-action=restart]");
-const stopButton = root.querySelector<HTMLButtonElement>("[data-action=stop]");
-if (
-  shell === null || canvas === null || contextPod === null || intentPod === null || receiptPod === null ||
-  seedButton === null || runButton === null || forcesButton === null || restartButton === null || stopButton === null
-) throw new Error("R2 Studio shell is incomplete");
+function requireElement<T extends Element>(parent: ParentNode, selector: string): T {
+  const element = parent.querySelector<T>(selector);
+  if (element === null) throw new Error(`R2 Studio shell missing ${selector}`);
+  return element;
+}
+
+const shell = requireElement<HTMLElement>(root, ".r2-studio");
+const canvas = requireElement<HTMLCanvasElement>(root, "[data-r2-world]");
+const contextPod = requireElement<HTMLElement>(root, "[data-r2-context]");
+const intentPod = requireElement<HTMLElement>(root, "[data-r2-intent]");
+const receiptPod = requireElement<HTMLElement>(root, "[data-r2-receipt]");
+const seedButton = requireElement<HTMLButtonElement>(root, "[data-action=seed]");
+const runButton = requireElement<HTMLButtonElement>(root, "[data-action=run]");
+const forcesButton = requireElement<HTMLButtonElement>(root, "[data-action=forces]");
+const restartButton = requireElement<HTMLButtonElement>(root, "[data-action=restart]");
+const stopButton = requireElement<HTMLButtonElement>(root, "[data-action=stop]");
 
 let workspace = new FreedomWorkspace(createFreedomStarterSource());
 let snapshot: FreedomSnapshot = workspace.snapshot();
@@ -239,7 +242,7 @@ function renderContext(): void {
     <h3>Local interface</h3>
     <p class="r2-small">${escapeHtml(hit.endpointA.cellId)}@${hit.endpointA.face} ↔ ${escapeHtml(hit.endpointB.cellId)}@${hit.endpointB.face}</p>
     <div class="r2-meaning-controls"><button data-add-bearing>B Bearing</button><button data-add-torque>T Torque</button></div>
-    ${bearingMarkup || ""}${torqueMarkup || ""}
+    ${bearingMarkup}${torqueMarkup}
   `;
   contextPod.hidden = false;
 }
@@ -338,18 +341,18 @@ function applyInterfaceIntent(hit: R2InterfaceHit): void {
     return;
   }
   if (intent.kind === "rebind-bearing") {
-    const bearing = snapshot.source.bearings.find((entry) => entry.id === intent.id);
-    if (bearing !== undefined) workspace.rebindBearing(bearing.id, hit.endpointA, hit.endpointB, bearing.freeAxis);
     const id = intent.id;
+    const bearing = snapshot.source.bearings.find((entry) => entry.id === id);
+    if (bearing !== undefined) workspace.rebindBearing(bearing.id, hit.endpointA, hit.endpointB, bearing.freeAxis);
     setIntent({ kind: "neutral" });
     selectedInterface = hit;
     afterAuthoredAction("rebind", `rebound ${id}`);
     return;
   }
   if (intent.kind === "retarget-torque") {
-    const patch = snapshot.source.torquePatches.find((entry) => entry.id === intent.id);
-    if (patch !== undefined) workspace.retargetTorquePatch(patch.id, hit.endpointA);
     const id = intent.id;
+    const patch = snapshot.source.torquePatches.find((entry) => entry.id === id);
+    if (patch !== undefined) workspace.retargetTorquePatch(patch.id, hit.endpointA);
     setIntent({ kind: "neutral" });
     selectedInterface = hit;
     afterAuthoredAction("retarget", `retargeted ${id}`);
