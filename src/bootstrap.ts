@@ -3,9 +3,13 @@ import "./bearing-owner-language.css";
 import "./cut-owner-gate.css";
 import "./rebind-demo.css";
 
-const experiment = new URLSearchParams(window.location.search).get("experiment");
+const params = new URLSearchParams(window.location.search);
+const experiment = params.get("experiment");
+const studio = params.get("studio");
 
-if (experiment === "cut") {
+if (studio === "1") {
+  void import("./studio-r2/app.js");
+} else if (experiment === "cut") {
   void (async () => {
     await import("./cut-demo.js");
     await import("./cut-owner-gate.js");
