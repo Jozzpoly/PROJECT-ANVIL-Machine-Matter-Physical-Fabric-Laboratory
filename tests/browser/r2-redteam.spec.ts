@@ -189,3 +189,70 @@ test("R2-D Matter grammar branches across X Y and Z without entering a build mod
   await expect(studio).toHaveAttribute("data-runtime", "build");
   await expect(studio).toHaveAttribute("data-source-generation", beforeRun ?? "");
 });
+
+test("R2-D conflicting meanings remain jointly reachable and no silent winner is chosen", async ({ page }) => {
+  test.setTimeout(45_000);
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/?studio=1");
+
+  const studio = page.locator(".r2-studio");
+  const canvas = page.locator("canvas[data-r2-world]");
+  const context = page.locator("[data-r2-context]");
+
+  await page.getByRole("button", { name: "New" }).click();
+  await page.getByRole("button", { name: "Seed" }).click();
+  await clickCanvas(page, canvas, 554, 419);
+  await expect(studio).toHaveAttribute("data-cells", "2");
+  await page.keyboard.press("f");
+  await clickCanvas(page, canvas, 503, 439);
+  await expect(studio).toHaveAttribute("data-cells", "3");
+  await page.keyboard.press("f");
+
+  // Frozen projections for the focused 3-cell line.
+  const conflictSeam = { x: 567, y: 413 };
+  const independentSeam = { x: 631, y: 387 };
+
+  // Two authored Bearings deliberately occupy the same seam. Both identities must survive.
+  await page.keyboard.press("b");
+  await clickCanvas(page, canvas, conflictSeam.x, conflictSeam.y);
+  await page.keyboard.press("b");
+  await clickCanvas(page, canvas, conflictSeam.x, conflictSeam.y);
+  await expect(studio).toHaveAttribute("data-bearings", "2");
+
+  // A separate Bearing+Torque remains realizable, proving conflict is local rather than global.
+  await page.keyboard.press("b");
+  await clickCanvas(page, canvas, independentSeam.x, independentSeam.y);
+  await page.keyboard.press("t");
+  await clickCanvas(page, canvas, independentSeam.x, independentSeam.y);
+  await expect(studio).toHaveAttribute("data-bearings", "3");
+  await expect(studio).toHaveAttribute("data-torques", "1");
+  await expect(studio).toHaveAttribute("data-quality", "PARTIAL");
+  await expect(studio).toHaveAttribute("data-realized-bearings", "1");
+  await expect(studio).toHaveAttribute("data-run-disabled", "false");
+
+  const generationBeforeRun = await studio.getAttribute("data-source-generation");
+  await page.getByRole("button", { name: "RUN", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-runtime", "running");
+  await page.waitForTimeout(80);
+  await page.getByRole("button", { name: "STOP", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-source-generation", generationBeforeRun ?? "");
+
+  // The conflict is still a place in the world, not a collapsed winner or an issue-list entry.
+  await clickCanvas(page, canvas, conflictSeam.x, conflictSeam.y);
+  await expect(context).toBeVisible();
+  await expect(context.locator('[data-bearing="bearing:1"]')).toBeVisible();
+  await expect(context.locator('[data-bearing="bearing:2"]')).toBeVisible();
+  await expect(context.locator('[data-bearing="bearing:1"] .r2-conflict')).toBeVisible();
+  await expect(context.locator('[data-bearing="bearing:2"] .r2-conflict')).toBeVisible();
+  await expect(context.locator('[data-bearing="bearing:3"]')).toHaveCount(0);
+
+  // Resolving one side is an explicit local Owner action. It is not required before the first RUN.
+  await context.locator('[data-bearing="bearing:1"] [data-delete-bearing="bearing:1"]').click();
+  await expect(studio).toHaveAttribute("data-bearings", "2");
+  await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
+  await expect(studio).toHaveAttribute("data-realized-bearings", "2");
+
+  await page.getByRole("button", { name: "RUN", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-runtime", "running");
+  await page.getByRole("button", { name: "STOP", exact: true }).click();
+});
