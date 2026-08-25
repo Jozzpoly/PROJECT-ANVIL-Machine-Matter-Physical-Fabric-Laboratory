@@ -64,3 +64,58 @@ test("R2-D orphan meaning remains spatially reachable after exact Matter delete"
   await context.locator('[data-bearing="bearing:1"] [data-rebind-bearing="bearing:1"]').click();
   await expect(studio).toHaveAttribute("data-intent", "rebind-bearing");
 });
+
+test("R2-D Escape cancels an authored extrusion before pointer release", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/?studio=1");
+
+  const studio = page.locator(".r2-studio");
+  const canvas = page.locator("canvas[data-r2-world]");
+  await page.getByRole("button", { name: "New" }).click();
+  await page.getByRole("button", { name: "Seed" }).click();
+  await expect(studio).toHaveAttribute("data-cells", "1");
+  const generationBefore = await studio.getAttribute("data-source-generation");
+
+  const start = await point(canvas, 554, 419);
+  const far = await point(canvas, 80, 610);
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down({ button: "left" });
+  await page.mouse.move(far.x, far.y, { steps: 10 });
+  await page.keyboard.press("Escape");
+  await page.mouse.up({ button: "left" });
+
+  await expect(studio).toHaveAttribute("data-cells", "1");
+  await expect(studio).toHaveAttribute("data-source-generation", generationBefore ?? "");
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+});
+
+test("R2-D Escape releases Runtime Hand instead of leaving an invisible force", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/?studio=1");
+
+  const studio = page.locator(".r2-studio");
+  const canvas = page.locator("canvas[data-r2-world]");
+  await page.getByRole("button", { name: "New" }).click();
+  await page.getByRole("button", { name: "Seed" }).click();
+  await page.getByRole("button", { name: "RUN", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-runtime", "running");
+
+  const grab = await point(canvas, 554, 419);
+  await page.mouse.move(grab.x, grab.y);
+  await page.mouse.down({ button: "left" });
+  await expect(studio).toHaveAttribute("data-hand", "active");
+  await page.mouse.move(grab.x - 55, grab.y + 35, { steps: 6 });
+
+  // Escape is an owner cancellation signal. It must end the physical spring now,
+  // not merely forget the pointer while Runtime Hand remains active underneath.
+  await page.keyboard.press("Escape");
+  await expect(studio).toHaveAttribute("data-hand", "ready");
+  await page.mouse.up({ button: "left" });
+
+  // The next grab must work normally, proving cancellation did not strand pointer/Hand state.
+  await page.mouse.move(grab.x, grab.y);
+  await page.mouse.down({ button: "left" });
+  await expect(studio).toHaveAttribute("data-hand", "active");
+  await page.mouse.up({ button: "left" });
+  await expect(studio).toHaveAttribute("data-hand", "ready");
+});
