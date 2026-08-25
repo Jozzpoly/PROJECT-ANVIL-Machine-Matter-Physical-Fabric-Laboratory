@@ -120,6 +120,10 @@ function addGrid(a: GridPosition, b: GridPosition): GridPosition {
   return { x: a.x + b.x, y: a.y + b.y, z: a.z + b.z };
 }
 
+function scaleGrid(value: GridPosition, scalar: number): GridPosition {
+  return { x: value.x * scalar, y: value.y * scalar, z: value.z * scalar };
+}
+
 function sameEndpoint(a: BearingEndpoint, b: BearingEndpoint): boolean {
   return a.cellId === b.cellId && a.face === b.face;
 }
@@ -214,20 +218,41 @@ export class FreedomWorkspace {
   }
 
   addMatterFromFace(cellId: string, face: GridFace): string {
+    const added = this.extrudeMatterFromFace(cellId, face, 1);
+    const id = added[0];
+    if (id === undefined) throw new Error("Adjacent Matter position is occupied");
+    return id;
+  }
+
+  extrudeMatterFromFace(cellId: string, face: GridFace, requestedCount: number): readonly string[] {
+    if (!Number.isInteger(requestedCount) || requestedCount < 1 || requestedCount > 64) {
+      throw new Error("Matter extrusion count must be an integer from 1 to 64");
+    }
     const sourceCell = requireCell(this.#source, cellId);
-    const grid = addGrid(sourceCell.grid, FACE_OFFSETS[face]);
-    const key = gridKey(grid);
-    if (this.#source.matter.cells.some((cell) => gridKey(cell.grid) === key)) throw new Error(`Matter position ${key} is occupied`);
-    const id = nextId("matter", new Set(this.#source.matter.cells.map((cell) => cell.id)));
+    const direction = FACE_OFFSETS[face];
+    const occupied = new Set(this.#source.matter.cells.map((cell) => gridKey(cell.grid)));
+    const reservedIds = new Set(this.#source.matter.cells.map((cell) => cell.id));
+    const cells: MatterCell[] = [];
+    const ids: string[] = [];
+
+    for (let step = 1; step <= requestedCount; step += 1) {
+      const grid = addGrid(sourceCell.grid, scaleGrid(direction, step));
+      const key = gridKey(grid);
+      if (occupied.has(key)) break;
+      const id = nextId("matter", reservedIds);
+      reservedIds.add(id);
+      occupied.add(key);
+      ids.push(id);
+      cells.push({ id, grid, materialId: sourceCell.materialId });
+    }
+
+    if (cells.length === 0) return [];
     const next = cloneFreedomSource(this.#source);
     this.#commit({
       ...next,
-      matter: {
-        ...next.matter,
-        cells: [...next.matter.cells, { id, grid, materialId: sourceCell.materialId }],
-      },
+      matter: { ...next.matter, cells: [...next.matter.cells, ...cells] },
     });
-    return id;
+    return ids;
   }
 
   addBearing(endpointA: BearingEndpoint, endpointB: BearingEndpoint, freeAxis: BearingAxis): string {
