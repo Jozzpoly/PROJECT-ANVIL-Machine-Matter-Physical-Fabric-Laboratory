@@ -16,6 +16,19 @@ async function clickCanvas(page: Page, canvas: Locator, x: number, y: number, al
   }
 }
 
+async function dragCanvas(page: Page, canvas: Locator, from: { x: number; y: number }, to: { x: number; y: number }): Promise<void> {
+  const start = await point(canvas, from.x, from.y);
+  const end = await point(canvas, to.x, to.y);
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down({ button: "left" });
+  await page.mouse.move(end.x, end.y, { steps: 12 });
+  await page.mouse.up({ button: "left" });
+}
+
+async function generation(studio: Locator): Promise<number> {
+  return Number(await studio.getAttribute("data-source-generation"));
+}
+
 test("R2-D orphan meaning remains spatially reachable after exact Matter delete", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/?studio=1");
@@ -118,4 +131,61 @@ test("R2-D Escape releases Runtime Hand instead of leaving an invisible force", 
   await expect(studio).toHaveAttribute("data-hand", "active");
   await page.mouse.up({ button: "left" });
   await expect(studio).toHaveAttribute("data-hand", "ready");
+});
+
+test("R2-D Matter grammar branches across X Y and Z without entering a build mode", async ({ page }) => {
+  test.setTimeout(45_000);
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/?studio=1");
+
+  const studio = page.locator(".r2-studio");
+  const canvas = page.locator("canvas[data-r2-world]");
+  await page.getByRole("button", { name: "New" }).click();
+  await page.getByRole("button", { name: "Seed" }).click();
+  await expect(studio).toHaveAttribute("data-cells", "1");
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+
+  // X- arm: one gesture grows six cells and advances source generation exactly once.
+  const beforeX = await generation(studio);
+  await dragCanvas(page, canvas, { x: 554, y: 419 }, { x: 20, y: 635 });
+  await expect(studio).toHaveAttribute("data-cells", "7");
+  expect(await generation(studio)).toBe(beforeX + 1);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+  await page.keyboard.press("f");
+
+  // Y+ branch from the far end. Projection is frozen against the explicit focused camera.
+  const beforeY = await generation(studio);
+  await dragCanvas(page, canvas, { x: 497, y: 421 }, { x: 491, y: 339 });
+  await expect(studio).toHaveAttribute("data-cells", "10");
+  expect(await generation(studio)).toBe(beforeY + 1);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+
+  // The face used for Y extrusion is now a real shared Y interface. Meaning must author there
+  // without entering a persistent Meaning mode.
+  await page.keyboard.press("b");
+  await clickCanvas(page, canvas, 497, 421);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+  await page.keyboard.press("t");
+  await clickCanvas(page, canvas, 497, 421);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+  await expect(studio).toHaveAttribute("data-bearings", "1");
+  await expect(studio).toHaveAttribute("data-torques", "1");
+  await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
+
+  // Z+ branch from the top of the Y branch, still through the same neutral Matter grammar.
+  const beforeZ = await generation(studio);
+  await dragCanvas(page, canvas, { x: 503, y: 321 }, { x: 563, y: 350 });
+  await expect(studio).toHaveAttribute("data-cells", "13");
+  expect(await generation(studio)).toBe(beforeZ + 1);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+
+  // The branched world is not merely authorable: its non-X local meaning enters the same RUN.
+  const beforeRun = await studio.getAttribute("data-source-generation");
+  await page.getByRole("button", { name: "RUN", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-runtime", "running");
+  await expect(studio).toHaveAttribute("data-run-disabled", "false");
+  await page.waitForTimeout(100);
+  await page.getByRole("button", { name: "STOP", exact: true }).click();
+  await expect(studio).toHaveAttribute("data-runtime", "build");
+  await expect(studio).toHaveAttribute("data-source-generation", beforeRun ?? "");
 });
