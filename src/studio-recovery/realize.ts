@@ -255,8 +255,17 @@ export function realizeFreedomSource(source: FreedomSourceV0): FreedomRealizatio
     });
   }
 
+  const torqueIdCounts = new Map<string, number>();
+  for (const patch of source.torquePatches) {
+    torqueIdCounts.set(patch.id, (torqueIdCounts.get(patch.id) ?? 0) + 1);
+  }
+
   const realizedTorques: FreedomTorquePlan[] = [];
   for (const patch of [...source.torquePatches].sort((a, b) => a.id.localeCompare(b.id))) {
+    if ((torqueIdCounts.get(patch.id) ?? 0) > 1) {
+      diagnostics.push(diagnostic("TORQUE", patch.id, "DUPLICATE_ID", "Duplicate TorquePatch id is ambiguous; this intent was omitted from runtime."));
+      continue;
+    }
     if (!Number.isFinite(patch.effortNm)) {
       diagnostics.push(diagnostic("TORQUE", patch.id, "INVALID_EFFORT", "Non-finite TorquePatch effort was omitted from runtime."));
       continue;
