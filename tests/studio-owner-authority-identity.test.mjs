@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { FreedomRuntimeSession } from "../.test-build/src/studio-recovery/runtime.js";
 import { realizeFreedomSource } from "../.test-build/src/studio-recovery/realize.js";
-import { createFreedomStarterSource } from "../.test-build/src/studio-recovery/source.js";
+import { FreedomWorkspace, createEmptyFreedomSource, createFreedomStarterSource } from "../.test-build/src/studio-recovery/source.js";
 
 test("R1 duplicate Torque IDs remain authored but are not applied under ambiguous provenance", async () => {
   const starter = createFreedomStarterSource();
@@ -74,4 +74,39 @@ test("R1 duplicate Bearing IDs are all omitted rather than selecting one identit
     plan.diagnostics.filter((entry) => entry.subject === "BEARING" && entry.sourceId === "bearing:duplicate" && entry.code === "DUPLICATE_ID").length,
     2,
   );
+});
+
+test("R2 authored IDs are never reincarnated after exact delete within one workspace", () => {
+  const workspace = new FreedomWorkspace(createEmptyFreedomSource());
+
+  const firstMatterId = workspace.addSeedMatter();
+  workspace.removeMatter(firstMatterId);
+  const secondMatterId = workspace.addSeedMatter();
+  assert.notEqual(secondMatterId, firstMatterId, "new Matter reincarnated a deleted authored identity");
+
+  const neighborId = workspace.addMatterFromFace(secondMatterId, "x+");
+  const firstBearingId = workspace.addBearing(
+    { cellId: secondMatterId, face: "x+" },
+    { cellId: neighborId, face: "x-" },
+    "z",
+  );
+  workspace.removeBearing(firstBearingId);
+  const secondBearingId = workspace.addBearing(
+    { cellId: secondMatterId, face: "x+" },
+    { cellId: neighborId, face: "x-" },
+    "z",
+  );
+  assert.notEqual(secondBearingId, firstBearingId, "new Bearing reincarnated a deleted authored identity");
+
+  const firstTorqueId = workspace.addTorquePatch({ cellId: secondMatterId, face: "x+" }, 10);
+  workspace.removeTorquePatch(firstTorqueId);
+  const secondTorqueId = workspace.addTorquePatch({ cellId: secondMatterId, face: "x+" }, 20);
+  assert.notEqual(secondTorqueId, firstTorqueId, "new Torque reincarnated a deleted authored identity");
+
+  workspace.undo();
+  workspace.redo();
+  workspace.removeTorquePatch(secondTorqueId);
+  const thirdTorqueId = workspace.addTorquePatch({ cellId: secondMatterId, face: "x+" }, 30);
+  assert.notEqual(thirdTorqueId, firstTorqueId);
+  assert.notEqual(thirdTorqueId, secondTorqueId, "Undo/Redo rewound the identity allocator");
 });
