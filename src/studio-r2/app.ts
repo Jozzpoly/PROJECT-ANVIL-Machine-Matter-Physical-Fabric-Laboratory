@@ -200,6 +200,7 @@ function refreshAuthoring(extra?: string): void {
   snapshot = workspace.snapshot();
   evidence = realizeFreedomSource(snapshot.source);
   world.setSource(snapshot.source, evidence);
+  world.draw();
   renderReceipt(extra);
   syncShell();
   renderContext();
@@ -282,6 +283,7 @@ async function startRuntime(): Promise<void> {
     runtime = next;
     world.setRuntime(next.plan, next.frame().bodies);
     world.setHandState(true, false);
+    world.draw();
     accumulator = 0;
     lastFrameTime = performance.now();
     renderReceipt(`${next.receipt.quality} runtime · ${next.receipt.diagnostics.length} diagnostic(s)`);
