@@ -556,7 +556,14 @@ window.addEventListener("keydown", (event) => {
   if (typing) return;
   if (event.key === "Escape") {
     setIntent({ kind: "neutral" });
-    if (pointer?.kind === "build") world.setPreviewCells([]);
+    const activePointer = pointer;
+    if (activePointer?.kind === "build") world.setPreviewCells([]);
+    if (activePointer?.kind === "hand" && runtime !== null && runtime.handActive) {
+      runtime.endHandGrab();
+      world.setHandState(true, false);
+      shell.dataset.hand = "ready";
+    }
+    if (activePointer !== null && canvas.hasPointerCapture(activePointer.pointerId)) canvas.releasePointerCapture(activePointer.pointerId);
     pointer = null;
     return;
   }
