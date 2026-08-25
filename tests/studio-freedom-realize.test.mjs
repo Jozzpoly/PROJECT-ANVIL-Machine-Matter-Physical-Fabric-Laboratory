@@ -77,12 +77,15 @@ test("FREEDOM-FIRST unresolved Torque is omitted locally while the rest of the w
   assert.equal(plan.diagnostics.some((entry) => entry.sourceId === "torque:bad" && entry.code === "UNRESOLVED_TARGET"), true);
 });
 
-test("FREEDOM-FIRST duplicate local seam becomes diagnostics rather than a global RUN prohibition", () => {
+test("FREEDOM-FIRST conflicting Bearings on one seam are omitted locally without choosing for the Owner", () => {
   const plan = realizeFreedomSource(withMeanings({ duplicateSeam: true }));
   assert.equal(plan.quality, "PARTIAL");
-  assert.equal(plan.physicalPlan.bodies.length, 3);
-  assert.equal(plan.bearings.length, 2);
+  assert.equal(plan.physicalPlan.bodies.length, 2, "unrelated right seam should still be attempted");
+  assert.equal(plan.bearings.length, 1);
+  assert.equal(plan.bearings[0].sourceBearingId, "bearing:right");
   assert.equal(plan.diagnostics.some((entry) => entry.sourceId === "bearing:duplicate" && entry.code === "DUPLICATE_SEAM"), true);
+  assert.equal(plan.diagnostics.some((entry) => entry.sourceId === "bearing:left" && entry.code === "DUPLICATE_SEAM"), true);
+  assert.equal(plan.diagnostics.some((entry) => entry.sourceId === "torque:left" && entry.code === "UNRESOLVED_TARGET"), true);
 });
 
 test("FREEDOM-FIRST realization is deterministic under authored array reorder", () => {
