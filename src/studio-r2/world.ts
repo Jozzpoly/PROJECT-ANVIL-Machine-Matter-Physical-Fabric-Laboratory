@@ -237,16 +237,19 @@ export class R2WorldCanvas {
   orbit(deltaX: number, deltaY: number): void {
     this.#camera.yaw -= deltaX * 0.007;
     this.#camera.pitch = Math.max(-1.25, Math.min(1.25, this.#camera.pitch + deltaY * 0.007));
+    this.draw();
   }
 
   pan(deltaX: number, deltaY: number): void {
     const basis = this.#cameraBasis();
     const factor = this.#camera.distance * 0.0014;
     this.#camera.target = add(this.#camera.target, add(scale(basis.right, -deltaX * factor), scale(basis.up, deltaY * factor)));
+    this.draw();
   }
 
   zoom(deltaY: number): void {
     this.#camera.distance = Math.max(1.6, Math.min(28, this.#camera.distance * Math.exp(deltaY * 0.0012)));
+    this.draw();
   }
 
   focusSource(): void {
@@ -254,6 +257,7 @@ export class R2WorldCanvas {
     if (source === null || source.matter.cells.length === 0) {
       this.#camera.target = { x: 0, y: 0, z: 0 };
       this.#camera.distance = 6;
+      this.draw();
       return;
     }
     const s = source.matter.cellSizeM;
@@ -267,6 +271,7 @@ export class R2WorldCanvas {
     this.#camera.target = scale(add(min, max), 0.5);
     const extent = Math.max(max.x - min.x, max.y - min.y, max.z - min.z, s);
     this.#camera.distance = Math.max(3, extent * 2.4 + 2);
+    this.draw();
   }
 
   hit(clientX: number, clientY: number): R2WorldHit | null {
