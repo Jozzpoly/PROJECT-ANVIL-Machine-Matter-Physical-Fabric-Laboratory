@@ -1,7 +1,6 @@
 import { compileMatter, type BlockedFaceConnection } from "../compiler.js";
 import type { GridPosition, MatterCell, PhysicalPlan, RigidBodyPlan, Vec3 } from "../model.js";
 import type { BearingAxis, BearingEndpoint, BearingMark } from "../experiments/anvil-02-bearing.js";
-import type { TorquePatch } from "../experiments/anvil-06-torque-patch.js";
 import type { FreedomSourceV0 } from "./source.js";
 
 export type RealizationQuality = "COMPLETE" | "PARTIAL" | "MATTER_ONLY";
@@ -140,7 +139,6 @@ function prepareBearing(source: FreedomSourceV0, bearing: BearingMark): Prepared
 
   const faceA = FACE_VECTORS[bearing.endpointA.face];
   const faceB = FACE_VECTORS[bearing.endpointB.face];
-  if (faceA === undefined || faceB === undefined) return "Bearing face is invalid";
   if (faceA.x !== -faceB.x || faceA.y !== -faceB.y || faceA.z !== -faceB.z) {
     return "Bearing faces are not opposite";
   }
@@ -155,7 +153,7 @@ function prepareBearing(source: FreedomSourceV0, bearing: BearingMark): Prepared
   }
 
   const axis = AXES[bearing.freeAxis];
-  if (axis === undefined || Math.abs(dot(axis, faceA)) > 0) return "Bearing free axis is normal to the shared face";
+  if (Math.abs(dot(axis, faceA)) > 0) return "Bearing free axis is normal to the shared face";
 
   return {
     source: bearing,
@@ -175,35 +173,55 @@ function diagnostic(
   return { subject, sourceId, code, message };
 }
 
-export function realizeFreedomSource(source: FreedomSourceV0): FreedomRealizationPlan {
-  const diagnostics: FreedomDiagnostic[] = [];
-  const prepared: PreparedBearing[] = [];
-  const bearingIds = new Set<string>();
-  const seams = new Set<string>();
+function uniquePreparedBearings(
+  source: FreedomSourceV0,
+  diagnostics: FreedomDiagnostic[],
+): PreparedBearing[] {
+  const idCounts = new Map<string, number>();
+  for (const bearing of source.bearings) idCounts.set(bearing.id, (idCounts.get(bearing.id) ?? 0) + 1);
 
+  const valid: PreparedBearing[] = [];
   for (const bearing of [...source.bearings].sort((a, b) => a.id.localeCompare(b.id))) {
-    if (bearingIds.has(bearing.id)) {
-      diagnostics.push(diagnostic("BEARING", bearing.id, "DUPLICATE_ID", "Duplicate Bearing id was omitted from this realization."));
+    if ((idCounts.get(bearing.id) ?? 0) > 1) {
+      diagnostics.push(diagnostic("BEARING", bearing.id, "DUPLICATE_ID", "Duplicate Bearing id is ambiguous; this intent was omitted from runtime."));
       continue;
     }
-    bearingIds.add(bearing.id);
-
     const result = prepareBearing(source, bearing);
     if (typeof result === "string") {
       diagnostics.push(diagnostic("BEARING", bearing.id, "INVALID_LOCALITY", `${result}; authored intent remains in source.`));
       continue;
     }
-
-    const key = seamKey(result.endpointA, result.endpointB);
-    if (seams.has(key)) {
-      diagnostics.push(diagnostic("BEARING", bearing.id, "DUPLICATE_SEAM", "Another Bearing already occupies this seam in the attempted realization."));
-      continue;
-    }
-    seams.add(key);
-    prepared.push(result);
+    valid.push(result);
   }
 
-  const blocked: BlockedFaceConnection[] = prepared.map((bearing) => [bearing.cellA.id, bearing.cellB.id]);
+  const bySeam = new Map<string, PreparedBearing[]>();
+  for (const bearing of valid) {
+    const key = seamKey(bearing.endpointA, bearing.endpointB);
+    const group = bySeam.get(key);
+    if (group === undefined) bySeam.set(key, [bearing]);
+    else group.push(bearing);
+  }
+
+  const prepared: PreparedBearing[] = [];
+  for (const key of [...bySeam.keys()].sort()) {
+    const group = bySeam.get(key) ?? [];
+    if (group.length > 1) {
+      for (const bearing of group.sort((a, b) => a.source.id.localeCompare(b.source.id))) {
+        diagnostics.push(diagnostic("BEARING", bearing.source.id, "DUPLICATE_SEAM", "Multiple authored Bearings occupy this seam; none was chosen on the Owner's behalf."));
+      }
+      continue;
+    }
+    const bearing = group[0];
+    if (bearing !== undefined) prepared.push(bearing);
+  }
+  prepared.sort((a, b) => a.source.id.localeCompare(b.source.id));
+  return prepared;
+}
+
+export function realizeFreedomSource(source: FreedomSourceV0): FreedomRealizationPlan {
+  const diagnostics: FreedomDiagnostic[] = [];
+  const prepared = uniquePreparedBearings(source, diagnostics);
+  const blocked = prepared.map((bearing): BlockedFaceConnection => [bearing.cellA.id, bearing.cellB.id]);
   const physicalPlan = compileMatter(source.matter, { blockedFaceConnections: blocked });
   const realizedBearings: FreedomBearingPlan[] = [];
 
@@ -257,25 +275,20 @@ export function realizeFreedomSource(source: FreedomSourceV0): FreedomRealizatio
     const bearing = matches[0];
     if (bearing === undefined) continue;
     const torqueBWorld = scale(bearing.axisWorld, patch.effortNm);
-    const torqueAWorld = scale(torqueBWorld, -1);
     realizedTorques.push({
       sourcePatchId: patch.id,
       sourceBearingId: bearing.sourceBearingId,
       effortNm: patch.effortNm,
       bodyAId: bearing.bodyAId,
       bodyBId: bearing.bodyBId,
-      torqueAWorld,
+      torqueAWorld: scale(torqueBWorld, -1),
       torqueBWorld,
     });
   }
 
-  const omitted = diagnostics.length;
+  diagnostics.sort((a, b) => a.subject.localeCompare(b.subject) || a.sourceId.localeCompare(b.sourceId) || a.code.localeCompare(b.code));
   const anyMeaningRealized = realizedBearings.length > 0 || realizedTorques.length > 0;
-  const quality: RealizationQuality = omitted === 0
-    ? "COMPLETE"
-    : anyMeaningRealized
-      ? "PARTIAL"
-      : "MATTER_ONLY";
+  const quality: RealizationQuality = diagnostics.length === 0 ? "COMPLETE" : anyMeaningRealized ? "PARTIAL" : "MATTER_ONLY";
 
   return {
     schema: "anvil-freedom-realization/0",
