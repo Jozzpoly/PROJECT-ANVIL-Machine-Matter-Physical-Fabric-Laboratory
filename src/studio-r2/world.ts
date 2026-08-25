@@ -565,6 +565,65 @@ export class R2WorldCanvas {
         });
       }
     }
+
+    const byId = new Map(source.matter.cells.map((cell) => [cell.id, cell] as const));
+    for (const bearing of source.bearings) {
+      const cellA = byId.get(bearing.endpointA.cellId);
+      const cellB = byId.get(bearing.endpointB.cellId);
+      const represented = cellA !== undefined && cellB !== undefined &&
+        gridKey(addGrid(cellA.grid, FACE_OFFSETS[bearing.endpointA.face])) === gridKey(cellB.grid) &&
+        bearing.endpointB.face === OPPOSITE[bearing.endpointA.face];
+      if (represented) continue;
+
+      const anchor = cellA !== undefined ? bearing.endpointA : cellB !== undefined ? bearing.endpointB : null;
+      if (anchor === null) continue;
+      const center = this.#authoredCenter(source, anchor.cellId);
+      if (center === null) continue;
+      const worldPoint = add(center, scale(FACE_NORMALS[anchor.face], s / 2));
+      const screen = this.#project(worldPoint);
+      if (screen === null) continue;
+      const torquePatchIds = source.torquePatches
+        .filter((patch) => sameEndpoint(patch.target, bearing.endpointA) || sameEndpoint(patch.target, bearing.endpointB))
+        .map((patch) => patch.id);
+      const conflicted = (diagnostics.get(bearing.id) ?? []).some((code) => code === "DUPLICATE_SEAM" || code === "DUPLICATE_ID");
+      const hovered = this.#hover?.kind === "interface" &&
+        Math.hypot(this.#hover.worldPoint.x - worldPoint.x, this.#hover.worldPoint.y - worldPoint.y, this.#hover.worldPoint.z - worldPoint.z) < 1e-6;
+      const radius = 9;
+      const context = this.#context;
+      context.save();
+      context.setLineDash([4, 3]);
+      context.beginPath();
+      context.arc(screen.x, screen.y, hovered ? radius + 3 : radius, 0, Math.PI * 2);
+      context.strokeStyle = conflicted ? "rgba(184,130,235,0.98)" : "rgba(213,183,99,0.92)";
+      context.lineWidth = hovered ? 3 : 2;
+      context.stroke();
+      context.setLineDash([]);
+      context.beginPath();
+      context.moveTo(screen.x - 3, screen.y);
+      context.lineTo(screen.x + 3, screen.y);
+      context.strokeStyle = "rgba(231,205,126,0.78)";
+      context.lineWidth = 1.4;
+      context.stroke();
+      if (torquePatchIds.length > 0) {
+        context.beginPath();
+        context.arc(screen.x, screen.y, 2.5, 0, Math.PI * 2);
+        context.fillStyle = "rgba(220,167,91,0.62)";
+        context.fill();
+      }
+      context.restore();
+      this.#interfaceHits.push({
+        hit: {
+          kind: "interface",
+          endpointA: bearing.endpointA,
+          endpointB: bearing.endpointB,
+          worldPoint,
+          bearingIds: [bearing.id],
+          torquePatchIds,
+        },
+        screen,
+        radius,
+      });
+    }
   }
 
   #drawPreview(source: FreedomSourceV0): void {
