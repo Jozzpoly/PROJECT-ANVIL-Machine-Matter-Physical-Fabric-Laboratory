@@ -9,7 +9,7 @@ import {
   createFreedomStarterSource,
   type FreedomSnapshot,
 } from "../studio-recovery/source.js";
-import { R2WorldCanvas, type R2InterfaceHit, type R2MatterHit } from "./world.js";
+import { R2WorldCanvas, type R2InterfaceHit, type R2MatterHit, type R2MeaningHit } from "./world.js";
 
 type R2Intent =
   | { readonly kind: "neutral" }
@@ -84,6 +84,7 @@ let runtime: FreedomRuntimeSession | null = null;
 let intent: R2Intent = { kind: "neutral" };
 let pointer: PointerState | null = null;
 let selectedInterface: R2InterfaceHit | null = null;
+let selectedMeaning: R2MeaningHit | null = null;
 let startingRuntime = false;
 let lastFrameTime = performance.now();
 let accumulator = 0;
@@ -144,6 +145,13 @@ function currentInterfaceMeanings(hit: R2InterfaceHit): { bearingIds: string[]; 
   ).map((bearing) => bearing.id);
   const torqueIds = source.torquePatches.filter((patch) => sameEndpoint(patch.target, hit.endpointA) || sameEndpoint(patch.target, hit.endpointB)).map((patch) => patch.id);
   return { bearingIds, torqueIds };
+}
+
+function currentMeaningTorques(hit: R2MeaningHit): string[] {
+  const ids = new Set(hit.torquePatchIds);
+  return snapshot.source.torquePatches
+    .filter((patch) => ids.has(patch.id) && sameEndpoint(patch.target, hit.endpoint))
+    .map((patch) => patch.id);
 }
 
 function setIntent(next: R2Intent): void {
@@ -210,16 +218,55 @@ function renderDiagnostic(entries: readonly FreedomDiagnostic[]): string {
   return entries.map((entry) => `<div class="r2-diagnostic ${entry.code.includes("DUPLICATE") ? "r2-conflict" : ""}">${escapeHtml(entry.code)} · ${escapeHtml(entry.message)}</div>`).join("");
 }
 
+function torqueMarkupFor(ids: readonly string[]): string {
+  const wanted = new Set(ids);
+  return snapshot.source.torquePatches
+    .filter((patch) => wanted.has(patch.id))
+    .map((patch) => `
+      <div class="r2-meaning" data-torque="${escapeHtml(patch.id)}">
+        <div class="r2-meaning-head"><span class="r2-meaning-id">Torque ${escapeHtml(patch.id)}</span><button class="r2-danger" data-delete-torque="${escapeHtml(patch.id)}">Delete</button></div>
+        <div class="r2-meaning-controls">
+          <label>Nm <input type="number" step="1" value="${patch.effortNm}" data-torque-effort="${escapeHtml(patch.id)}"></label>
+          <button data-apply-torque="${escapeHtml(patch.id)}">Apply</button>
+          <button data-retarget-torque="${escapeHtml(patch.id)}">Retarget</button>
+        </div>
+        ${renderDiagnostic(diagnosticsFor(patch.id))}
+      </div>`).join("");
+}
+
 function renderContext(): void {
+  if (runtime !== null) {
+    contextPod.hidden = true;
+    contextPod.innerHTML = "";
+    return;
+  }
+
+  const meaningHit = selectedMeaning;
+  if (meaningHit !== null) {
+    const torqueIds = currentMeaningTorques(meaningHit);
+    if (torqueIds.length === 0) {
+      selectedMeaning = null;
+      contextPod.hidden = true;
+      contextPod.innerHTML = "";
+      return;
+    }
+    contextPod.innerHTML = `
+      <h3>Local meaning</h3>
+      <p class="r2-small">${escapeHtml(meaningHit.endpoint.cellId)}@${meaningHit.endpoint.face} · preserved authored locality</p>
+      ${torqueMarkupFor(torqueIds)}
+    `;
+    contextPod.hidden = false;
+    return;
+  }
+
   const hit = selectedInterface;
-  if (runtime !== null || hit === null) {
+  if (hit === null) {
     contextPod.hidden = true;
     contextPod.innerHTML = "";
     return;
   }
   const meanings = currentInterfaceMeanings(hit);
   const bearings = meanings.bearingIds.map((id) => snapshot.source.bearings.find((entry) => entry.id === id)).filter((entry) => entry !== undefined);
-  const torques = meanings.torqueIds.map((id) => snapshot.source.torquePatches.find((entry) => entry.id === id)).filter((entry) => entry !== undefined);
   const bearingMarkup = bearings.map((bearing) => `
     <div class="r2-meaning" data-bearing="${escapeHtml(bearing.id)}">
       <div class="r2-meaning-head"><span class="r2-meaning-id">Bearing ${escapeHtml(bearing.id)}</span><button class="r2-danger" data-delete-bearing="${escapeHtml(bearing.id)}">Delete</button></div>
@@ -229,16 +276,7 @@ function renderContext(): void {
       </div>
       ${renderDiagnostic(diagnosticsFor(bearing.id))}
     </div>`).join("");
-  const torqueMarkup = torques.map((patch) => `
-    <div class="r2-meaning" data-torque="${escapeHtml(patch.id)}">
-      <div class="r2-meaning-head"><span class="r2-meaning-id">Torque ${escapeHtml(patch.id)}</span><button class="r2-danger" data-delete-torque="${escapeHtml(patch.id)}">Delete</button></div>
-      <div class="r2-meaning-controls">
-        <label>Nm <input type="number" step="1" value="${patch.effortNm}" data-torque-effort="${escapeHtml(patch.id)}"></label>
-        <button data-apply-torque="${escapeHtml(patch.id)}">Apply</button>
-        <button data-retarget-torque="${escapeHtml(patch.id)}">Retarget</button>
-      </div>
-      ${renderDiagnostic(diagnosticsFor(patch.id))}
-    </div>`).join("");
+  const torqueMarkup = torqueMarkupFor(meanings.torqueIds);
   contextPod.innerHTML = `
     <h3>Local interface</h3>
     <p class="r2-small">${escapeHtml(hit.endpointA.cellId)}@${hit.endpointA.face} ↔ ${escapeHtml(hit.endpointB.cellId)}@${hit.endpointB.face}</p>
@@ -258,6 +296,7 @@ function resetWorkspace(kind: "new" | "starter"): void {
   if (runtime !== null || startingRuntime) return;
   workspace = new FreedomWorkspace(kind === "new" ? createEmptyFreedomSource() : createFreedomStarterSource());
   selectedInterface = null;
+  selectedMeaning = null;
   setIntent({ kind: "neutral" });
   telemetry.authoredActions += 1;
   emitInput(kind);
@@ -271,6 +310,7 @@ async function startRuntime(): Promise<void> {
   emitInput("run");
   startingRuntime = true;
   selectedInterface = null;
+  selectedMeaning = null;
   setIntent({ kind: "neutral" });
   syncShell();
   const startSnapshot = workspace.snapshot();
@@ -331,6 +371,7 @@ function applyInterfaceIntent(hit: R2InterfaceHit): void {
   if (intent.kind === "bearing") {
     workspace.addBearing(hit.endpointA, hit.endpointB, defaultAxis(hit.endpointA));
     setIntent({ kind: "neutral" });
+    selectedMeaning = null;
     selectedInterface = hit;
     afterAuthoredAction("bearing");
     return;
@@ -338,6 +379,7 @@ function applyInterfaceIntent(hit: R2InterfaceHit): void {
   if (intent.kind === "torque") {
     workspace.addTorquePatch(hit.endpointA, 20);
     setIntent({ kind: "neutral" });
+    selectedMeaning = null;
     selectedInterface = hit;
     afterAuthoredAction("torque");
     return;
@@ -347,6 +389,7 @@ function applyInterfaceIntent(hit: R2InterfaceHit): void {
     const bearing = snapshot.source.bearings.find((entry) => entry.id === id);
     if (bearing !== undefined) workspace.rebindBearing(bearing.id, hit.endpointA, hit.endpointB, bearing.freeAxis);
     setIntent({ kind: "neutral" });
+    selectedMeaning = null;
     selectedInterface = hit;
     afterAuthoredAction("rebind", `rebound ${id}`);
     return;
@@ -356,11 +399,22 @@ function applyInterfaceIntent(hit: R2InterfaceHit): void {
     const patch = snapshot.source.torquePatches.find((entry) => entry.id === id);
     if (patch !== undefined) workspace.retargetTorquePatch(patch.id, hit.endpointA);
     setIntent({ kind: "neutral" });
+    selectedMeaning = null;
     selectedInterface = hit;
     afterAuthoredAction("retarget", `retargeted ${id}`);
     return;
   }
+  selectedMeaning = null;
   selectedInterface = hit;
+  telemetry.contextOpens += 1;
+  emitInput("context");
+  renderContext();
+}
+
+function applyMeaningHit(hit: R2MeaningHit): void {
+  if (runtime !== null || intent.kind !== "neutral") return;
+  selectedInterface = null;
+  selectedMeaning = hit;
   telemetry.contextOpens += 1;
   emitInput("context");
   renderContext();
@@ -370,6 +424,7 @@ function exactDeleteInterface(hit: R2InterfaceHit): void {
   const meanings = currentInterfaceMeanings(hit);
   const total = meanings.bearingIds.length + meanings.torqueIds.length;
   if (total !== 1) {
+    selectedMeaning = null;
     selectedInterface = hit;
     telemetry.contextOpens += 1;
     emitInput("context");
@@ -378,8 +433,25 @@ function exactDeleteInterface(hit: R2InterfaceHit): void {
   }
   if (meanings.torqueIds.length === 1) workspace.removeTorquePatch(meanings.torqueIds[0] ?? "");
   else workspace.removeBearing(meanings.bearingIds[0] ?? "");
+  selectedMeaning = null;
   selectedInterface = hit;
   afterAuthoredAction("delete");
+}
+
+function exactDeleteMeaning(hit: R2MeaningHit): void {
+  const torqueIds = currentMeaningTorques(hit);
+  if (torqueIds.length !== 1) {
+    selectedInterface = null;
+    selectedMeaning = hit;
+    telemetry.contextOpens += 1;
+    emitInput("context");
+    renderContext();
+    return;
+  }
+  workspace.removeTorquePatch(torqueIds[0] ?? "");
+  selectedInterface = null;
+  selectedMeaning = null;
+  afterAuthoredAction("delete", `exact-delete Torque ${torqueIds[0]}`);
 }
 
 canvas.addEventListener("contextmenu", (event) => event.preventDefault());
@@ -413,6 +485,7 @@ canvas.addEventListener("pointerdown", (event) => {
   if (event.altKey && hit?.kind === "matter") {
     workspace.removeMatter(hit.cellId);
     selectedInterface = null;
+    selectedMeaning = null;
     afterAuthoredAction("delete", `exact-delete Matter ${hit.cellId}`);
     return;
   }
@@ -420,19 +493,29 @@ canvas.addEventListener("pointerdown", (event) => {
     exactDeleteInterface(hit);
     return;
   }
+  if (event.altKey && hit?.kind === "meaning") {
+    exactDeleteMeaning(hit);
+    return;
+  }
   if (hit?.kind === "interface") {
     applyInterfaceIntent(hit);
+    return;
+  }
+  if (hit?.kind === "meaning") {
+    applyMeaningHit(hit);
     return;
   }
   if (intent.kind !== "neutral") return;
   if (hit?.kind === "matter") {
     selectedInterface = null;
+    selectedMeaning = null;
     pointer = { kind: "build", pointerId: event.pointerId, hit, startX: event.clientX, startY: event.clientY, count: 1 };
     canvas.setPointerCapture(event.pointerId);
     world.setPreviewCells(world.previewFor(hit, 1));
     emitInput("build");
   } else {
     selectedInterface = null;
+    selectedMeaning = null;
     renderContext();
   }
 });
@@ -519,6 +602,7 @@ root.addEventListener("click", (event) => {
   const deleteTorque = target.dataset.deleteTorque;
   if (deleteTorque !== undefined && runtime === null) {
     workspace.removeTorquePatch(deleteTorque);
+    if (selectedMeaning?.torquePatchIds.includes(deleteTorque) === true) selectedMeaning = null;
     afterAuthoredAction("delete", `exact-delete Torque ${deleteTorque}`);
   }
   const rebindBearing = target.dataset.rebindBearing;
