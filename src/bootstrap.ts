@@ -8,7 +8,12 @@ const experiment = params.get("experiment");
 const studio = params.get("studio");
 
 if (studio === "1") {
-  void import("./studio-r2/app.js");
+  void (async () => {
+    const loose = await import("./studio-r2/loose.js");
+    loose.installLooseWorkspaceCapture();
+    await import("./studio-r2/app.js");
+    loose.installLooseTray();
+  })();
 } else if (experiment === "cut") {
   void (async () => {
     await import("./cut-demo.js");
