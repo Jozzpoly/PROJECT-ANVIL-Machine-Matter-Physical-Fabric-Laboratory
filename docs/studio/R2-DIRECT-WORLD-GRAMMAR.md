@@ -57,7 +57,9 @@ For RC1, repeated authoring may use repeated B/T. A persistent paint mode is del
 
 Selecting an existing Bearing/Torque may expose a small contextual island for local parameters such as axis/effort and explicit rebind/retarget. The island is optional instrumentation around a selected spatial meaning; it must not become a required workflow to continue using the world.
 
-Unresolved/conflicting meaning remains spatially present and selectable. It must not be moved into an issue list as its only representation.
+Unresolved/conflicting meaning remains spatially present and selectable whenever at least one truthful spatial referent survives. It must not be moved into an issue list as its only representation.
+
+If an authored meaning has **zero surviving spatial referents**, R2 must not fabricate a world position merely to keep it clickable. The same authored identity remains directly reachable through a small conditional **Loose** tray exposing the existing Rebind / Retarget / Delete paths. Loose is not a repair queue, has no permission or severity role, does not block RUN, is hidden during RUN, and disappears when a truthful spatial referent is restored.
 
 ### Camera
 
@@ -83,9 +85,10 @@ Camera control remains available in BUILD and RUN.
 Evidence is primarily local and spatial:
 
 - realized meaning: normal semantic presentation;
-- unresolved meaning: still visible, visually muted/broken rather than deleted;
-- conflicted meaning: all conflicting authored meanings remain visible;
-- selected local meaning may reveal the diagnostic text in a small contextual island;
+- unresolved meaning with a surviving truthful referent: still visible there, visually muted/broken rather than deleted;
+- fully unanchored meaning: directly reachable through Loose without inventing a world position;
+- conflicted meaning: all conflicting authored meanings remain visible/reachable rather than one being selected for the Owner;
+- selected local or Loose meaning may reveal the diagnostic text in a small contextual island;
 - a compact global receipt may say e.g. `PARTIAL · 4/6 meanings realized`, but never becomes a task list or blocks RUN.
 
 ## Friction telemetry for synthetic-owner validation
@@ -99,7 +102,7 @@ R2 browser evidence will record, but not gate by arbitrary thresholds:
 - number of automatic authored mutations not directly requested by the simulated Owner (expected zero);
 - source generation across RUN/STOP;
 - realized vs omitted meaning counts;
-- whether unresolved/conflicted meanings remain directly targetable;
+- whether unresolved/conflicted meanings remain directly targetable, including Loose when zero truthful spatial referents survive;
 - input channels used for build, meaning, camera, hand, delete, undo/redo.
 
 The telemetry is evidence for later grammar changes, not another permission system.
