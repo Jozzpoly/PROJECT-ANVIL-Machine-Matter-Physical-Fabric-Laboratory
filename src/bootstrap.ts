@@ -6,8 +6,9 @@ import "./rebind-demo.css";
 const params = new URLSearchParams(window.location.search);
 const experiment = params.get("experiment");
 const studio = params.get("studio");
+const activeRoot = studio === null && experiment === null;
 
-if (studio === "1") {
+if (studio === "1" || activeRoot) {
   void (async () => {
     const presentation = await import("./studio-r2/semantic-presentation.js");
     presentation.installSemanticPresentation();
@@ -36,6 +37,8 @@ if (studio === "1") {
   void import("./load-rebind-demo.js");
 } else if (experiment === "torque") {
   void import("./torque-demo.js");
+} else if (experiment === "collapse" || studio === "0") {
+  void import("./main.js");
 } else {
   void import("./main.js");
 }
