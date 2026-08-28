@@ -92,7 +92,7 @@ export function installLooseTray(): void {
     top: "78px",
     maxWidth: "calc(100vw - 36px)",
     padding: "4px",
-    display: "flex",
+    display: "none",
     gap: "4px",
     flexWrap: "wrap",
   });
@@ -100,13 +100,18 @@ export function installLooseTray(): void {
 
   let entries: LooseEntry[] = [];
 
+  const hideTray = (): void => {
+    tray.hidden = true;
+    tray.style.display = "none";
+    tray.innerHTML = "";
+  };
+
   const render = (): void => {
     const workspace = currentWorkspace;
     const build = shell.dataset.runtime === "build";
     if (workspace === null || !build) {
       entries = [];
-      tray.hidden = true;
-      tray.innerHTML = "";
+      hideTray();
       shell.dataset.loose = "0";
       return;
     }
@@ -114,14 +119,14 @@ export function installLooseTray(): void {
     entries = looseEntries(snapshot);
     shell.dataset.loose = String(entries.length);
     if (entries.length === 0) {
-      tray.hidden = true;
-      tray.innerHTML = "";
+      hideTray();
       return;
     }
     tray.innerHTML = entries.map((entry, index) =>
       `<button type="button" data-loose-index="${index}" title="No surviving spatial referent; authored meaning is preserved">${escapeHtml(entry.label)}</button>`,
     ).join("");
     tray.hidden = false;
+    tray.style.display = "flex";
   };
 
   tray.addEventListener("click", (event) => {
