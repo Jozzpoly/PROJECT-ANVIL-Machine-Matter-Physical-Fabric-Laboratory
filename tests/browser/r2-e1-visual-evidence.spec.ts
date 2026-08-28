@@ -84,7 +84,7 @@ test("R2-E1 baseline rendered evidence at 1440x900", async ({ page }) => {
   await page.getByRole("button", { name: "STOP", exact: true }).click();
 
   await oneShot(page, canvas, viewport, "b", 600, 400);
-  await expect(studio).toHaveAttribute("data-quality", "PARTIAL");
+  await expect(studio).toHaveAttribute("data-quality", "MATTER_ONLY");
   await page.mouse.move(viewport.width - 40, viewport.height - 80);
   await capture(page, "baseline-04-conflict-1440x900");
 
