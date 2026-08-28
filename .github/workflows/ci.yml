@@ -93,6 +93,15 @@ jobs:
       - name: Run real browser regression gate
         run: npm run test:browser
 
+      - name: Upload R2 E1 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: r2-e1-visual-evidence
+          path: test-results/r2-e1-evidence
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload owner-candidate browser artifact
         uses: actions/upload-artifact@v7
         with:
