@@ -24,6 +24,7 @@ test("R2-D6 fully unanchored authored meaning stays directly reachable without f
   const studio = page.locator(".r2-studio");
   const canvas = page.locator("canvas[data-r2-world]");
   const context = page.locator("[data-r2-context]");
+  const loose = page.locator("[data-r2-loose]");
 
   await page.getByRole("button", { name: "Starter" }).click();
   await expect(studio).toHaveAttribute("data-cells", "3");
@@ -42,11 +43,13 @@ test("R2-D6 fully unanchored authored meaning stays directly reachable without f
   await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
 
   // Delete endpoint A exactly. Bearing+Torque survive and the remaining endpoint carries
-  // the already-qualified spatial orphan ghost.
+  // the already-qualified spatial orphan ghost. Loose must not duplicate spatial evidence.
   await clickCanvas(page, canvas, 503, 439, true);
   await expect(studio).toHaveAttribute("data-cells", "2");
   await expect(studio).toHaveAttribute("data-bearings", "1");
   await expect(studio).toHaveAttribute("data-torques", "1");
+  await expect(studio).toHaveAttribute("data-loose", "0");
+  await expect(loose).toBeHidden();
   await page.keyboard.press("f");
 
   // Delete endpoint B through its exposed y+ face rather than through the orphan ghost.
@@ -59,6 +62,8 @@ test("R2-D6 fully unanchored authored meaning stays directly reachable without f
   await expect(studio).toHaveAttribute("data-realized-bearings", "0");
   await expect(studio).toHaveAttribute("data-realized-torques", "0");
   await expect(studio).toHaveAttribute("data-run-disabled", "false");
+  await expect(studio).toHaveAttribute("data-loose", "1");
+  await expect(loose).toBeVisible();
 
   const generationBeforeReach = await studio.getAttribute("data-source-generation");
 
@@ -73,14 +78,49 @@ test("R2-D6 fully unanchored authored meaning stays directly reachable without f
   await expect(context.locator('[data-retarget-torque="torque:1"]')).toBeVisible();
   await expect(studio).toHaveAttribute("data-source-generation", generationBeforeReach ?? "");
 
-  // Loose is not a repair gate. The unrelated Matter world still enters real runtime and
-  // STOP returns to the exact same authored generation with the loose meanings preserved.
+  // Loose is not a repair gate. The unrelated Matter world still enters real runtime.
   await page.getByRole("button", { name: "RUN", exact: true }).click();
   await expect(studio).toHaveAttribute("data-runtime", "running");
+  await expect(loose).toBeHidden();
   await page.waitForTimeout(80);
   await page.getByRole("button", { name: "STOP", exact: true }).click();
   await expect(studio).toHaveAttribute("data-runtime", "build");
   await expect(studio).toHaveAttribute("data-bearings", "1");
   await expect(studio).toHaveAttribute("data-torques", "1");
   await expect(studio).toHaveAttribute("data-source-generation", generationBeforeReach ?? "");
+  await expect(loose).toBeVisible();
+
+  // Build a fresh honest seam from the unrelated Matter, then recover the same authored IDs.
+  // Rebinding the Bearing removes it from Loose; its old Torque target remains loose until
+  // the Owner explicitly retargets it. No automatic repair or replacement identity occurs.
+  await page.keyboard.press("f");
+  await clickCanvas(page, canvas, 554, 419);
+  await expect(studio).toHaveAttribute("data-cells", "2");
+  await page.keyboard.press("f");
+  const recoverySeam = { x: 600, y: 400 };
+
+  await clickCanvas(page, canvas, 78, 96);
+  await context.locator('[data-rebind-bearing="bearing:1"]').click();
+  await expect(studio).toHaveAttribute("data-intent", "rebind-bearing");
+  await clickCanvas(page, canvas, recoverySeam.x, recoverySeam.y);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+  await expect(studio).toHaveAttribute("data-bearings", "1");
+  await expect(studio).toHaveAttribute("data-torques", "1");
+  await expect(studio).toHaveAttribute("data-realized-bearings", "1");
+  await expect(studio).toHaveAttribute("data-realized-torques", "0");
+  await expect(studio).toHaveAttribute("data-quality", "PARTIAL");
+  await expect(studio).toHaveAttribute("data-loose", "1");
+
+  await clickCanvas(page, canvas, 78, 96);
+  await expect(context.locator('[data-bearing="bearing:1"]')).toHaveCount(0);
+  await expect(context.locator('[data-torque="torque:1"]')).toBeVisible();
+  await context.locator('[data-retarget-torque="torque:1"]').click();
+  await expect(studio).toHaveAttribute("data-intent", "retarget-torque");
+  await clickCanvas(page, canvas, recoverySeam.x, recoverySeam.y);
+  await expect(studio).toHaveAttribute("data-intent", "neutral");
+  await expect(studio).toHaveAttribute("data-quality", "COMPLETE");
+  await expect(studio).toHaveAttribute("data-realized-bearings", "1");
+  await expect(studio).toHaveAttribute("data-realized-torques", "1");
+  await expect(studio).toHaveAttribute("data-loose", "0");
+  await expect(loose).toBeHidden();
 });
