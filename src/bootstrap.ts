@@ -9,6 +9,8 @@ const studio = params.get("studio");
 
 if (studio === "1") {
   void (async () => {
+    const presentation = await import("./studio-r2/semantic-presentation.js");
+    presentation.installSemanticPresentation();
     const loose = await import("./studio-r2/loose.js");
     loose.installLooseWorkspaceCapture();
     await import("./studio-r2/app.js");
