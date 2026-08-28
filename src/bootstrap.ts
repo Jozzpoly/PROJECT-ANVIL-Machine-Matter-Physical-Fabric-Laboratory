@@ -15,6 +15,8 @@ if (studio === "1" || activeRoot) {
     const loose = await import("./studio-r2/loose.js");
     loose.installLooseWorkspaceCapture();
     await import("./studio-r2/app.js");
+    const readiness = await import("./studio-r2/blind-test-readiness.js");
+    readiness.installBlindTestReadiness();
     loose.installLooseTray();
   })();
 } else if (experiment === "cut") {
