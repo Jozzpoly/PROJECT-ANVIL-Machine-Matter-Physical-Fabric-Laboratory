@@ -59,6 +59,8 @@ Selecting an existing Bearing/Torque may expose a small contextual island for lo
 
 Unresolved/conflicting meaning remains spatially present and selectable whenever at least one truthful spatial referent survives. It must not be moved into an issue list as its only representation.
 
+For a `TorquePatch`, its authored `target = cellId@face` is itself a truthful spatial referent while that target Matter cell survives. If no current Bearing/shared-interface representation carries that Torque and the target face is exposed, the same Torque identity remains directly selectable at that authored face; R2 must not hide it merely because realization reports `UNRESOLVED_TARGET`.
+
 If an authored meaning has **zero surviving spatial referents**, R2 must not fabricate a world position merely to keep it clickable. The same authored identity remains directly reachable through a small conditional **Loose** tray exposing the existing Rebind / Retarget / Delete paths. Loose is not a repair queue, has no permission or severity role, does not block RUN, is hidden during RUN, and disappears when a truthful spatial referent is restored.
 
 ### Camera
@@ -86,6 +88,7 @@ Evidence is primarily local and spatial:
 
 - realized meaning: normal semantic presentation;
 - unresolved meaning with a surviving truthful referent: still visible there, visually muted/broken rather than deleted;
+- a standalone unresolved Torque with a surviving authored `cellId@face` target remains directly reachable at that face even when no Bearing currently realizes or carries it;
 - fully unanchored meaning: directly reachable through Loose without inventing a world position;
 - conflicted meaning: all conflicting authored meanings remain visible/reachable rather than one being selected for the Owner;
 - selected local or Loose meaning may reveal the diagnostic text in a small contextual island;
@@ -102,7 +105,7 @@ R2 browser evidence will record, but not gate by arbitrary thresholds:
 - number of automatic authored mutations not directly requested by the simulated Owner (expected zero);
 - source generation across RUN/STOP;
 - realized vs omitted meaning counts;
-- whether unresolved/conflicted meanings remain directly targetable, including Loose when zero truthful spatial referents survive;
+- whether unresolved/conflicted meanings remain directly targetable, including a surviving single-anchor Torque target and Loose when zero truthful spatial referents survive;
 - input channels used for build, meaning, camera, hand, delete, undo/redo.
 
 The telemetry is evidence for later grammar changes, not another permission system.
@@ -114,6 +117,18 @@ Before any Owner package, real Chromium must complete one continuous session usi
 `empty → seed/build → multi-direction extrusion → several Bearings → several Torques → RUN → Hand + orbit/zoom → STOP → exact-delete Bearing → orphan Torque remains → RUN PARTIAL → STOP → rebind/retarget → RUN → STOP → create seam conflict → RUN despite conflict → STOP → exact-delete Matter → Undo → Redo → continue building → RUN again`
 
 The session is RED if it discovers any hidden permission gate, mandatory repair workflow, automatic destructive cleanup, or runtime-to-source write-back.
+
+## D6 reachability qualification boundary
+
+The earlier exact head `399c8606cf0d0ec19f998617e8e023292b316d0e` passed its then-current `26/26` Chromium suite, but later falsification showed that result was narrower than the claim recorded for D6. A legal Owner sequence could preserve a standalone Torque on an exposed surviving target face while making it unreachable through both the world and Loose.
+
+D6 therefore is not qualified by that historical green alone. Qualification requires explicit real-browser evidence for all three current recovery classes:
+
+1. shared/spatial or orphan world representation while a truthful world referent survives;
+2. standalone Torque directly reachable at its own surviving authored `cellId@face` target when no Bearing/interface representation carries it;
+3. Loose only when no truthful spatial referent remains.
+
+The D6C correction is presentation-only: it must not change R1 source semantics, realization, physics, RUN policy, authored identity, or Loose eligibility merely to make the world representation work.
 
 ## Scope
 
