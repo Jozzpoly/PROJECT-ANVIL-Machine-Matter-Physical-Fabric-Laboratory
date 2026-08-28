@@ -20,7 +20,14 @@ export interface R2InterfaceHit {
   readonly torquePatchIds: readonly string[];
 }
 
-export type R2WorldHit = R2MatterHit | R2InterfaceHit;
+export interface R2MeaningHit {
+  readonly kind: "meaning";
+  readonly endpoint: BearingEndpoint;
+  readonly worldPoint: Vec3;
+  readonly torquePatchIds: readonly string[];
+}
+
+export type R2WorldHit = R2MatterHit | R2InterfaceHit | R2MeaningHit;
 
 interface ScreenPoint {
   readonly x: number;
@@ -43,6 +50,12 @@ interface MatterRecord {
 
 interface InterfaceRecord {
   readonly hit: R2InterfaceHit;
+  readonly screen: ScreenPoint;
+  readonly radius: number;
+}
+
+interface MeaningRecord {
+  readonly hit: R2MeaningHit;
   readonly screen: ScreenPoint;
   readonly radius: number;
 }
@@ -164,6 +177,10 @@ function sameEndpoint(a: BearingEndpoint, b: BearingEndpoint): boolean {
   return a.cellId === b.cellId && a.face === b.face;
 }
 
+function endpointKey(endpoint: BearingEndpoint): string {
+  return `${endpoint.cellId}@${endpoint.face}`;
+}
+
 function canonicalInterfaceKey(a: string, b: string): string {
   return a.localeCompare(b) <= 0 ? `${a}\u0000${b}` : `${b}\u0000${a}`;
 }
@@ -185,6 +202,7 @@ export class R2WorldCanvas {
   #hover: R2WorldHit | null = null;
   #matterHits: MatterRecord[] = [];
   #interfaceHits: InterfaceRecord[] = [];
+  #meaningHits: MeaningRecord[] = [];
   #handReady = false;
   #handActive = false;
 
@@ -281,6 +299,9 @@ export class R2WorldCanvas {
     for (const entry of [...this.#interfaceHits].sort((a, b) => a.screen.depth - b.screen.depth)) {
       if (Math.hypot(entry.screen.x - x, entry.screen.y - y) <= entry.radius + 5) return entry.hit;
     }
+    for (const entry of [...this.#meaningHits].sort((a, b) => a.screen.depth - b.screen.depth)) {
+      if (Math.hypot(entry.screen.x - x, entry.screen.y - y) <= entry.radius + 5) return entry.hit;
+    }
     for (const entry of [...this.#matterHits].sort((a, b) => a.depth - b.depth)) {
       if (pointInPolygon(x, y, entry.polygon)) return entry.hit;
     }
@@ -334,6 +355,7 @@ export class R2WorldCanvas {
     this.#drawGround();
     this.#matterHits = [];
     this.#interfaceHits = [];
+    this.#meaningHits = [];
     const source = this.#source;
     if (source === null) return;
     if (this.#runtimePlan === null) {
@@ -512,6 +534,7 @@ export class R2WorldCanvas {
   #drawInterfaces(source: FreedomSourceV0, evidence: FreedomRealizationPlan | null): void {
     const byGrid = new Map(source.matter.cells.map((cell) => [gridKey(cell.grid), cell] as const));
     const seen = new Set<string>();
+    const representedTorqueIds = new Set<string>();
     const s = source.matter.cellSizeM;
     const realizedBearings = new Set(evidence?.bearings.map((entry) => entry.sourceBearingId) ?? []);
     const realizedTorques = new Set(evidence?.torques.map((entry) => entry.sourcePatchId) ?? []);
@@ -537,6 +560,7 @@ export class R2WorldCanvas {
           (sameEndpoint(bearing.endpointA, endpointB) && sameEndpoint(bearing.endpointB, endpointA)),
         ).map((bearing) => bearing.id);
         const torquePatchIds = source.torquePatches.filter((patch) => sameEndpoint(patch.target, endpointA) || sameEndpoint(patch.target, endpointB)).map((patch) => patch.id);
+        for (const id of torquePatchIds) representedTorqueIds.add(id);
         const worldPoint = add(center, scale(FACE_NORMALS[face], s / 2));
         const screen = this.#project(worldPoint);
         if (screen === null) continue;
@@ -590,6 +614,7 @@ export class R2WorldCanvas {
       const torquePatchIds = source.torquePatches
         .filter((patch) => sameEndpoint(patch.target, bearing.endpointA) || sameEndpoint(patch.target, bearing.endpointB))
         .map((patch) => patch.id);
+      for (const id of torquePatchIds) representedTorqueIds.add(id);
       const conflicted = (diagnostics.get(bearing.id) ?? []).some((code) => code === "DUPLICATE_SEAM" || code === "DUPLICATE_ID");
       const hovered = this.#hover?.kind === "interface" &&
         Math.hypot(this.#hover.worldPoint.x - worldPoint.x, this.#hover.worldPoint.y - worldPoint.y, this.#hover.worldPoint.z - worldPoint.z) < 1e-6;
@@ -624,6 +649,52 @@ export class R2WorldCanvas {
           worldPoint,
           bearingIds: [bearing.id],
           torquePatchIds,
+        },
+        screen,
+        radius,
+      });
+    }
+
+    const singleAnchorTargets = new Map<string, { endpoint: BearingEndpoint; torquePatchIds: string[] }>();
+    for (const patch of source.torquePatches) {
+      if (representedTorqueIds.has(patch.id) || !byId.has(patch.target.cellId)) continue;
+      const key = endpointKey(patch.target);
+      const existing = singleAnchorTargets.get(key);
+      if (existing === undefined) {
+        singleAnchorTargets.set(key, { endpoint: { ...patch.target }, torquePatchIds: [patch.id] });
+      } else {
+        existing.torquePatchIds.push(patch.id);
+      }
+    }
+
+    for (const entry of singleAnchorTargets.values()) {
+      const center = this.#authoredCenter(source, entry.endpoint.cellId);
+      if (center === null) continue;
+      const worldPoint = add(center, scale(FACE_NORMALS[entry.endpoint.face], s / 2));
+      const screen = this.#project(worldPoint);
+      if (screen === null) continue;
+      const radius = 7;
+      const hovered = this.#hover?.kind === "meaning" && sameEndpoint(this.#hover.endpoint, entry.endpoint);
+      const context = this.#context;
+      context.save();
+      context.setLineDash([2, 2]);
+      context.beginPath();
+      context.arc(screen.x, screen.y, hovered ? radius + 3 : radius, 0, Math.PI * 2);
+      context.strokeStyle = "rgba(220,167,91,0.84)";
+      context.lineWidth = hovered ? 2.5 : 1.7;
+      context.stroke();
+      context.setLineDash([]);
+      context.beginPath();
+      context.arc(screen.x, screen.y, 2.5, 0, Math.PI * 2);
+      context.fillStyle = hovered ? "rgba(242,162,83,0.92)" : "rgba(220,167,91,0.62)";
+      context.fill();
+      context.restore();
+      this.#meaningHits.push({
+        hit: {
+          kind: "meaning",
+          endpoint: { ...entry.endpoint },
+          worldPoint,
+          torquePatchIds: [...entry.torquePatchIds],
         },
         screen,
         radius,
