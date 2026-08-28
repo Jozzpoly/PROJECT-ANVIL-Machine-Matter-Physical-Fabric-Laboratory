@@ -4,7 +4,7 @@ test("COLLAPSE produces live evidence in a real browser", async ({ page }) => {
   const pageErrors: string[] = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
 
-  await page.goto("/");
+  await page.goto("/?experiment=collapse");
   await expect(page.locator("#status")).toHaveText("LIVE EVIDENCE");
   await expect(page.locator("#metrics dd").nth(0)).toHaveText("51");
   await expect(page.locator("#metrics dd").nth(1)).toHaveText("1");
