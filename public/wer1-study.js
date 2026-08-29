@@ -75,8 +75,24 @@
   async function clickTarget(ctx,m,t){ctx.doc.querySelector('[data-action="focus"]').click();await raf2(ctx.win);const p=project(facePoint(t.a.grid,t.fa),ctx.canvas.getBoundingClientRect(),camera(m));ptr(ctx,"pointerdown",p.x,p.y);ptr(ctx,"pointerup",p.x,p.y);await raf2(ctx.win)}
 
   async function setup(trial){
-    frame.src=`./?wer1=${trial.policy}`;await new Promise((res,rej)=>{const x=setTimeout(()=>rej(new Error("iframe load timeout")),8000);frame.onload=()=>{clearTimeout(x);res()}});
-    const win=frame.contentWindow,doc=frame.contentDocument,shell=doc?.querySelector(".r2-studio"),canvas=doc?.querySelector("canvas[data-r2-world]");if(!win||!doc||!shell||!canvas)throw new Error("R2 iframe incomplete");await wait(shell,"cells",3);
+    const expected=new URL(`./?wer1=${trial.policy}`,location.href).href;
+    await new Promise((res,rej)=>{
+      const started=performance.now();let timer=0;
+      const done=()=>{frame.onload=null;if(timer)clearTimeout(timer);res()};
+      const fail=message=>{frame.onload=null;if(timer)clearTimeout(timer);rej(new Error(message))};
+      const probe=()=>{
+        try{
+          const win=frame.contentWindow,doc=frame.contentDocument;
+          if(win&&doc&&win.location.href===expected&&doc.querySelector(".r2-studio")&&doc.querySelector("canvas[data-r2-world]"))return done();
+        }catch{}
+        if(performance.now()-started>8000)return fail("iframe R2 readiness timeout");
+        timer=setTimeout(probe,20);
+      };
+      frame.onload=probe;
+      frame.src=`./?wer1=${trial.policy}`;
+      timer=setTimeout(probe,20);
+    });
+    const win=frame.contentWindow,doc=frame.contentDocument,shell=doc?.querySelector(".r2-studio"),canvas=doc?.querySelector("canvas[data-r2-world]");if(!win||!doc||!shell||!canvas)throw new Error("R2 iframe incomplete after readiness");await wait(shell,"cells",3);
     const restore=patchCapture(canvas),ctx={win,doc,shell,canvas};try{
       doc.querySelector('[data-action="new"]').click();doc.querySelector('[data-action="seed"]').click();await wait(shell,"cells",1);const m=model(),s=D.scenes[trial.scene];for(const [from,f,n] of s.commands)await extrude(ctx,m,from,f,n);const t=target(m,s.target);
       if(trial.sub==="N"){keydown(ctx,"b");await raf2(win);await clickTarget(ctx,m,t);await wait(shell,"bearings",1);ptr(ctx,"pointerdown",8,8);ptr(ctx,"pointerup",8,8);await raf2(win)}
