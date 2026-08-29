@@ -24,7 +24,7 @@ const GROUND_TOP_Y_M = -0.26;
 const GROUND_HALF_HEIGHT_M = 0.5;
 const GROUND_HALF_EXTENT_X_M = 10;
 const GROUND_HALF_EXTENT_Z_M = 10;
-const GROUND_FRICTION = 0.8;
+const GROUND_FRICTION = 0.01;
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
 
@@ -327,7 +327,7 @@ export class FreedomRuntimeSession {
     if (grab === null) return;
     const snapshot = this.snapshots().find((candidate) => candidate.planBodyId === grab.planBodyId);
     const bodyId = this.#bodyIds.get(grab.planBodyId);
-    if (snapshot === undefined || bodyId === undefined) throw new Error(`Runtime Hand lost grabbed body ${grab.planBodyId}`);
+    if (snapshot === undefined || bodyId === undefined) throw new Error(`Freedom runtime lost grabbed body ${grab.planBodyId}`);
     const anchorWorld = runtimeHandAnchorWorld(grab, snapshot);
     const forceWorld = runtimeHandForceWorld(grab, snapshot);
     this.#b3.b3Body_ApplyForce(bodyId, forceWorld, anchorWorld, true);
