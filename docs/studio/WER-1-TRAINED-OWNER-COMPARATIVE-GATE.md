@@ -1,10 +1,12 @@
 # WER-1 — Trained-Owner Bearing Disclosure Comparative Gate
 
-Status: **PRE-REGISTERED / STUDY HARNESS NOT YET QUALIFIED / OWNER RUN NOT STARTED**.
+Status: **PRE-REGISTERED / STUDY HARNESS QUALIFIED / OWNER RUN NOT STARTED**.
 
 Upstream executable authority: `74494178d169f988f6aa01f9c2d440a476c8e5ce` (WER-1Q qualified build).
 
 Upstream record authority: `d842dc65035f1cb6fc9d099dd9a93e2a0c3caada`.
+
+Study-harness executable authority: `23f12bc520a1ec9d2213113f540c16ab68d94867` (qualified by ANVIL CI #556 / run `33253468859`).
 
 This stage is a bounded trained-Owner comparison. It is not a naive-user study, not a final UI choice, not a Meaning-grammar redesign, and not an R2 merge gate.
 
@@ -255,9 +257,39 @@ Bounded correction before any Owner exposure:
 
 This correction changes fixture preparation only. It does not tune baseline/global/local policy behavior, 96 px, task wording, trial order, source semantics, realization/runtime, Meaning semantics or the measured Owner interaction.
 
-No UX or product inference may be drawn from any qualification RED above.
+### Qualification attempt 5 — `23f12bc520a1ec9d2213113f540c16ab68d94867`
+
+Result: **STUDY HARNESS QUALIFIED / OWNER RUN NOT STARTED**.
+
+Exact qualification evidence:
+
+- ANVIL CI #556 / workflow run `33253468859`: **COMPLETED / SUCCESS** on exact head `23f12bc520a1ec9d2213113f540c16ab68d94867`;
+- `core`: **PASS**, including exact checkout, locked dependencies, strict typecheck + Foundation/semantic/Box3D tests, production browser build and exact staging;
+- `candidate`: **PASS**, including exact staged provenance, packaged Windows Owner launcher, real Chromium regression gate and Owner-candidate artifact upload;
+- the full real-browser gate passed after deterministic source-fixture injection, including the WER-1 qualification probes required to establish the preregistered fixture/target instrument before Owner exposure;
+- `publish-owner-page`: **SKIPPED**;
+- `owner-page-smoke`: **SKIPPED**;
+- public Owner Pages were therefore not overwritten by this qualification transport.
+
+Qualified artifacts from run `33253468859`:
+
+- `anvil-browser-laboratory`: artifact `9715098747`, digest `sha256:38b84015e07ce7dca1a3397484eec112fbc9834ea05630e242f982b58bd2c9da`, expires `2026-09-12T12:51:22Z`;
+- `r2-e1-visual-evidence`: artifact `9715098552`, digest `sha256:33d3f0644fdb216c085c394f31f980f9b549bbbd5ac7cc3ba5f8e8f08cf7c6b7`, expires `2026-09-12T12:51:21Z`;
+- transient `anvil-browser-staging`: artifact `9715081432`, digest `sha256:34b9bd22010a7a51d1917fa1b23214716a5ca146cf78df2b0f33fb02421cf673`, expires `2026-08-30T12:49:52Z`.
+
+Qualification disposition:
+
+- the WER-1 study harness is now executably qualified as a bounded experimental instrument;
+- executable authority remains the exact pre-record build `23f12bc520a1ec9d2213113f540c16ab68d94867`; any later docs-only record commit is record authority only and must not replace that executable identity;
+- no Owner trial has started and no Owner evidence exists yet;
+- no UX/product conclusion, policy winner, radius verdict, Meaning-grammar verdict or R2 merge-readiness claim is earned by qualification;
+- no policy tuning, 96 px tuning, task-order change or post-Owner correction occurred because Owner exposure has not begun.
+
+No UX or product inference may be drawn from any qualification RED or from the qualification PASS itself.
 
 ## 11. Natural stop
+
+Current boundary: **STUDY HARNESS QUALIFIED / OWNER RUN REQUIRED**.
 
 WER-1 ends after an evidence disposition is recorded.
 
