@@ -12,7 +12,7 @@
   const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0), cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
   const norm=v=>{const m=Math.hypot(...v); return m<1e-9?[0,0,0]:scale(v,1/m)};
   const key=g=>g.join(",");
-  const blank=()=>({schema:"anvil-wer1-owner-study/v1",executable:D.executable,startedAt:null,completedAt:null,index:0,results:[],pairFeedback:[],recording:"not-requested"});
+  const blank=()=>({schema:"anvil-wer1-owner-study/v1",wer1QExecutable:D.executable,studyBuildSha:null,startedAt:null,completedAt:null,index:0,results:[],pairFeedback:[],recording:"not-requested"});
   const load=()=>{try{const v=JSON.parse(localStorage.getItem(STORE)||"null");return v?.schema==="anvil-wer1-owner-study/v1"?v:blank()}catch{return blank()}};
   let state=load(), active=null, recorder=null, stream=null, chunks=[], videoBlob=null;
   const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
@@ -38,11 +38,15 @@
 
   function intro(){
     card(`<div class="study-kicker">PROJECT ANVIL · WER-1</div><h1>Trained-Owner comparative gate</h1><p>16 krótkich prób. Działaj normalnie i nie próbuj zgadywać wariantu. Bez think-aloud podczas pomiaru; feedback pojawi się po każdej parze.</p><p class="study-small">Nagranie jest lokalne. Jeśli wybierzesz nagrywanie, przeglądarka poprosi o bieżącą kartę/okno.</p><div class="study-actions">${btn("rec","Start z nagrywaniem","primary")}${btn("norec","Start bez nagrania")}${btn("reset","Wyczyść run")}</div>`);
-    document.getElementById("rec").onclick=async()=>{await startRecording();begin()};
-    document.getElementById("norec").onclick=()=>{state.recording="not-captured";save();begin()};
+    document.getElementById("rec").onclick=async()=>{await startRecording();await begin()};
+    document.getElementById("norec").onclick=async()=>{state.recording="not-captured";save();await begin()};
     document.getElementById("reset").onclick=()=>{localStorage.removeItem(STORE);state=blank();intro()};
   }
-  function begin(){state.startedAt ||= new Date().toISOString();save();loadTrial(state.index)}
+  async function begin(){
+    try{const manifest=await fetch("./anvil-artifact.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error(`manifest ${r.status}`);return r.json()});state.studyBuildSha=typeof manifest.sourceSha==="string"?manifest.sourceSha:null}
+    catch(e){state.studyBuildSha=`unavailable:${e?.message||"error"}`}
+    state.startedAt ||= new Date().toISOString();save();await loadTrial(state.index)
+  }
 
   const model=()=>({next:2,cells:new Map([["0,0,0",{id:"matter:1",grid:[0,0,0]}]])});
   function camera(m){
