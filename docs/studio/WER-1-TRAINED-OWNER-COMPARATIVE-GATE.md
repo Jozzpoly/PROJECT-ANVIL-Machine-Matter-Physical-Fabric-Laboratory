@@ -218,7 +218,22 @@ Bounded correction before any Owner exposure:
 - qualification spec only is strengthened to wait for either `Gotowe` or explicit `STUDY-HARNESS RED` and fail with the controller's exact reason;
 - study controller, fixture data, trial order, policy behavior and Owner task content remain unchanged.
 
-No UX or product inference may be drawn from either qualification RED.
+### Qualification attempt 3 — `2c3019bb8a885b65210d247c675a21c1de97d716`
+
+Result: **STUDY-HARNESS RED / IFRAME LIFECYCLE**.
+
+- core/typecheck/build/exact staging/provenance/Windows launcher remained green;
+- all 38 pre-WER-1 browser tests again remained green;
+- only the two study-harness tests failed;
+- strengthened diagnostics exposed the controller's exact reason: `R2 iframe incomplete`;
+- no fixture, disclosure-policy or R2 product failure was observed.
+
+Bounded correction before any Owner exposure:
+
+- study controller now installs the iframe load/probe path before navigation and waits for the exact expected `?wer1=<policy>` URL plus `.r2-studio` and `canvas[data-r2-world]` before fixture setup begins;
+- fixture data, trial order, policy assignment, 96 px radius, Owner tasks, root R2 app, source/runtime and hit semantics remain unchanged.
+
+No UX or product inference may be drawn from any qualification RED above.
 
 ## 11. Natural stop
 
