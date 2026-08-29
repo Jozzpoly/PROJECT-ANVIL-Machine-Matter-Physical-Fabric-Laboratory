@@ -1,6 +1,6 @@
 # WER-1 — Trained-Owner Bearing Disclosure Comparative Gate
 
-Status: **PRE-REGISTERED / STUDY HARNESS QUALIFICATION IN PROGRESS / OWNER RUN NOT STARTED**.
+Status: **PRE-REGISTERED / STUDY HARNESS NOT YET QUALIFIED / OWNER RUN NOT STARTED**.
 
 Upstream executable authority: `74494178d169f988f6aa01f9c2d440a476c8e5ce` (WER-1Q qualified build).
 
@@ -120,7 +120,7 @@ The qualified WER-1Q app does not itself include deterministic human-study fixtu
 
 Therefore WER-1 may add a **disposable experiment-only study harness** with these strict limits:
 
-- URL/trial-driven deterministic fixture preparation outside the visible Owner trial;
+- URL/trial-driven deterministic source fixture injection;
 - opaque trial IDs mapping to preregistered policy and fixture;
 - controller overlay shown only before/after timed interaction, not as an in-world target cue;
 - telemetry collection for pointer path, input channels, timing and target correctness;
@@ -128,7 +128,7 @@ Therefore WER-1 may add a **disposable experiment-only study harness** with thes
 - optional browser-tab recording initiated explicitly by the Owner;
 - no change to source semantics, realization/runtime, hit tolerance, M/P/S policy behavior, Bearing grammar, semantic glyphs, Matter renderer, camera behavior or runtime permission model.
 
-The harness must be qualified before use. If fixture preparation requires broader product refactoring, WER-1 stops with **STUDY-HARNESS RED** rather than modifying the product by momentum.
+The harness must be qualified before use. If fixture injection requires broader product refactoring, WER-1 stops with **STUDY-HARNESS RED** rather than modifying the product by momentum.
 
 ## 6. Raw evidence
 
@@ -186,25 +186,39 @@ If both global and local fail to produce material improvement, or the Owner repe
 
 If the harness itself contaminates the tasks, changes the tested interaction, or cannot prove target/fixture identity, the result is **PROTOCOL RED** and no UX conclusion is drawn.
 
-## 10. Pre-Owner harness qualification history
+## 10. Qualification history before Owner evidence
 
-### First qualification attempt — STUDY-HARNESS RED
+No Owner trial has started yet. Pre-Owner qualification is allowed to correct the disposable harness, but every correction must remain explicit and must not tune policy behavior after seeing Owner evidence.
 
-Exact harness proposal `0e2003b90b69e19dad9adeec34b3109f39c9af7a` passed Draft core/build and exact candidate provenance/launcher, while the existing pre-WER-1 browser suite remained **38/38 PASS**. The two new study-harness browser tests failed before any Owner run.
+### Qualification attempt 1 — `0e2003b90b69e19dad9adeec34b3109f39c9af7a`
 
-Root cause was fixture preparation, not WER-1Q behavior: several originally preregistered fixture construction commands attempted hidden extrusion through faces (`x+`, `y-`, `z-`) that are not exposed to the default/focused camera. The real app therefore correctly provided no Matter hit and the controller timed out waiting for a cell that was never authored.
+Result: **STUDY-HARNESS RED**.
 
-No human UX evidence was observed. The policy order, density counts, task semantics, target role, 96 px radius and metrics therefore remain frozen.
+- core/typecheck/build/provenance/Windows launcher remained green;
+- all 38 pre-WER-1 browser tests remained green;
+- only the two new study-harness tests failed;
+- hidden fixture setup used some faces that were not reachable through the frozen/default camera interaction path.
 
-Bounded correction before Owner evidence:
+Bounded correction before any Owner exposure:
 
-- fixture geometry only was changed so hidden setup uses faces exposed by the frozen default/focused camera (`x-`, `y+`, `z+`);
-- pair counts remain exact at 7/7, 15/15, 27/27 and 53/53 Matter;
-- fixtures remain trees, so candidate/interface counts remain matched at 6/6, 14/14, 26/26 and 52/52;
-- each A target remains the terminal seam of the unique longest side branch;
-- no R2 product/source/runtime/policy code was changed.
+- fixture geometry changed to use camera-reachable construction faces while preserving the frozen trial count/order, 7/15/27/53 Matter pair loads, task semantics, target role, policy assignment, metrics and 96 px local radius;
+- no source/runtime/policy/Meaning/renderer or hit semantics changed.
 
-This correction must itself pass a new exact real-Chromium qualification before the Owner run.
+### Qualification attempt 2 — `b5a79dffaab90c80b36bac1bbd53046165cae68e`
+
+Result: **STUDY-HARNESS RED / DIAGNOSTICALLY INSUFFICIENT**.
+
+- core/typecheck/build/provenance/Windows launcher remained green;
+- all 38 pre-WER-1 browser tests again remained green;
+- only the two study-harness tests failed;
+- the current test reported only that `Gotowe` was not reached within its assertion window and did not surface the controller's own `STUDY-HARNESS RED` message.
+
+Bounded correction before any Owner exposure:
+
+- qualification spec only is strengthened to wait for either `Gotowe` or explicit `STUDY-HARNESS RED` and fail with the controller's exact reason;
+- study controller, fixture data, trial order, policy behavior and Owner task content remain unchanged.
+
+No UX or product inference may be drawn from either qualification RED.
 
 ## 11. Natural stop
 
