@@ -277,7 +277,7 @@ export class FreedomRuntimeSession {
 
   updateHandTarget(targetWorld: Vec3): void {
     this.#assertActive();
-    if (this.#handGrab === null) throw new Error("Freedom runtime has no active grab");
+    if (this.#handGrab === null) throw new Error("Runtime Hand has no active grab");
     this.#handGrab = updateRuntimeHandTarget(this.#handGrab, targetWorld);
   }
 
@@ -291,7 +291,7 @@ export class FreedomRuntimeSession {
     const grab = this.#handGrab;
     if (grab === null) return null;
     const snapshot = this.snapshots().find((candidate) => candidate.planBodyId === grab.planBodyId);
-    if (snapshot === undefined) throw new Error(`Freedom runtime lost grabbed body ${grab.planBodyId}`);
+    if (snapshot === undefined) throw new Error(`Runtime Hand lost grabbed body ${grab.planBodyId}`);
     return runtimeHandAnchorWorld(grab, snapshot);
   }
 
@@ -327,7 +327,7 @@ export class FreedomRuntimeSession {
     if (grab === null) return;
     const snapshot = this.snapshots().find((candidate) => candidate.planBodyId === grab.planBodyId);
     const bodyId = this.#bodyIds.get(grab.planBodyId);
-    if (snapshot === undefined || bodyId === undefined) throw new Error(`Freedom runtime lost grabbed body ${grab.planBodyId}`);
+    if (snapshot === undefined || bodyId === undefined) throw new Error(`Runtime Hand lost grabbed body ${grab.planBodyId}`);
     const anchorWorld = runtimeHandAnchorWorld(grab, snapshot);
     const forceWorld = runtimeHandForceWorld(grab, snapshot);
     this.#b3.b3Body_ApplyForce(bodyId, forceWorld, anchorWorld, true);
