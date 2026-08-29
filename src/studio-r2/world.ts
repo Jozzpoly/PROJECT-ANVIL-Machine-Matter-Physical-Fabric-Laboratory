@@ -2,6 +2,12 @@ import type { BearingEndpoint, BearingRuntimeSnapshot } from "../experiments/anv
 import type { GridPosition, Vec3 } from "../model.js";
 import type { FreedomRealizationPlan } from "../studio-recovery/realize.js";
 import type { FreedomSourceV0, GridFace } from "../studio-recovery/source.js";
+import {
+  currentR2Intent,
+  currentWER1Policy,
+  localWakeNeedsRefresh,
+  shouldDiscloseBearingOpportunity,
+} from "./actionability-disclosure.js";
 
 export interface R2MatterHit {
   readonly kind: "matter";
@@ -18,6 +24,8 @@ export interface R2InterfaceHit {
   readonly worldPoint: Vec3;
   readonly bearingIds: readonly string[];
   readonly torquePatchIds: readonly string[];
+  readonly bearingOpportunity: boolean;
+  readonly bearingOpportunityActive: boolean;
 }
 
 export interface R2MeaningHit {
@@ -293,10 +301,13 @@ export class R2WorldCanvas {
   }
 
   hit(clientX: number, clientY: number): R2WorldHit | null {
+    if (localWakeNeedsRefresh()) this.draw();
     const rect = this.#canvas.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
+    const bearingIntent = currentR2Intent() === "bearing";
     for (const entry of [...this.#interfaceHits].sort((a, b) => a.screen.depth - b.screen.depth)) {
+      if (bearingIntent && (!entry.hit.bearingOpportunity || !entry.hit.bearingOpportunityActive)) continue;
       if (Math.hypot(entry.screen.x - x, entry.screen.y - y) <= entry.radius + 5) return entry.hit;
     }
     for (const entry of [...this.#meaningHits].sort((a, b) => a.screen.depth - b.screen.depth)) {
@@ -536,6 +547,9 @@ export class R2WorldCanvas {
     const seen = new Set<string>();
     const representedTorqueIds = new Set<string>();
     const s = source.matter.cellSizeM;
+    const canvasRect = this.#canvas.getBoundingClientRect();
+    let fullCandidateCount = 0;
+    let disclosedCandidateCount = 0;
     const realizedBearings = new Set(evidence?.bearings.map((entry) => entry.sourceBearingId) ?? []);
     const realizedTorques = new Set(evidence?.torques.map((entry) => entry.sourcePatchId) ?? []);
     const diagnostics = new Map<string, string[]>();
@@ -564,9 +578,14 @@ export class R2WorldCanvas {
         const worldPoint = add(center, scale(FACE_NORMALS[face], s / 2));
         const screen = this.#project(worldPoint);
         if (screen === null) continue;
+        fullCandidateCount += 1;
+        const bearingOpportunityActive = shouldDiscloseBearingOpportunity(screen, canvasRect);
+        if (bearingOpportunityActive) disclosedCandidateCount += 1;
+        const hasAuthoredMeaning = bearingIds.length > 0 || torquePatchIds.length > 0;
+        if (!hasAuthoredMeaning && !bearingOpportunityActive) continue;
         const conflicted = bearingIds.some((id) => (diagnostics.get(id) ?? []).some((code) => code === "DUPLICATE_SEAM" || code === "DUPLICATE_ID"));
         const unresolved = bearingIds.some((id) => !realizedBearings.has(id)) || torquePatchIds.some((id) => !realizedTorques.has(id));
-        const radius = bearingIds.length > 0 || torquePatchIds.length > 0 ? 8 : 4;
+        const radius = hasAuthoredMeaning ? 8 : 4;
         const hovered = this.#hover?.kind === "interface" &&
           Math.hypot(this.#hover.worldPoint.x - worldPoint.x, this.#hover.worldPoint.y - worldPoint.y, this.#hover.worldPoint.z - worldPoint.z) < 1e-6;
         const context = this.#context;
@@ -588,11 +607,27 @@ export class R2WorldCanvas {
         }
         context.restore();
         this.#interfaceHits.push({
-          hit: { kind: "interface", endpointA, endpointB, worldPoint, bearingIds, torquePatchIds },
+          hit: {
+            kind: "interface",
+            endpointA,
+            endpointB,
+            worldPoint,
+            bearingIds,
+            torquePatchIds,
+            bearingOpportunity: true,
+            bearingOpportunityActive,
+          },
           screen,
           radius,
         });
       }
+    }
+
+    const shell = document.querySelector<HTMLElement>(".r2-studio");
+    if (shell !== null) {
+      shell.dataset.wer1Policy = currentWER1Policy();
+      shell.dataset.wer1Candidates = String(fullCandidateCount);
+      shell.dataset.wer1Disclosed = String(disclosedCandidateCount);
     }
 
     const byId = new Map(source.matter.cells.map((cell) => [cell.id, cell] as const));
@@ -649,6 +684,8 @@ export class R2WorldCanvas {
           worldPoint,
           bearingIds: [bearing.id],
           torquePatchIds,
+          bearingOpportunity: false,
+          bearingOpportunityActive: false,
         },
         screen,
         radius,
