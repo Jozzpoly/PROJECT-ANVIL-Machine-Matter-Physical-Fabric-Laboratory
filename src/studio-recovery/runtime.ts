@@ -18,7 +18,12 @@ import {
 } from "./hand.js";
 import type { FreedomSourceV0 } from "./source.js";
 
-const ZERO: Vec3 = Object.freeze({ x: 0, y: 0, z: 0 });
+const GRAVITY: Vec3 = Object.freeze({ x: 0, y: -10, z: 0 });
+const GROUND_TOP_Y_M = -0.26;
+const GROUND_HALF_HEIGHT_M = 0.5;
+const GROUND_HALF_EXTENT_X_M = 10;
+const GROUND_HALF_EXTENT_Z_M = 10;
+const GROUND_FRICTION = 0.8;
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
 
@@ -123,13 +128,26 @@ export class FreedomRuntimeSession {
 
     const materialById = new Map(source.matter.materials.map((material) => [material.id, material] as const));
     const worldDef = b3.b3DefaultWorldDef();
-    worldDef.gravity = { ...ZERO };
+    worldDef.gravity = { ...GRAVITY };
     worldDef.workerCount = 0;
     const worldId = b3.b3CreateWorld(worldDef);
     const bodyIds = new Map<string, b3BodyId>();
     const jointIds: b3JointId[] = [];
 
     try {
+      const groundDef = b3.b3DefaultBodyDef();
+      groundDef.position = { x: 0, y: GROUND_TOP_Y_M - GROUND_HALF_HEIGHT_M, z: 0 };
+      const groundId = b3.b3CreateBody(worldId, groundDef);
+      const groundShape = b3.b3DefaultShapeDef();
+      groundShape.baseMaterial.friction = GROUND_FRICTION;
+      b3.b3CreateBoxShape(
+        groundId,
+        groundShape,
+        GROUND_HALF_EXTENT_X_M,
+        GROUND_HALF_HEIGHT_M,
+        GROUND_HALF_EXTENT_Z_M,
+      );
+
       for (const body of plan.physicalPlan.bodies) {
         const bodyDef = b3.b3DefaultBodyDef();
         bodyDef.type = b3.b3BodyType.b3_dynamicBody;
@@ -162,7 +180,6 @@ export class FreedomRuntimeSession {
         jointIds.push(b3.b3CreateRevoluteJoint(worldId, def));
       }
 
-      const counters = b3.b3World_GetCounters(worldId);
       return new FreedomRuntimeSession(
         sourceGeneration,
         plan,
@@ -173,8 +190,8 @@ export class FreedomRuntimeSession {
         {
           engineVersion: `${version.major}.${version.minor}.${version.revision}`,
           quality: plan.quality,
-          bodyCount: counters.bodyCount,
-          jointCount: counters.jointCount,
+          bodyCount: bodyIds.size,
+          jointCount: jointIds.length,
           torqueCount: plan.torques.length,
           diagnostics: plan.diagnostics.map((entry) => ({ ...entry })),
         },
