@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { FreedomRuntimeSession } from "../.test-build/src/studio-recovery/runtime.js";
-import { createFreedomStarterSource } from "../.test-build/src/studio-recovery/source.js";
+import { FreedomWorkspace, createFreedomStarterSource } from "../.test-build/src/studio-recovery/source.js";
 
 const GROUND_TOP_Y_M = -0.26;
 
@@ -17,6 +17,17 @@ function elevatedStarter(rows = 4) {
       })),
     },
   };
+}
+
+function createDefaultTorqueMechanism() {
+  const workspace = new FreedomWorkspace(createFreedomStarterSource());
+  const bearing = workspace.addBearing(
+    { cellId: "starter:a", face: "x+" },
+    { cellId: "starter:b", face: "x-" },
+    "z",
+  );
+  workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, 20);
+  return { source: workspace.snapshot().source, bearing };
 }
 
 test("Freedom runtime falls under gravity and settles on the physical ground", async () => {
@@ -49,6 +60,44 @@ test("Freedom runtime falls under gravity and settles on the physical ground", a
     assert.ok(
       Math.abs(settled.linearVelocity.y) < 0.2,
       `body still has excessive vertical speed after settling: ${settled.linearVelocity.y}`,
+    );
+  } finally {
+    runtime.dispose();
+  }
+});
+
+test("grounded product keeps the current default 20 Nm Torque physically actionable", async () => {
+  const { source, bearing } = createDefaultTorqueMechanism();
+  const runtime = await FreedomRuntimeSession.create(source, 0);
+
+  try {
+    runtime.step(90);
+    runtime.setForcesEnabled(true);
+    runtime.step(120);
+    const speed = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
+    assert.ok(speed > 0.05, `default 20 Nm Torque is effectively pinned by the grounded environment: ${speed} rad/s`);
+  } finally {
+    runtime.dispose();
+  }
+});
+
+test("grounded Runtime Hand can drag a settled mechanism across the ground", async () => {
+  const source = createFreedomStarterSource();
+  const runtime = await FreedomRuntimeSession.create(source, 0);
+
+  try {
+    runtime.step(90);
+    const body = runtime.snapshots()[0];
+    assert.ok(body);
+    const initial = { ...body.position };
+    runtime.beginHandGrab(body.planBodyId, initial);
+    runtime.updateHandTarget({ x: initial.x + 0.2, y: initial.y, z: initial.z });
+    runtime.step(60);
+    const moved = runtime.handAnchorWorld();
+    assert.ok(moved);
+    assert.ok(
+      moved.x - initial.x > 0.03,
+      `Runtime Hand is effectively pinned by the grounded environment: moved ${moved.x - initial.x} m toward a 0.2 m target`,
     );
   } finally {
     runtime.dispose();
