@@ -18,6 +18,7 @@ import {
 } from "./hand.js";
 import type { FreedomSourceV0 } from "./source.js";
 
+const ZERO: Vec3 = Object.freeze({ x: 0, y: 0, z: 0 });
 const GRAVITY: Vec3 = Object.freeze({ x: 0, y: -10, z: 0 });
 const GROUND_TOP_Y_M = -0.26;
 const GROUND_HALF_HEIGHT_M = 0.5;
@@ -26,6 +27,10 @@ const GROUND_HALF_EXTENT_Z_M = 10;
 const GROUND_FRICTION = 0.8;
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
+
+export interface FreedomRuntimeOptions {
+  readonly grounded?: boolean;
+}
 
 export interface FreedomRuntimeReceipt {
   readonly engineVersion: string;
@@ -118,7 +123,11 @@ export class FreedomRuntimeSession {
     this.#receipt = receipt;
   }
 
-  static async create(source: FreedomSourceV0, sourceGeneration: number): Promise<FreedomRuntimeSession> {
+  static async create(
+    source: FreedomSourceV0,
+    sourceGeneration: number,
+    options: FreedomRuntimeOptions = {},
+  ): Promise<FreedomRuntimeSession> {
     const plan = realizeFreedomSource(source);
     const b3 = await Box3DFactory();
     const version = b3.b3GetVersion();
@@ -126,27 +135,30 @@ export class FreedomRuntimeSession {
       throw new Error(`Freedom runtime expects Box3D 0.1.0, got ${version.major}.${version.minor}.${version.revision}`);
     }
 
+    const grounded = options.grounded ?? true;
     const materialById = new Map(source.matter.materials.map((material) => [material.id, material] as const));
     const worldDef = b3.b3DefaultWorldDef();
-    worldDef.gravity = { ...GRAVITY };
+    worldDef.gravity = { ...(grounded ? GRAVITY : ZERO) };
     worldDef.workerCount = 0;
     const worldId = b3.b3CreateWorld(worldDef);
     const bodyIds = new Map<string, b3BodyId>();
     const jointIds: b3JointId[] = [];
 
     try {
-      const groundDef = b3.b3DefaultBodyDef();
-      groundDef.position = { x: 0, y: GROUND_TOP_Y_M - GROUND_HALF_HEIGHT_M, z: 0 };
-      const groundId = b3.b3CreateBody(worldId, groundDef);
-      const groundShape = b3.b3DefaultShapeDef();
-      groundShape.baseMaterial.friction = GROUND_FRICTION;
-      b3.b3CreateBoxShape(
-        groundId,
-        groundShape,
-        GROUND_HALF_EXTENT_X_M,
-        GROUND_HALF_HEIGHT_M,
-        GROUND_HALF_EXTENT_Z_M,
-      );
+      if (grounded) {
+        const groundDef = b3.b3DefaultBodyDef();
+        groundDef.position = { x: 0, y: GROUND_TOP_Y_M - GROUND_HALF_HEIGHT_M, z: 0 };
+        const groundId = b3.b3CreateBody(worldId, groundDef);
+        const groundShape = b3.b3DefaultShapeDef();
+        groundShape.baseMaterial.friction = GROUND_FRICTION;
+        b3.b3CreateBoxShape(
+          groundId,
+          groundShape,
+          GROUND_HALF_EXTENT_X_M,
+          GROUND_HALF_HEIGHT_M,
+          GROUND_HALF_EXTENT_Z_M,
+        );
+      }
 
       for (const body of plan.physicalPlan.bodies) {
         const bodyDef = b3.b3DefaultBodyDef();
