@@ -116,5 +116,5 @@ export function shouldDiscloseBearingOpportunity(
 }
 
 export function localWakeNeedsRefresh(): boolean {
-  return currentWER1Policy() === "local" && currentR2Intent() === "bearing";
+  return currentWER1Policy() !== "baseline" && currentR2Intent() === "bearing";
 }
