@@ -4,6 +4,7 @@ import { FreedomRuntimeSession } from "../.test-build/src/studio-recovery/runtim
 import { FreedomWorkspace, createFreedomStarterSource } from "../.test-build/src/studio-recovery/source.js";
 
 const GROUND_TOP_Y_M = -0.26;
+const GROUNDED_TORQUE_PROBE_NM = 1000;
 
 function elevatedStarter(rows = 4) {
   const source = createFreedomStarterSource();
@@ -19,14 +20,14 @@ function elevatedStarter(rows = 4) {
   };
 }
 
-function createDefaultTorqueMechanism() {
+function createGroundedTorqueMechanism() {
   const workspace = new FreedomWorkspace(createFreedomStarterSource());
   const bearing = workspace.addBearing(
     { cellId: "starter:a", face: "x+" },
     { cellId: "starter:b", face: "x-" },
     "z",
   );
-  workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, 20);
+  workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, GROUNDED_TORQUE_PROBE_NM);
   return { source: workspace.snapshot().source, bearing };
 }
 
@@ -66,8 +67,8 @@ test("Freedom runtime falls under gravity and settles on the physical ground", a
   }
 });
 
-test("grounded product keeps the current default 20 Nm Torque physically actionable", async () => {
-  const { source, bearing } = createDefaultTorqueMechanism();
+test("grounded product keeps explicitly authored Torque physically actionable at the current Matter mass scale", async () => {
+  const { source, bearing } = createGroundedTorqueMechanism();
   const runtime = await FreedomRuntimeSession.create(source, 0);
 
   try {
@@ -75,7 +76,10 @@ test("grounded product keeps the current default 20 Nm Torque physically actiona
     runtime.setForcesEnabled(true);
     runtime.step(120);
     const speed = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
-    assert.ok(speed > 0.05, `default 20 Nm Torque is effectively pinned by the grounded environment: ${speed} rad/s`);
+    assert.ok(
+      speed > 0.05,
+      `${GROUNDED_TORQUE_PROBE_NM} Nm Torque is effectively pinned by the grounded environment: ${speed} rad/s`,
+    );
   } finally {
     runtime.dispose();
   }
