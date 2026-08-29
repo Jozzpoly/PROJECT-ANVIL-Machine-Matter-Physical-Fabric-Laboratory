@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 interface StudyActive {
   trial: { id: string; sub: "N" | "A"; pair: string; policy: "baseline" | "global" | "local"; scene: string };
@@ -18,6 +18,37 @@ interface StudyState {
   }>;
 }
 
+async function waitForPreparedOrRed(page: Page): Promise<void> {
+  await page.waitForFunction(() => {
+    const text = document.querySelector<HTMLElement>("#study-overlay")?.innerText ?? "";
+    return text.includes("Gotowe") || text.includes("STUDY-HARNESS RED");
+  }, undefined, { timeout: 15_000 });
+  const overlay = await page.locator("#study-overlay").innerText();
+  if (overlay.includes("STUDY-HARNESS RED")) throw new Error(`WER-1 study harness setup RED:\n${overlay}`);
+  await expect(page.getByText("Gotowe", { exact: true })).toBeVisible();
+}
+
+async function loadTrial(page: Page, index: number): Promise<void> {
+  await page.evaluate(async (trialIndex) => {
+    const api = (window as Window & {
+      __WER1_STUDY__?: { loadTrial: (value: number) => Promise<void> };
+    }).__WER1_STUDY__;
+    if (api === undefined) throw new Error("WER-1 study API missing");
+    await api.loadTrial(trialIndex);
+  }, index);
+  await waitForPreparedOrRed(page);
+}
+
+async function debugCompleteTarget(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const api = (window as Window & {
+      __WER1_STUDY__?: { debugCompleteTarget: () => Promise<void> };
+    }).__WER1_STUDY__;
+    if (api === undefined) throw new Error("WER-1 study API missing");
+    await api.debugCompleteTarget();
+  });
+}
+
 test("WER-1 study harness deterministically prepares every preregistered fixture", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/wer1-study.html");
@@ -30,15 +61,7 @@ test("WER-1 study harness deterministically prepares every preregistered fixture
   ];
 
   for (let index = 0; index < 16; index += 1) {
-    await page.evaluate(async (trialIndex) => {
-      const api = (window as Window & {
-        __WER1_STUDY__?: { loadTrial: (index: number) => Promise<void> };
-      }).__WER1_STUDY__;
-      if (api === undefined) throw new Error("WER-1 study API missing");
-      await api.loadTrial(trialIndex);
-    }, index);
-
-    await expect(page.getByText("Gotowe", { exact: true })).toBeVisible();
+    await loadTrial(page, index);
     const active = await page.evaluate(() => {
       const api = (window as Window & {
         __WER1_STUDY__?: { getActive: () => StudyActive | null };
@@ -67,14 +90,8 @@ test("WER-1 study harness detects correct N target and local-A authored target",
   await page.waitForFunction(() => Boolean((window as Window & { __WER1_STUDY__?: unknown }).__WER1_STUDY__));
   await page.evaluate(() => localStorage.clear());
 
-  await page.evaluate(async () => {
-    const api = (window as Window & {
-      __WER1_STUDY__?: { loadTrial: (index: number) => Promise<void>; debugCompleteTarget: () => Promise<void> };
-    }).__WER1_STUDY__;
-    if (api === undefined) throw new Error("WER-1 study API missing");
-    await api.loadTrial(0);
-    await api.debugCompleteTarget();
-  });
+  await loadTrial(page, 0);
+  await debugCompleteTarget(page);
   await expect(page.getByText("Próba zakończona", { exact: true })).toBeVisible();
 
   let state = await page.evaluate(() => {
@@ -87,14 +104,8 @@ test("WER-1 study harness detects correct N target and local-A authored target",
   expect(state.results[0]?.firstRelevantCorrect).toBe(true);
   expect(state.results[0]?.wrongRelevantActions).toBe(0);
 
-  await page.evaluate(async () => {
-    const api = (window as Window & {
-      __WER1_STUDY__?: { loadTrial: (index: number) => Promise<void>; debugCompleteTarget: () => Promise<void> };
-    }).__WER1_STUDY__;
-    if (api === undefined) throw new Error("WER-1 study API missing");
-    await api.loadTrial(9);
-    await api.debugCompleteTarget();
-  });
+  await loadTrial(page, 9);
+  await debugCompleteTarget(page);
   await expect(page.getByText("Para A1 zakończona", { exact: true })).toBeVisible();
 
   state = await page.evaluate(() => {
