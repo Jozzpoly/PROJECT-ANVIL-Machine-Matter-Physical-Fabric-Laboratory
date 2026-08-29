@@ -9,6 +9,7 @@ import {
   createFreedomStarterSource,
   type FreedomSnapshot,
 } from "../studio-recovery/source.js";
+import { createWER1StudyInitialSource } from "./wer1-study-fixture.js";
 import { R2WorldCanvas, type R2InterfaceHit, type R2MatterHit, type R2MeaningHit } from "./world.js";
 
 type R2Intent =
@@ -77,7 +78,8 @@ const forcesButton = requireElement<HTMLButtonElement>(root, "[data-action=force
 const restartButton = requireElement<HTMLButtonElement>(root, "[data-action=restart]");
 const stopButton = requireElement<HTMLButtonElement>(root, "[data-action=stop]");
 
-let workspace = new FreedomWorkspace(createFreedomStarterSource());
+const initialStudySource = createWER1StudyInitialSource();
+let workspace = new FreedomWorkspace(initialStudySource ?? createFreedomStarterSource());
 let snapshot: FreedomSnapshot = workspace.snapshot();
 let evidence: FreedomRealizationPlan = realizeFreedomSource(snapshot.source);
 let runtime: FreedomRuntimeSession | null = null;
