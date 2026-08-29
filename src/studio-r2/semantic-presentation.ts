@@ -2,6 +2,7 @@ import type { BearingAxis, BearingEndpoint, BearingRuntimeSnapshot } from "../ex
 import type { GridPosition, Vec3 } from "../model.js";
 import type { FreedomRealizationPlan } from "../studio-recovery/realize.js";
 import type { FreedomSourceV0, GridFace } from "../studio-recovery/source.js";
+import { shouldDiscloseBearingOpportunity } from "./actionability-disclosure.js";
 import { R2WorldCanvas } from "./world.js";
 
 interface ScreenPoint {
@@ -366,6 +367,7 @@ function drawAuthoredPresentation(
   const shell = document.querySelector<HTMLElement>(".r2-studio");
   const intentActive = shell?.dataset.intent !== undefined && shell.dataset.intent !== "neutral";
   const s = source.matter.cellSizeM;
+  const canvasRect = canvas.getBoundingClientRect();
 
   for (const cell of source.matter.cells) {
     const center = authoredCenter(source, cell.id);
@@ -390,7 +392,7 @@ function drawAuthoredPresentation(
       if (screen === null) continue;
 
       if (bearings.length === 0 && torques.length === 0) {
-        drawSeamTarget(context, screen, intentActive);
+        if (shouldDiscloseBearingOpportunity(screen, canvasRect)) drawSeamTarget(context, screen, intentActive);
         continue;
       }
 
@@ -561,7 +563,7 @@ export function installSemanticPresentation(): void {
   R2WorldCanvas.prototype.zoom = function zoomWithPresentation(this: R2WorldCanvas, deltaY: number): void {
     const camera = stateFor(this).camera;
     camera.distance = Math.max(1.6, Math.min(28, camera.distance * Math.exp(deltaY * 0.0012)));
-    originalZoom.call(this, deltaY);
+    originalZoom.call(this, deltaX, deltaY);
   };
 
   const originalFocusSource = R2WorldCanvas.prototype.focusSource;
