@@ -56,18 +56,10 @@
     return {x:rect.width/2+dot(rel,r)/dep*focal,y:rect.height/2-dot(rel,u)/dep*focal};
   }
   const center=g=>g.map(v=>(v+.5)*.5), facePoint=(g,f)=>add(center(g),scale(F[f],.25));
-  function patchCapture(c){
-    Object.defineProperty(c,"setPointerCapture",{configurable:true,value:()=>{}});Object.defineProperty(c,"releasePointerCapture",{configurable:true,value:()=>{}});Object.defineProperty(c,"hasPointerCapture",{configurable:true,value:()=>false});
-    return ()=>{delete c.setPointerCapture;delete c.releasePointerCapture;delete c.hasPointerCapture};
-  }
   function ptr(ctx,type,x,y){const r=ctx.canvas.getBoundingClientRect();ctx.canvas.dispatchEvent(new ctx.win.PointerEvent(type,{bubbles:true,cancelable:true,pointerId:731,button:0,buttons:type==="pointerup"?0:1,clientX:r.left+x,clientY:r.top+y}))}
   const keydown=(ctx,k)=>ctx.win.dispatchEvent(new ctx.win.KeyboardEvent("keydown",{key:k,bubbles:true,cancelable:true}));
   function updateModel(m,from,f,count){
     for(let i=1;i<=count;i++){const g=add(from,scale(F[f],i)),s=key(g);if(m.cells.has(s))break;m.cells.set(s,{id:`matter:${m.next++}`,grid:g})}
-  }
-  async function extrude(ctx,m,from,f,count){
-    ctx.doc.querySelector('[data-action="focus"]').click();await raf2(ctx.win);const r=ctx.canvas.getBoundingClientRect(),c=camera(m),p0=project(facePoint(from,f),r,c),p1=project(add(facePoint(from,f),scale(F[f],.5)),r,c),dx=p1.x-p0.x,dy=p1.y-p0.y;
-    ptr(ctx,"pointerdown",p0.x,p0.y);ptr(ctx,"pointermove",p0.x+dx*(count-1),p0.y+dy*(count-1));ptr(ctx,"pointerup",p0.x+dx*(count-1),p0.y+dy*(count-1));updateModel(m,from,f,count);await wait(ctx.shell,"cells",m.cells.size);await raf2(ctx.win);
   }
   function target(m,pair){
     const a=m.cells.get(key(pair[0])),b=m.cells.get(key(pair[1]));if(!a||!b)throw new Error("target cells missing");const d=sub(pair[1],pair[0]);const fa=Object.keys(F).find(f=>F[f].every((v,i)=>v===d[i]));if(!fa)throw new Error("target nonadjacent");return {a,b,fa,fb:O[fa],tokens:[`${a.id}@${fa}`,`${b.id}@${O[fa]}`]};
@@ -75,7 +67,8 @@
   async function clickTarget(ctx,m,t){ctx.doc.querySelector('[data-action="focus"]').click();await raf2(ctx.win);const p=project(facePoint(t.a.grid,t.fa),ctx.canvas.getBoundingClientRect(),camera(m));ptr(ctx,"pointerdown",p.x,p.y);ptr(ctx,"pointerup",p.x,p.y);await raf2(ctx.win)}
 
   async function setup(trial){
-    const expected=new URL(`./?wer1=${trial.policy}`,location.href).href;
+    const query=`?wer1=${encodeURIComponent(trial.policy)}&wer1study=1&wer1fixture=${encodeURIComponent(trial.scene)}&wer1sub=${encodeURIComponent(trial.sub)}`;
+    const expected=new URL(`./${query}`,location.href).href;
     await new Promise((res,rej)=>{
       const started=performance.now();let timer=0;
       const done=()=>{frame.onload=null;if(timer)clearTimeout(timer);res()};
@@ -88,16 +81,17 @@
         if(performance.now()-started>8000)return fail("iframe R2 readiness timeout");
         timer=setTimeout(probe,20);
       };
-      frame.onload=probe;
-      frame.src=`./?wer1=${trial.policy}`;
-      timer=setTimeout(probe,20);
+      frame.onload=probe;frame.src=`./${query}`;timer=setTimeout(probe,20);
     });
-    const win=frame.contentWindow,doc=frame.contentDocument,shell=doc?.querySelector(".r2-studio"),canvas=doc?.querySelector("canvas[data-r2-world]");if(!win||!doc||!shell||!canvas)throw new Error("R2 iframe incomplete after readiness");await wait(shell,"cells",3);
-    const restore=patchCapture(canvas),ctx={win,doc,shell,canvas};try{
-      doc.querySelector('[data-action="new"]').click();doc.querySelector('[data-action="seed"]').click();await wait(shell,"cells",1);const m=model(),s=D.scenes[trial.scene];for(const [from,f,n] of s.commands)await extrude(ctx,m,from,f,n);const t=target(m,s.target);
-      if(trial.sub==="N"){keydown(ctx,"b");await raf2(win);await clickTarget(ctx,m,t);await wait(shell,"bearings",1);ptr(ctx,"pointerdown",8,8);ptr(ctx,"pointerup",8,8);await raf2(win)}
-      doc.querySelector('[data-action="focus"]').click();await raf2(win);return{ctx,m,t,restore};
-    }catch(e){restore();throw e}
+    const win=frame.contentWindow,doc=frame.contentDocument,shell=doc?.querySelector(".r2-studio"),canvas=doc?.querySelector("canvas[data-r2-world]");
+    if(!win||!doc||!shell||!canvas)throw new Error("R2 iframe incomplete after readiness");
+    const ctx={win,doc,shell,canvas},m=model(),scene=D.scenes[trial.scene];
+    for(const [from,f,n] of scene.commands)updateModel(m,from,f,n);
+    const t=target(m,scene.target);
+    await wait(shell,"cells",m.cells.size,5000);
+    await wait(shell,"bearings",trial.sub==="N"?1:0,5000);
+    doc.querySelector('[data-action="focus"]').click();await raf2(win);
+    return{ctx,m,t,restore:()=>{}};
   }
   function contextCorrect(ctx,t){const p=ctx.doc.querySelector("[data-r2-context]");if(!p||p.hidden)return false;const txt=p.textContent||"";return t.tokens.every(x=>txt.includes(x))&&!!p.querySelector("[data-bearing]")}
   const task=t=>D.tasks[t.sub];
