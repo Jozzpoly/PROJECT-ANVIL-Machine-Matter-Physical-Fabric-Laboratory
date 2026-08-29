@@ -15,6 +15,7 @@
     "src/physics.ts",
     "src/foundation/**/*.ts",
     "src/experiments/**/*.ts",
-    "src/studio-recovery/**/*.ts"
+    "src/studio-recovery/**/*.ts",
+    "src/studio-r2/actionability-disclosure.ts"
   ]
 }

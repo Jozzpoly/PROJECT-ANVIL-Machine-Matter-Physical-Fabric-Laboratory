@@ -132,12 +132,17 @@ function patchDependsOnBearing(patch: TorquePatch, bearing: BearingMark): boolea
   return sameEndpoint(patch.target, bearing.endpointA) || sameEndpoint(patch.target, bearing.endpointB);
 }
 
-function nextId(prefix: string, ids: ReadonlySet<string>): string {
-  for (let index = 1; index < 100_000; index += 1) {
-    const candidate = `${prefix}:${index}`;
-    if (!ids.has(candidate)) return candidate;
+function nextNumericIndex(prefix: string, ids: readonly string[]): number {
+  const marker = `${prefix}:`;
+  let highest = 0;
+  for (const id of ids) {
+    if (!id.startsWith(marker)) continue;
+    const suffix = id.slice(marker.length);
+    if (!/^\d+$/u.test(suffix)) continue;
+    const value = Number(suffix);
+    if (Number.isSafeInteger(value)) highest = Math.max(highest, value);
   }
-  throw new Error(`Could not allocate ${prefix} id`);
+  return highest + 1;
 }
 
 function requireCell(source: FreedomSourceV0, cellId: string): MatterCell {
@@ -163,9 +168,15 @@ export class FreedomWorkspace {
   #generation = 0;
   #history: FreedomSourceV0[] = [];
   #future: FreedomSourceV0[] = [];
+  #nextMatterIndex: number;
+  #nextBearingIndex: number;
+  #nextTorqueIndex: number;
 
   constructor(source: FreedomSourceV0) {
     this.#source = cloneFreedomSource(source);
+    this.#nextMatterIndex = nextNumericIndex("matter", source.matter.cells.map((cell) => cell.id));
+    this.#nextBearingIndex = nextNumericIndex("bearing", source.bearings.map((bearing) => bearing.id));
+    this.#nextTorqueIndex = nextNumericIndex("torque", source.torquePatches.map((patch) => patch.id));
   }
 
   snapshot(): FreedomSnapshot {
@@ -182,6 +193,24 @@ export class FreedomWorkspace {
     this.#source = cloneFreedomSource(next);
     this.#future = [];
     this.#generation += 1;
+  }
+
+  #allocateMatterId(): string {
+    const id = `matter:${this.#nextMatterIndex}`;
+    this.#nextMatterIndex += 1;
+    return id;
+  }
+
+  #allocateBearingId(): string {
+    const id = `bearing:${this.#nextBearingIndex}`;
+    this.#nextBearingIndex += 1;
+    return id;
+  }
+
+  #allocateTorqueId(): string {
+    const id = `torque:${this.#nextTorqueIndex}`;
+    this.#nextTorqueIndex += 1;
+    return id;
   }
 
   undo(): boolean {
@@ -205,7 +234,7 @@ export class FreedomWorkspace {
   addSeedMatter(materialId = DEFAULT_MATERIAL.id): string {
     if (this.#source.matter.cells.length !== 0) throw new Error("Seed Matter requires an empty world");
     if (!this.#source.matter.materials.some((material) => material.id === materialId)) throw new Error(`Unknown material ${materialId}`);
-    const id = nextId("matter", new Set(this.#source.matter.cells.map((cell) => cell.id)));
+    const id = this.#allocateMatterId();
     const next = cloneFreedomSource(this.#source);
     this.#commit({
       ...next,
@@ -231,7 +260,6 @@ export class FreedomWorkspace {
     const sourceCell = requireCell(this.#source, cellId);
     const direction = FACE_OFFSETS[face];
     const occupied = new Set(this.#source.matter.cells.map((cell) => gridKey(cell.grid)));
-    const reservedIds = new Set(this.#source.matter.cells.map((cell) => cell.id));
     const cells: MatterCell[] = [];
     const ids: string[] = [];
 
@@ -239,8 +267,7 @@ export class FreedomWorkspace {
       const grid = addGrid(sourceCell.grid, scaleGrid(direction, step));
       const key = gridKey(grid);
       if (occupied.has(key)) break;
-      const id = nextId("matter", reservedIds);
-      reservedIds.add(id);
+      const id = this.#allocateMatterId();
       occupied.add(key);
       ids.push(id);
       cells.push({ id, grid, materialId: sourceCell.materialId });
@@ -256,7 +283,7 @@ export class FreedomWorkspace {
   }
 
   addBearing(endpointA: BearingEndpoint, endpointB: BearingEndpoint, freeAxis: BearingAxis): string {
-    const id = nextId("bearing", new Set(this.#source.bearings.map((bearing) => bearing.id)));
+    const id = this.#allocateBearingId();
     const next = cloneFreedomSource(this.#source);
     this.#commit({
       ...next,
@@ -288,7 +315,7 @@ export class FreedomWorkspace {
 
   addTorquePatch(target: BearingEndpoint, effortNm: number): string {
     if (!Number.isFinite(effortNm)) throw new Error("Torque effort must be finite");
-    const id = nextId("torque", new Set(this.#source.torquePatches.map((patch) => patch.id)));
+    const id = this.#allocateTorqueId();
     const next = cloneFreedomSource(this.#source);
     this.#commit({ ...next, torquePatches: [...next.torquePatches, { id, target: cloneEndpoint(target), effortNm }] });
     return id;

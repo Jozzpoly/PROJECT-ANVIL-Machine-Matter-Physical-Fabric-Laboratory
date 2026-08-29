@@ -4,6 +4,18 @@ Last strategic grounding: 2026-08-21 final pre-implementation handoff seal.
 
 Live Git overrides this memory.
 
+## Branch-local recovery override — 2026-08-28
+
+The `Current work state after final grounding` / `I1 next` section below describes the sealed `main` boundary from 2026-08-21. It is historical context when this file is read on a recovery branch; it is **not** authority that recovery work is inactive.
+
+For `recovery/r2-direct-world-grammar`, live authority is PR **#42** plus its exact branch head, code and executable CI evidence. Its base is frozen R1 `5eba8d70bb2192675651bf06ab9768c1fb7518a8`; sealed `main` remains untouched by recovery unless an explicit later merge decision is earned.
+
+Recovery R1 preserves Owner Authority: default Bearing/Matter deletion is exact, unresolved/orphan authored intent survives, RUN remains an attempt rather than a permission gate, and rebind/retarget preserves authored identity. R2 tests whether those semantics can be exposed through a world-primary interaction grammar.
+
+R2 reachability rule under test/qualification: unresolved meaning stays directly reachable at a truthful world referent whenever one survives; `TorquePatch.target = cellId@face` is itself such a referent while the target Matter cell survives. `Loose` is only the fallback when no truthful spatial referent remains; it is not a repair queue or RUN gate. Use `docs/studio/R2-DIRECT-WORLD-GRAMMAR.md` and PR #42 for the exact current evidence boundary and falsification history.
+
+Do not promote R2 presentation helpers, `R2MeaningHit`, Loose, cubic `cellId@face`, or current Canvas2D interaction code into final Machine Matter ontology/architecture by inertia. They remain bounded recovery/product evidence unless later work earns consolidation.
+
 ## Authority
 
 Repository: `Jozzpoly/PROJECT-ANVIL-Machine-Matter-Physical-Fabric-Laboratory`.
