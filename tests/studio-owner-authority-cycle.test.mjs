@@ -11,6 +11,10 @@ function maxValue(record) {
   return Math.max(0, ...Object.values(record));
 }
 
+function createAuthorityRuntime(source, generation) {
+  return FreedomRuntimeSession.create(source, generation, { grounded: false });
+}
+
 test("R1 authority cycle: orphan -> partial Box3D -> rebind same IDs -> complete Box3D -> exact Undo", async () => {
   const workspace = new FreedomWorkspace(createFreedomStarterSource());
   const first = workspace.addBearing(
@@ -31,7 +35,7 @@ test("R1 authority cycle: orphan -> partial Box3D -> rebind same IDs -> complete
   assert.equal(orphaned.source.bearings.some((bearing) => bearing.id === first), true);
   assert.equal(orphaned.source.torquePatches.some((patch) => patch.id === firstTorque), true);
 
-  const partialRuntime = await FreedomRuntimeSession.create(orphaned.source, orphaned.generation);
+  const partialRuntime = await createAuthorityRuntime(orphaned.source, orphaned.generation);
   try {
     assert.equal(partialRuntime.receipt.quality, "PARTIAL");
     assert.equal(partialRuntime.receipt.jointCount, 1);
@@ -62,7 +66,7 @@ test("R1 authority cycle: orphan -> partial Box3D -> rebind same IDs -> complete
   assert.equal(repaired.source.torquePatches.some((patch) => patch.id === secondTorque), true);
 
   const authoredBeforeRuntime = canonical(repaired.source);
-  const completeRuntime = await FreedomRuntimeSession.create(repaired.source, repaired.generation);
+  const completeRuntime = await createAuthorityRuntime(repaired.source, repaired.generation);
   try {
     assert.equal(completeRuntime.receipt.quality, "COMPLETE");
     assert.equal(completeRuntime.receipt.bodyCount, 3);
@@ -108,7 +112,7 @@ test("R1 conflict: runtime omits ambiguous seam instead of choosing a Bearing fo
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
 
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "PARTIAL");
     assert.equal(runtime.receipt.bodyCount, 2);
@@ -138,7 +142,7 @@ test("R1 MATTER_ONLY remains a runnable observation when every authored meaning 
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
 
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "MATTER_ONLY");
     assert.equal(runtime.receipt.bodyCount, 1);
