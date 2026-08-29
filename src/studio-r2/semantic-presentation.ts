@@ -563,7 +563,7 @@ export function installSemanticPresentation(): void {
   R2WorldCanvas.prototype.zoom = function zoomWithPresentation(this: R2WorldCanvas, deltaY: number): void {
     const camera = stateFor(this).camera;
     camera.distance = Math.max(1.6, Math.min(28, camera.distance * Math.exp(deltaY * 0.0012)));
-    originalZoom.call(this, deltaX, deltaY);
+    originalZoom.call(this, deltaY);
   };
 
   const originalFocusSource = R2WorldCanvas.prototype.focusSource;
