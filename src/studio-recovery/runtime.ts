@@ -24,7 +24,7 @@ const GROUND_TOP_Y_M = -0.26;
 const GROUND_HALF_HEIGHT_M = 0.5;
 const GROUND_HALF_EXTENT_X_M = 10;
 const GROUND_HALF_EXTENT_Z_M = 10;
-const GROUND_FRICTION = 0.01;
+const GROUND_FRICTION = 0.8;
 const FIXED_DT = 1 / 60;
 const SUBSTEPS = 4;
 
@@ -277,7 +277,7 @@ export class FreedomRuntimeSession {
 
   updateHandTarget(targetWorld: Vec3): void {
     this.#assertActive();
-    if (this.#handGrab === null) throw new Error("Runtime Hand has no active grab");
+    if (this.#handGrab === null) throw new Error("Freedom runtime has no active grab");
     this.#handGrab = updateRuntimeHandTarget(this.#handGrab, targetWorld);
   }
 
@@ -291,7 +291,7 @@ export class FreedomRuntimeSession {
     const grab = this.#handGrab;
     if (grab === null) return null;
     const snapshot = this.snapshots().find((candidate) => candidate.planBodyId === grab.planBodyId);
-    if (snapshot === undefined) throw new Error(`Runtime Hand lost grabbed body ${grab.planBodyId}`);
+    if (snapshot === undefined) throw new Error(`Freedom runtime lost grabbed body ${grab.planBodyId}`);
     return runtimeHandAnchorWorld(grab, snapshot);
   }
 
