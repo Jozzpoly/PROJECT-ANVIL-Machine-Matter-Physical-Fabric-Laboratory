@@ -233,6 +233,28 @@ Bounded correction before any Owner exposure:
 - study controller now installs the iframe load/probe path before navigation and waits for the exact expected `?wer1=<policy>` URL plus `.r2-studio` and `canvas[data-r2-world]` before fixture setup begins;
 - fixture data, trial order, policy assignment, 96 px radius, Owner tasks, root R2 app, source/runtime and hit semantics remain unchanged.
 
+### Qualification attempt 4 — `46e395e7efea1969f427a68911b19f0546518dfd`
+
+Result: **STUDY-HARNESS RED / SYNTHETIC UI-REPLAY METHOD INSUFFICIENT**.
+
+- core/typecheck/build/exact staging/provenance/Windows launcher remained green;
+- 39/40 real-Chromium tests passed: all pre-WER-1 coverage plus the direct target-completion study probe; only the exhaustive 16-fixture preparation test failed;
+- exact diagnostic was `timeout cells=27; got 21` during the first branched-density family;
+- small and medium fixture loads had already passed;
+- because the replay checked cell count but could not independently prove the full authored topology after every synthetic drag, continued camera/coordinate tuning would risk qualifying the wrong scene rather than the preregistered fixture.
+
+Bounded correction before any Owner exposure:
+
+- abandon synthetic mouse-drag fixture construction as the preparation mechanism;
+- use the preregistered URL-driven deterministic source-fixture path instead;
+- `src/studio-r2/wer1-study-fixture.ts` materializes the exact 7/15/27/53 authored Matter scenes and the one pre-authored N Bearing directly as `FreedomSourceV0`;
+- normal R2 startup remains unchanged unless the explicit `wer1study=1&wer1fixture=<id>&wer1sub=<N|A>` study query is present;
+- study trial interaction after reveal still uses the ordinary R2 world, hit path, B intent and Meaning interaction;
+- all 16 preregistered targets are now required to complete successfully in real Chromium before qualification;
+- Owner JSON records both the upstream WER-1Q executable authority and the exact study-build SHA from `anvil-artifact.json`.
+
+This correction changes fixture preparation only. It does not tune baseline/global/local policy behavior, 96 px, task wording, trial order, source semantics, realization/runtime, Meaning semantics or the measured Owner interaction.
+
 No UX or product inference may be drawn from any qualification RED above.
 
 ## 11. Natural stop
