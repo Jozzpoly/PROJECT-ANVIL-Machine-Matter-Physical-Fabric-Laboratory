@@ -36,6 +36,9 @@ jobs:
       - name: Run bounded Motor candidate gate
         run: node scripts/minimal-product-correction-actuation-gate.mjs | tee artifacts/minimal-product-correction-gate/actuation.log
 
+      - name: Run bounded Motor robustness gate
+        run: node scripts/minimal-product-correction-robustness-gate.mjs | tee artifacts/minimal-product-correction-gate/robustness.log
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
