@@ -29,13 +29,22 @@ jobs:
         run: npx tsc -p tsconfig.test.json
 
       - name: Run grounded runtime reality falsifier
-        run: node scripts/grounded-runtime-reality-falsifier.mjs
+        shell: bash
+        run: |
+          mkdir -p test-results
+          set +e
+          node scripts/grounded-runtime-reality-falsifier.mjs > test-results/grounded-runtime-reality-falsifier.log 2>&1
+          status=$?
+          cat test-results/grounded-runtime-reality-falsifier.log
+          exit $status
 
       - name: Upload bounded evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: grounded-runtime-reality-falsifier
-          path: test-results/grounded-runtime-reality-falsifier.json
+          path: |
+            test-results/grounded-runtime-reality-falsifier.json
+            test-results/grounded-runtime-reality-falsifier.log
           if-no-files-found: error
           retention-days: 7
