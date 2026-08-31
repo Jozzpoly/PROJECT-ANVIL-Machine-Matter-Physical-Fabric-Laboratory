@@ -1,0 +1,41 @@
+name: Constraint-Safe Actuation Envelope Falsifier
+
+on:
+  push:
+    branches:
+      - experiment/constraint-safe-actuation-envelope
+
+permissions:
+  contents: read
+
+jobs:
+  falsifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact experiment head
+        uses: actions/checkout@v7
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Compile test runtime
+        run: npx tsc -p tsconfig.test.json
+
+      - name: Run bounded actuation envelope falsifier
+        run: node scripts/constraint-safe-actuation-envelope.mjs
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: constraint-safe-actuation-envelope
+          path: test-results/constraint-safe-actuation-envelope.json
+          if-no-files-found: error
+          retention-days: 7
