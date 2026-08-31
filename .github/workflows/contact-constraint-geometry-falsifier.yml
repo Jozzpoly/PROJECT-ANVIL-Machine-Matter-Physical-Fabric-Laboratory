@@ -36,6 +36,9 @@ jobs:
       - name: Run matched-elevation precontact falsifier
         run: node scripts/contact-constraint-precontact-falsifier.mjs | tee artifacts/contact-constraint-geometry-falsifier/precontact.log
 
+      - name: Run corrected far-ground control
+        run: node scripts/contact-constraint-precontact-control-v2.mjs | tee artifacts/contact-constraint-geometry-falsifier/precontact-v2.log
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
