@@ -5,7 +5,8 @@ import { FreedomWorkspace, createFreedomStarterSource } from "../.test-build/src
 
 const SETTLE_STEPS = 240;
 const DRIVE_STEPS = 180;
-const EFFORTS_NM = [0, 20, 100, 250, 500, 750, 1000];
+const NEUTRAL_EFFORTS_NM = [0, 20, 40, 60, 80, 100, 150];
+const GROUNDED_EFFORTS_NM = [0, 20, 100, 250, 300, 350, 400, 450, 500, 750, 1000];
 const ACTIONABLE_SPEED_RADPS = 0.05;
 const ANCHOR_LIMIT_M = 0.003;
 
@@ -58,10 +59,10 @@ async function runCondition({ grounded, effortNm }) {
     assert.ok(armId, "starter:b has no realized body");
     assert.notEqual(baseId, armId, "Bearing did not split the beam into two rigid islands");
 
-    let maxAnchorErrorM = maxValue(runtime.anchorErrorsM());
+    let maxAnchorErrorDuringSettleM = maxValue(runtime.anchorErrorsM());
     for (let step = 0; step < SETTLE_STEPS; step += 1) {
       runtime.step(1);
-      maxAnchorErrorM = Math.max(maxAnchorErrorM, maxValue(runtime.anchorErrorsM()));
+      maxAnchorErrorDuringSettleM = Math.max(maxAnchorErrorDuringSettleM, maxValue(runtime.anchorErrorsM()));
     }
 
     const settledBase = snapshotById(runtime, baseId);
@@ -70,9 +71,15 @@ async function runCondition({ grounded, effortNm }) {
     const anchorErrorBeforeDriveM = maxValue(runtime.anchorErrorsM());
 
     runtime.setForcesEnabled(true);
+    let maxAnchorErrorDuringDriveM = anchorErrorBeforeDriveM;
+    let peakAbsoluteRelativeSpeedRadps = Math.abs(settledRelativeSpeedRadps);
     for (let step = 0; step < DRIVE_STEPS; step += 1) {
       runtime.step(1);
-      maxAnchorErrorM = Math.max(maxAnchorErrorM, maxValue(runtime.anchorErrorsM()));
+      maxAnchorErrorDuringDriveM = Math.max(maxAnchorErrorDuringDriveM, maxValue(runtime.anchorErrorsM()));
+      peakAbsoluteRelativeSpeedRadps = Math.max(
+        peakAbsoluteRelativeSpeedRadps,
+        Math.abs(runtime.relativeAngularSpeedRadps(bearing)),
+      );
     }
 
     const finalBase = snapshotById(runtime, baseId);
@@ -93,10 +100,13 @@ async function runCondition({ grounded, effortNm }) {
       settledRelativeSpeedRadps,
       relativeSpeedRadps,
       absoluteRelativeSpeedRadps: Math.abs(relativeSpeedRadps),
+      peakAbsoluteRelativeSpeedRadps,
       anchorErrorBeforeDriveM,
       anchorErrorAfterDriveM,
-      maxAnchorErrorM,
-      anchorPass: maxAnchorErrorM < ANCHOR_LIMIT_M,
+      maxAnchorErrorDuringSettleM,
+      maxAnchorErrorDuringDriveM,
+      driveAnchorPass: maxAnchorErrorDuringDriveM < ANCHOR_LIMIT_M,
+      settledAnchorPass: anchorErrorBeforeDriveM < ANCHOR_LIMIT_M,
       allFinite,
       baseTranslationM: distance(settledBase.position, finalBase.position),
       armTranslationM: distance(settledArm.position, finalArm.position),
@@ -118,48 +128,49 @@ async function runCondition({ grounded, effortNm }) {
   }
 }
 
-const conditions = [];
-for (const grounded of [false, true]) {
-  for (const effortNm of EFFORTS_NM) conditions.push(await runCondition({ grounded, effortNm }));
-}
+const neutralConditions = [];
+for (const effortNm of NEUTRAL_EFFORTS_NM) neutralConditions.push(await runCondition({ grounded: false, effortNm }));
+const groundedConditions = [];
+for (const effortNm of GROUNDED_EFFORTS_NM) groundedConditions.push(await runCondition({ grounded: true, effortNm }));
+const conditions = [...neutralConditions, ...groundedConditions];
 
-const groundedConditions = conditions.filter((condition) => condition.grounded);
-const neutralConditions = conditions.filter((condition) => !condition.grounded);
-const firstAnchorRed = (entries) => entries.find((condition) => !condition.anchorPass)?.effortNm ?? null;
+const firstDriveAnchorRed = (entries) => entries.find((condition) => !condition.driveAnchorPass)?.effortNm ?? null;
+const firstActionable = (entries) => entries.find((condition) => condition.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS)?.effortNm ?? null;
 const grounded1000 = groundedConditions.find((condition) => condition.effortNm === 1000);
-const neutral1000 = neutralConditions.find((condition) => condition.effortNm === 1000);
-assert.ok(grounded1000 && neutral1000);
+assert.ok(grounded1000);
 
 const classification = {
-  solverAnchorRed: conditions.some((condition) => !condition.anchorPass),
-  groundedAnchorRed: groundedConditions.some((condition) => !condition.anchorPass),
-  environmentNeutralAnchorRed: neutralConditions.some((condition) => !condition.anchorPass),
-  firstGroundedAnchorRedEffortNm: firstAnchorRed(groundedConditions),
-  firstEnvironmentNeutralAnchorRedEffortNm: firstAnchorRed(neutralConditions),
+  solverDriveAnchorRed: conditions.some((condition) => !condition.driveAnchorPass),
+  groundedDriveAnchorRed: groundedConditions.some((condition) => !condition.driveAnchorPass),
+  environmentNeutralDriveAnchorRed: neutralConditions.some((condition) => !condition.driveAnchorPass),
+  firstGroundedDriveAnchorRedEffortNm: firstDriveAnchorRed(groundedConditions),
+  firstEnvironmentNeutralDriveAnchorRedEffortNm: firstDriveAnchorRed(neutralConditions),
+  firstGroundedActionableEffortNm: firstActionable(groundedConditions),
+  firstEnvironmentNeutralActionableEffortNm: firstActionable(neutralConditions),
+  groundSettleTransientOver3mm: groundedConditions.some((condition) => condition.maxAnchorErrorDuringSettleM >= ANCHOR_LIMIT_M),
+  groundSettlesBackWithin3mm: groundedConditions.every((condition) => condition.settledAnchorPass),
   nonFiniteRed: conditions.some((condition) => !condition.allFinite),
   grounded20NmActionable: groundedConditions.find((condition) => condition.effortNm === 20)?.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
-  grounded100NmActionable: groundedConditions.find((condition) => condition.effortNm === 100)?.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
   grounded1000NmActionable: grounded1000.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
   groundedDynamicBaseMateriallyMovesAt1000Nm: grounded1000.baseTranslationM > 0.02 || grounded1000.baseRotationRad > 0.05,
-  anchorAmplificationAt1000FromGroundContact: grounded1000.maxAnchorErrorM / Math.max(neutral1000.maxAnchorErrorM, Number.EPSILON),
 };
 
 const report = {
-  schema: "anvil-grounded-runtime-reality-falsifier/1",
+  schema: "anvil-grounded-runtime-reality-falsifier/2",
   sourceSha: process.env.GITHUB_SHA ?? null,
-  fixture: "same three-cell beam in both environments; Bearing starter:a x+ ↔ starter:b x-; freeAxis=y; starter:a and starter:b/c remain dynamic authored islands",
+  fixture: "same three-cell beam; Bearing starter:a x+ ↔ starter:b x-; freeAxis=y; starter:a and starter:b/c remain dynamic authored islands",
   timing: { settleSteps: SETTLE_STEPS, driveSteps: DRIVE_STEPS, fixedDtS: 1 / 60 },
   thresholds: { actionableSpeedRadps: ACTIONABLE_SPEED_RADPS, anchorLimitM: ANCHOR_LIMIT_M },
-  effortsNm: EFFORTS_NM,
+  sweep: { neutralEffortsNm: NEUTRAL_EFFORTS_NM, groundedEffortsNm: GROUNDED_EFFORTS_NM },
   conditions,
   classification,
   verdict: classification.nonFiniteRed
     ? "RUNTIME_NONFINITE_RED"
-    : classification.groundedAnchorRed && !classification.environmentNeutralAnchorRed
-      ? "GROUNDED_CONTACT_CONSTRAINT_RED"
-      : classification.groundedAnchorRed && classification.environmentNeutralAnchorRed
-        ? "GENERAL_CONSTRAINT_RED"
-        : "NO_CONSTRAINT_RED_IN_PROBE",
+    : classification.environmentNeutralDriveAnchorRed
+      ? "GENERAL_HIGH_SPEED_CONSTRAINT_RED"
+      : classification.groundedDriveAnchorRed
+        ? "GROUNDED_CONTACT_CONSTRAINT_RED"
+        : "NO_DRIVE_CONSTRAINT_RED_IN_PROBE",
 };
 
 await mkdir("test-results", { recursive: true });
