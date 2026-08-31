@@ -3,9 +3,23 @@ import "./bearing-owner-language.css";
 import "./cut-owner-gate.css";
 import "./rebind-demo.css";
 
-const experiment = new URLSearchParams(window.location.search).get("experiment");
+const params = new URLSearchParams(window.location.search);
+const experiment = params.get("experiment");
+const studio = params.get("studio");
+const activeRoot = studio === null && experiment === null;
 
-if (experiment === "cut") {
+if (studio === "1" || activeRoot) {
+  void (async () => {
+    const presentation = await import("./studio-r2/semantic-presentation.js");
+    presentation.installSemanticPresentation();
+    const loose = await import("./studio-r2/loose.js");
+    loose.installLooseWorkspaceCapture();
+    await import("./studio-r2/app.js");
+    const readiness = await import("./studio-r2/blind-test-readiness.js");
+    readiness.installBlindTestReadiness();
+    loose.installLooseTray();
+  })();
+} else if (experiment === "cut") {
   void (async () => {
     await import("./cut-demo.js");
     await import("./cut-owner-gate.js");
@@ -25,6 +39,8 @@ if (experiment === "cut") {
   void import("./load-rebind-demo.js");
 } else if (experiment === "torque") {
   void import("./torque-demo.js");
+} else if (experiment === "collapse" || studio === "0") {
+  void import("./main.js");
 } else {
   void import("./main.js");
 }

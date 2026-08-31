@@ -83,6 +83,19 @@ jobs:
           name: anvil-browser-staging
           path: dist
 
+      - name: Validate exact staged provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from "node:fs/promises";
+          const manifest = JSON.parse(await readFile("dist/anvil-artifact.json", "utf8"));
+          if (manifest.sourceSha !== process.env.EXPECTED_SOURCE_SHA) {
+            throw new Error(`staged artifact source ${manifest.sourceSha} != PR head ${process.env.EXPECTED_SOURCE_SHA}`);
+          }
+          if (manifest.entryPath !== "/") throw new Error(`unexpected Owner entryPath ${manifest.entryPath}`);
+          NODE
+
       - name: Validate packaged Windows owner launcher
         shell: pwsh
         run: ./dist/serve-anvil.ps1 -SelfTest
@@ -93,6 +106,15 @@ jobs:
       - name: Run real browser regression gate
         run: npm run test:browser
 
+      - name: Upload R2 E1 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: r2-e1-visual-evidence
+          path: test-results/r2-e1-evidence
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload owner-candidate browser artifact
         uses: actions/upload-artifact@v7
         with:
@@ -100,3 +122,83 @@ jobs:
           path: dist
           if-no-files-found: error
           retention-days: 14
+
+  publish-owner-page:
+    name: publish-owner-page
+    if: github.event_name == 'pull_request' && github.event.action == 'ready_for_review'
+    needs:
+      - core
+      - candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download the exact candidate dist already tested above
+        uses: actions/download-artifact@v7
+        with:
+          name: anvil-browser-staging
+          path: dist
+
+      - name: Refuse provenance drift before publication
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from "node:fs/promises";
+          const manifest = JSON.parse(await readFile("dist/anvil-artifact.json", "utf8"));
+          if (manifest.sourceSha !== process.env.EXPECTED_SOURCE_SHA) {
+            throw new Error(`publication artifact source ${manifest.sourceSha} != PR head ${process.env.EXPECTED_SOURCE_SHA}`);
+          }
+          if (manifest.entryPath !== "/") throw new Error(`unexpected Owner entryPath ${manifest.entryPath}`);
+          NODE
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Package the already-tested dist for Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Deploy exact Owner candidate
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  owner-page-smoke:
+    name: owner-page-smoke
+    if: github.event_name == 'pull_request' && github.event.action == 'ready_for_review'
+    needs:
+      - publish-owner-page
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact proposal test harness
+        uses: actions/checkout@v7
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Chromium for public transport smoke
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify deployed provenance, root and runtime boot
+        env:
+          ANVIL_PAGES_URL: ${{ needs.publish-owner-page.outputs.page_url }}
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: npx playwright test --config=playwright.pages.config.ts

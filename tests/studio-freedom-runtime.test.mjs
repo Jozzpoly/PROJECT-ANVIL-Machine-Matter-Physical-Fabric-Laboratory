@@ -11,6 +11,10 @@ function maxValue(record) {
   return Math.max(0, ...Object.values(record));
 }
 
+function createAuthorityRuntime(source, generation) {
+  return FreedomRuntimeSession.create(source, generation, { grounded: false });
+}
+
 function makeTwoBearingSource({ torques = true } = {}) {
   const workspace = new FreedomWorkspace(createFreedomStarterSource());
   const left = workspace.addBearing(
@@ -46,7 +50,7 @@ test("OWNER-AUTHORITY one invalid local meaning cannot globally block a realizab
   workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, 35);
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "PARTIAL");
     assert.equal(runtime.receipt.bodyCount, 2);
@@ -77,7 +81,7 @@ test("OWNER-AUTHORITY exact Bearing delete preserves orphan source while indepen
   assert.equal(snapshot.source.torquePatches.some((patch) => patch.id === orphanedTorque), true);
   assert.equal(snapshot.source.torquePatches.some((patch) => patch.id === liveTorque), true);
 
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "PARTIAL");
     assert.equal(runtime.receipt.jointCount, 1);
@@ -104,7 +108,7 @@ test("OWNER-AUTHORITY exact Matter delete preserves orphan meanings while indepe
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
 
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "PARTIAL");
     assert.equal(runtime.receipt.jointCount, 1);
@@ -127,7 +131,7 @@ test("OWNER-AUTHORITY exact Matter delete preserves orphan meanings while indepe
 test("OWNER-AUTHORITY one runtime composes multiple Bearings and multiple TorquePatches", async () => {
   const { workspace, left, right } = makeTwoBearingSource();
   const snapshot = workspace.snapshot();
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     assert.equal(runtime.receipt.quality, "COMPLETE");
     assert.equal(runtime.receipt.bodyCount, 3);
@@ -156,7 +160,7 @@ test("OWNER-AUTHORITY Runtime Hand directly moves the live mechanism in the same
   const { workspace } = makeTwoBearingSource({ torques: false });
   const snapshot = workspace.snapshot();
   const authoredBefore = canonical(snapshot.source);
-  const runtime = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const runtime = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     const bodyId = runtime.plan.physicalPlan.cellToBody["starter:c"];
     assert.ok(bodyId);
@@ -181,7 +185,7 @@ test("OWNER-AUTHORITY Runtime Hand directly moves the live mechanism in the same
 test("OWNER-AUTHORITY fresh runtime forgets prior physical pose and transient Hand state", async () => {
   const { workspace } = makeTwoBearingSource({ torques: false });
   const snapshot = workspace.snapshot();
-  const first = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const first = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   const bodyId = first.plan.physicalPlan.cellToBody["starter:c"];
   assert.ok(bodyId);
   const initial = first.snapshots().find((candidate) => candidate.planBodyId === bodyId);
@@ -194,7 +198,7 @@ test("OWNER-AUTHORITY fresh runtime forgets prior physical pose and transient Ha
   assert.ok(Math.abs(displaced.position.y - initial.position.y) > 0.01);
   first.dispose();
 
-  const second = await FreedomRuntimeSession.create(snapshot.source, snapshot.generation);
+  const second = await createAuthorityRuntime(snapshot.source, snapshot.generation);
   try {
     const fresh = second.snapshots().find((candidate) => candidate.planBodyId === bodyId);
     assert.ok(fresh);
