@@ -1,0 +1,39 @@
+name: Minimal Product Correction Gate
+
+on:
+  push:
+    branches:
+      - candidate/minimal-product-correction-gate
+
+permissions:
+  contents: read
+
+jobs:
+  solver-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate head
+        uses: actions/checkout@v4
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Compile test runtime
+        run: npx tsc -p tsconfig.test.json
+
+      - name: Run numerical candidate gate
+        run: node scripts/minimal-product-correction-gate.mjs | tee artifacts/minimal-product-correction-gate/run.log
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: minimal-product-correction-gate
+          path: artifacts/minimal-product-correction-gate/
+          if-no-files-found: warn
