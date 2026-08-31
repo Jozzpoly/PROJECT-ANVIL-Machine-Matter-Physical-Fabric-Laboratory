@@ -1,0 +1,42 @@
+name: Reference Support Geometry Falsifier
+
+on:
+  push:
+    branches:
+      - experiment/reference-support-geometry-falsifier
+
+permissions:
+  contents: read
+
+jobs:
+  falsifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact experiment head
+        uses: actions/checkout@v4
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Compile test runtime
+        run: npx tsc -p tsconfig.test.json
+
+      - name: Prepare evidence directory
+        run: mkdir -p artifacts/reference-support-geometry-falsifier
+
+      - name: Run reference support geometry falsifier
+        run: node scripts/reference-support-geometry-falsifier.mjs | tee artifacts/reference-support-geometry-falsifier/run.log
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reference-support-geometry-falsifier
+          path: artifacts/reference-support-geometry-falsifier/
+          if-no-files-found: warn
