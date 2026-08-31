@@ -5,7 +5,7 @@ import { FreedomWorkspace, createFreedomStarterSource } from "../.test-build/src
 
 const SETTLE_STEPS = 240;
 const DRIVE_STEPS = 180;
-const LEGACY_ACTIONABILITY_DRIVE_STEPS = 120;
+const COMPARISON_DRIVE_STEPS = 120;
 const NEUTRAL_EFFORTS_NM = [0, 20, 40, 60, 80, 100, 150];
 const GROUNDED_EFFORTS_NM = [0, 20, 100, 250, 300, 350, 400, 450, 500, 750, 1000];
 const ACTIONABLE_SPEED_RADPS = 0.05;
@@ -39,19 +39,19 @@ function snapshotById(runtime, planBodyId) {
   return snapshot;
 }
 
-function createBeam(effortNm) {
+function createBeam(effortNm, freeAxis = "y") {
   const workspace = new FreedomWorkspace(createFreedomStarterSource());
   const bearing = workspace.addBearing(
     { cellId: "starter:a", face: "x+" },
     { cellId: "starter:b", face: "x-" },
-    "y",
+    freeAxis,
   );
   workspace.addTorquePatch({ cellId: "starter:a", face: "x+" }, effortNm);
   return { source: workspace.snapshot().source, bearing };
 }
 
 async function runCondition({ grounded, effortNm }) {
-  const { source, bearing } = createBeam(effortNm);
+  const { source, bearing } = createBeam(effortNm, "y");
   const runtime = await FreedomRuntimeSession.create(source, 0, { grounded });
   try {
     const baseId = runtime.plan.physicalPlan.cellToBody["starter:a"];
@@ -76,8 +76,8 @@ async function runCondition({ grounded, effortNm }) {
     let peakAbsoluteRelativeSpeedRadps = Math.abs(settledRelativeSpeedRadps);
     let firstDriveAnchorRedStep = null;
     let firstActionableDriveStep = null;
-    let anchorErrorAtLegacyDriveStepM = null;
-    let absoluteRelativeSpeedAtLegacyDriveStepRadps = null;
+    let anchorErrorAtComparisonDriveStepM = null;
+    let absoluteRelativeSpeedAtComparisonDriveStepRadps = null;
     for (let step = 1; step <= DRIVE_STEPS; step += 1) {
       runtime.step(1);
       const anchorErrorM = maxValue(runtime.anchorErrorsM());
@@ -86,9 +86,9 @@ async function runCondition({ grounded, effortNm }) {
       peakAbsoluteRelativeSpeedRadps = Math.max(peakAbsoluteRelativeSpeedRadps, absoluteRelativeSpeedRadps);
       if (firstDriveAnchorRedStep === null && anchorErrorM >= ANCHOR_LIMIT_M) firstDriveAnchorRedStep = step;
       if (firstActionableDriveStep === null && absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS) firstActionableDriveStep = step;
-      if (step === LEGACY_ACTIONABILITY_DRIVE_STEPS) {
-        anchorErrorAtLegacyDriveStepM = anchorErrorM;
-        absoluteRelativeSpeedAtLegacyDriveStepRadps = absoluteRelativeSpeedRadps;
+      if (step === COMPARISON_DRIVE_STEPS) {
+        anchorErrorAtComparisonDriveStepM = anchorErrorM;
+        absoluteRelativeSpeedAtComparisonDriveStepRadps = absoluteRelativeSpeedRadps;
       }
     }
 
@@ -113,8 +113,8 @@ async function runCondition({ grounded, effortNm }) {
       peakAbsoluteRelativeSpeedRadps,
       firstActionableDriveStep,
       firstDriveAnchorRedStep,
-      anchorErrorAtLegacyDriveStepM,
-      absoluteRelativeSpeedAtLegacyDriveStepRadps,
+      anchorErrorAtComparisonDriveStepM,
+      absoluteRelativeSpeedAtComparisonDriveStepRadps,
       anchorErrorBeforeDriveM,
       anchorErrorAfterDriveM,
       maxAnchorErrorDuringSettleM,
@@ -142,11 +142,58 @@ async function runCondition({ grounded, effortNm }) {
   }
 }
 
+async function runExactPriorQualificationProbe() {
+  const effortNm = 1000;
+  const { source, bearing } = createBeam(effortNm, "z");
+  const runtime = await FreedomRuntimeSession.create(source, 0);
+  try {
+    let maxAnchorErrorDuringSettleM = maxValue(runtime.anchorErrorsM());
+    for (let step = 1; step <= 90; step += 1) {
+      runtime.step(1);
+      maxAnchorErrorDuringSettleM = Math.max(maxAnchorErrorDuringSettleM, maxValue(runtime.anchorErrorsM()));
+    }
+    const anchorErrorBeforeDriveM = maxValue(runtime.anchorErrorsM());
+    runtime.setForcesEnabled(true);
+    let maxAnchorErrorDuringDriveM = anchorErrorBeforeDriveM;
+    let firstDriveAnchorRedStep = null;
+    let peakAbsoluteRelativeSpeedRadps = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
+    for (let step = 1; step <= 120; step += 1) {
+      runtime.step(1);
+      const anchorErrorM = maxValue(runtime.anchorErrorsM());
+      const speed = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
+      maxAnchorErrorDuringDriveM = Math.max(maxAnchorErrorDuringDriveM, anchorErrorM);
+      peakAbsoluteRelativeSpeedRadps = Math.max(peakAbsoluteRelativeSpeedRadps, speed);
+      if (firstDriveAnchorRedStep === null && anchorErrorM >= ANCHOR_LIMIT_M) firstDriveAnchorRedStep = step;
+    }
+    const finalAbsoluteRelativeSpeedRadps = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
+    const anchorErrorAfterDriveM = maxValue(runtime.anchorErrorsM());
+    return {
+      fixture: "exact src/tests/studio-grounded-runtime.test.mjs actionability geometry and timing: starter:a↔starter:b, freeAxis=z, 1000 Nm, settle=90, drive=120",
+      effortNm,
+      settleSteps: 90,
+      driveSteps: 120,
+      finalAbsoluteRelativeSpeedRadps,
+      peakAbsoluteRelativeSpeedRadps,
+      actionablePass: finalAbsoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
+      anchorErrorBeforeDriveM,
+      anchorErrorAfterDriveM,
+      maxAnchorErrorDuringSettleM,
+      maxAnchorErrorDuringDriveM,
+      anchorIntegrityPass: maxAnchorErrorDuringDriveM < ANCHOR_LIMIT_M,
+      firstDriveAnchorRedStep,
+      allFinite: runtime.snapshots().every(finiteSnapshot),
+    };
+  } finally {
+    runtime.dispose();
+  }
+}
+
 const neutralConditions = [];
 for (const effortNm of NEUTRAL_EFFORTS_NM) neutralConditions.push(await runCondition({ grounded: false, effortNm }));
 const groundedConditions = [];
 for (const effortNm of GROUNDED_EFFORTS_NM) groundedConditions.push(await runCondition({ grounded: true, effortNm }));
 const conditions = [...neutralConditions, ...groundedConditions];
+const exactPriorQualificationProbe = await runExactPriorQualificationProbe();
 
 const firstDriveAnchorRed = (entries) => entries.find((condition) => !condition.driveAnchorPass)?.effortNm ?? null;
 const firstActionable = (entries) => entries.find((condition) => condition.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS)?.effortNm ?? null;
@@ -166,24 +213,27 @@ const classification = {
   nonFiniteRed: conditions.some((condition) => !condition.allFinite),
   grounded20NmActionable: groundedConditions.find((condition) => condition.effortNm === 20)?.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
   grounded1000NmActionable: grounded1000.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
-  grounded1000NmAnchorAlreadyRedAtLegacy120DriveSteps: (grounded1000.anchorErrorAtLegacyDriveStepM ?? 0) >= ANCHOR_LIMIT_M,
+  grounded1000NmAnchorAlreadyRedAt120DriveSteps: (grounded1000.anchorErrorAtComparisonDriveStepM ?? 0) >= ANCHOR_LIMIT_M,
   grounded1000NmFirstAnchorRedDriveStep: grounded1000.firstDriveAnchorRedStep,
   groundedDynamicBaseMateriallyMovesAt1000Nm: grounded1000.baseTranslationM > 0.02 || grounded1000.baseRotationRad > 0.05,
+  exactPriorActionabilityFixtureStillActionable: exactPriorQualificationProbe.actionablePass,
+  exactPriorActionabilityFixtureAnchorIntegrityPass: exactPriorQualificationProbe.anchorIntegrityPass,
 };
 
 const report = {
-  schema: "anvil-grounded-runtime-reality-falsifier/3",
+  schema: "anvil-grounded-runtime-reality-falsifier/4",
   sourceSha: process.env.GITHUB_SHA ?? null,
-  fixture: "same three-cell beam; Bearing starter:a x+ ↔ starter:b x-; freeAxis=y; starter:a and starter:b/c remain dynamic authored islands",
+  fixture: "primary sweep uses same three-cell beam; Bearing starter:a x+ ↔ starter:b x-; freeAxis=y; starter:a and starter:b/c remain dynamic authored islands",
   timing: {
     settleSteps: SETTLE_STEPS,
     driveSteps: DRIVE_STEPS,
-    legacyActionabilityDriveSteps: LEGACY_ACTIONABILITY_DRIVE_STEPS,
+    comparisonDriveSteps: COMPARISON_DRIVE_STEPS,
     fixedDtS: 1 / 60,
   },
   thresholds: { actionableSpeedRadps: ACTIONABLE_SPEED_RADPS, anchorLimitM: ANCHOR_LIMIT_M },
   sweep: { neutralEffortsNm: NEUTRAL_EFFORTS_NM, groundedEffortsNm: GROUNDED_EFFORTS_NM },
   conditions,
+  exactPriorQualificationProbe,
   classification,
   verdict: classification.nonFiniteRed
     ? "RUNTIME_NONFINITE_RED"
