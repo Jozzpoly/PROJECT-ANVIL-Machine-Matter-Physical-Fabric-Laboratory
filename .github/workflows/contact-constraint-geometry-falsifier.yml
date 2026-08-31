@@ -1,0 +1,42 @@
+name: Contact-Constraint Geometry Falsifier
+
+on:
+  push:
+    branches:
+      - experiment/contact-constraint-geometry-falsifier
+
+permissions:
+  contents: read
+
+jobs:
+  falsifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact experiment head
+        uses: actions/checkout@v4
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Compile test runtime
+        run: npx tsc -p tsconfig.test.json
+
+      - name: Prepare evidence directory
+        run: mkdir -p artifacts/contact-constraint-geometry-falsifier
+
+      - name: Run contact-constraint geometry falsifier
+        run: node scripts/contact-constraint-geometry-falsifier.mjs | tee artifacts/contact-constraint-geometry-falsifier/run.log
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contact-constraint-geometry-falsifier
+          path: artifacts/contact-constraint-geometry-falsifier/
+          if-no-files-found: warn
