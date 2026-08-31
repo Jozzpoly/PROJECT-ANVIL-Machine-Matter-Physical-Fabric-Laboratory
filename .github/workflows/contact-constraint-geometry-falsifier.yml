@@ -39,6 +39,9 @@ jobs:
       - name: Run corrected far-ground control
         run: node scripts/contact-constraint-precontact-control-v2.mjs | tee artifacts/contact-constraint-geometry-falsifier/precontact-v2.log
 
+      - name: Run passive contact-impact control
+        run: node scripts/contact-impact-passive-control.mjs | tee artifacts/contact-constraint-geometry-falsifier/passive-impact.log
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
