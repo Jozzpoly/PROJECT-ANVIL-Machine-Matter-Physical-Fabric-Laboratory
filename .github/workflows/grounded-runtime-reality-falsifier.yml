@@ -1,0 +1,41 @@
+name: Grounded Runtime Reality Falsifier
+
+on:
+  push:
+    branches:
+      - experiment/grounded-runtime-reality-falsifier
+
+permissions:
+  contents: read
+
+jobs:
+  falsifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact experiment head
+        uses: actions/checkout@v7
+
+      - name: Use canonical Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.16.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Compile test runtime
+        run: npx tsc -p tsconfig.test.json
+
+      - name: Run grounded runtime reality falsifier
+        run: node scripts/grounded-runtime-reality-falsifier.mjs
+
+      - name: Upload bounded evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: grounded-runtime-reality-falsifier
+          path: test-results/grounded-runtime-reality-falsifier.json
+          if-no-files-found: error
+          retention-days: 7
