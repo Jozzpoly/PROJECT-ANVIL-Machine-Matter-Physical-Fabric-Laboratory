@@ -5,6 +5,7 @@ import { FreedomWorkspace, createFreedomStarterSource } from "../.test-build/src
 
 const SETTLE_STEPS = 240;
 const DRIVE_STEPS = 180;
+const LEGACY_ACTIONABILITY_DRIVE_STEPS = 120;
 const NEUTRAL_EFFORTS_NM = [0, 20, 40, 60, 80, 100, 150];
 const GROUNDED_EFFORTS_NM = [0, 20, 100, 250, 300, 350, 400, 450, 500, 750, 1000];
 const ACTIONABLE_SPEED_RADPS = 0.05;
@@ -73,13 +74,22 @@ async function runCondition({ grounded, effortNm }) {
     runtime.setForcesEnabled(true);
     let maxAnchorErrorDuringDriveM = anchorErrorBeforeDriveM;
     let peakAbsoluteRelativeSpeedRadps = Math.abs(settledRelativeSpeedRadps);
-    for (let step = 0; step < DRIVE_STEPS; step += 1) {
+    let firstDriveAnchorRedStep = null;
+    let firstActionableDriveStep = null;
+    let anchorErrorAtLegacyDriveStepM = null;
+    let absoluteRelativeSpeedAtLegacyDriveStepRadps = null;
+    for (let step = 1; step <= DRIVE_STEPS; step += 1) {
       runtime.step(1);
-      maxAnchorErrorDuringDriveM = Math.max(maxAnchorErrorDuringDriveM, maxValue(runtime.anchorErrorsM()));
-      peakAbsoluteRelativeSpeedRadps = Math.max(
-        peakAbsoluteRelativeSpeedRadps,
-        Math.abs(runtime.relativeAngularSpeedRadps(bearing)),
-      );
+      const anchorErrorM = maxValue(runtime.anchorErrorsM());
+      const absoluteRelativeSpeedRadps = Math.abs(runtime.relativeAngularSpeedRadps(bearing));
+      maxAnchorErrorDuringDriveM = Math.max(maxAnchorErrorDuringDriveM, anchorErrorM);
+      peakAbsoluteRelativeSpeedRadps = Math.max(peakAbsoluteRelativeSpeedRadps, absoluteRelativeSpeedRadps);
+      if (firstDriveAnchorRedStep === null && anchorErrorM >= ANCHOR_LIMIT_M) firstDriveAnchorRedStep = step;
+      if (firstActionableDriveStep === null && absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS) firstActionableDriveStep = step;
+      if (step === LEGACY_ACTIONABILITY_DRIVE_STEPS) {
+        anchorErrorAtLegacyDriveStepM = anchorErrorM;
+        absoluteRelativeSpeedAtLegacyDriveStepRadps = absoluteRelativeSpeedRadps;
+      }
     }
 
     const finalBase = snapshotById(runtime, baseId);
@@ -101,6 +111,10 @@ async function runCondition({ grounded, effortNm }) {
       relativeSpeedRadps,
       absoluteRelativeSpeedRadps: Math.abs(relativeSpeedRadps),
       peakAbsoluteRelativeSpeedRadps,
+      firstActionableDriveStep,
+      firstDriveAnchorRedStep,
+      anchorErrorAtLegacyDriveStepM,
+      absoluteRelativeSpeedAtLegacyDriveStepRadps,
       anchorErrorBeforeDriveM,
       anchorErrorAfterDriveM,
       maxAnchorErrorDuringSettleM,
@@ -152,14 +166,21 @@ const classification = {
   nonFiniteRed: conditions.some((condition) => !condition.allFinite),
   grounded20NmActionable: groundedConditions.find((condition) => condition.effortNm === 20)?.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
   grounded1000NmActionable: grounded1000.absoluteRelativeSpeedRadps > ACTIONABLE_SPEED_RADPS,
+  grounded1000NmAnchorAlreadyRedAtLegacy120DriveSteps: (grounded1000.anchorErrorAtLegacyDriveStepM ?? 0) >= ANCHOR_LIMIT_M,
+  grounded1000NmFirstAnchorRedDriveStep: grounded1000.firstDriveAnchorRedStep,
   groundedDynamicBaseMateriallyMovesAt1000Nm: grounded1000.baseTranslationM > 0.02 || grounded1000.baseRotationRad > 0.05,
 };
 
 const report = {
-  schema: "anvil-grounded-runtime-reality-falsifier/2",
+  schema: "anvil-grounded-runtime-reality-falsifier/3",
   sourceSha: process.env.GITHUB_SHA ?? null,
   fixture: "same three-cell beam; Bearing starter:a x+ ↔ starter:b x-; freeAxis=y; starter:a and starter:b/c remain dynamic authored islands",
-  timing: { settleSteps: SETTLE_STEPS, driveSteps: DRIVE_STEPS, fixedDtS: 1 / 60 },
+  timing: {
+    settleSteps: SETTLE_STEPS,
+    driveSteps: DRIVE_STEPS,
+    legacyActionabilityDriveSteps: LEGACY_ACTIONABILITY_DRIVE_STEPS,
+    fixedDtS: 1 / 60,
+  },
   thresholds: { actionableSpeedRadps: ACTIONABLE_SPEED_RADPS, anchorLimitM: ANCHOR_LIMIT_M },
   sweep: { neutralEffortsNm: NEUTRAL_EFFORTS_NM, groundedEffortsNm: GROUNDED_EFFORTS_NM },
   conditions,
